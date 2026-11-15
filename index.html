@@ -175,7 +175,12 @@ function createKitPreview(){
  }
  kitModels=[mannequin(-2.1),mannequin(2.1)];
 }
-function renderKitPreview(){if(kitScreen.style.display==='flex'&&kitPreviewRenderer){kitPreviewRenderer.render(kitPreviewScene,kitPreviewCamera)}}
+let previewAngle=0,previewDrag=null;
+const previewCanvas=document.getElementById('kitPreview');previewCanvas.style.touchAction='none';
+previewCanvas.addEventListener('pointerdown',e=>{previewDrag={id:e.pointerId,x:e.clientX};previewCanvas.setPointerCapture(e.pointerId)});
+previewCanvas.addEventListener('pointermove',e=>{if(!previewDrag||previewDrag.id!==e.pointerId)return;previewAngle+=(e.clientX-previewDrag.x)*.013;previewDrag.x=e.clientX;renderKitPreview()});
+for(const ev of ['pointerup','pointercancel','lostpointercapture'])previewCanvas.addEventListener(ev,()=>previewDrag=null);
+function renderKitPreview(){if(kitScreen.style.display==='flex'&&kitPreviewRenderer){if(kitModels)kitModels.forEach(p=>p.rotation.y=previewAngle);kitPreviewRenderer.render(kitPreviewScene,kitPreviewCamera)}}
 function openUniforms(){if(!selectedHome||!selectedAway)return;clubLauncher.style.display='none';kitScreen.style.display='flex';createKitPreview();updateKitScreen();renderKitPreview()}
 document.getElementById('openKitScreen').addEventListener('click',openUniforms);
 document.getElementById('kitBack').addEventListener('click',()=>{kitScreen.style.display='none';clubLauncher.style.display='flex'});
