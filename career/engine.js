@@ -146,6 +146,23 @@ export class CareerEngine{
   const record={key,offerId,kind,questionIndex,answer,effects,date:new Date().toISOString()};
   s.press.records.push(record);this.save();return record;
  }
+ recordTitle({matchId,competition,winnerClubId,prize=0,score}){
+  const s=this.current();
+  if(!matchId||!competition||!s.clubs[winnerClubId]||!Array.isArray(score)||score.length!==2||score.some(n=>!Number.isInteger(n)||n<0))throw Error('Dados da final inválidos');
+  if(score[0]===score[1])throw Error('Empate: resolva prorrogação ou pênaltis antes de premiar');
+  if(money(prize)===null)throw Error('Premiação inválida');
+  s.titles=s.titles||[];
+  if(s.titles.some(t=>t.matchId===matchId))throw Error('Final já registrada');
+  const title={matchId,competition,winnerClubId,score:[...score],season:s.season,prize:money(prize),date:new Date().toISOString(),roster:[...s.clubs[winnerClubId].roster]};
+  s.titles.push(title);
+  if(winnerClubId===s.clubId){
+   s.clubs[winnerClubId].transferBudget+=money(prize);
+   s.press=s.press||{board:50,fans:50,records:[]};
+   s.press.board=Math.min(100,(s.press.board??50)+6);
+   s.press.reputation=Math.min(100,(s.press.reputation??50)+8);
+  }
+  s.history.push({type:'title',...title});this.save();return title;
+ }
  listForSale(playerId){const p=this.player(playerId);if(p.clubId!==this.current().clubId)throw Error('Não pertence ao clube');p.listed=true;this.save()}
  credit(amount,reason){if(money(amount)===null||!reason)throw Error('Receita inválida');const s=this.current();this.club(s.clubId).transferBudget+=money(amount);s.history.push({type:'revenue',amount:money(amount),reason,date:new Date().toISOString()});this.save()}
  debit(amount,reason){const s=this.current(),c=this.club(s.clubId);if(money(amount)===null||c.transferBudget<money(amount)||!reason)throw Error('Despesa inválida');c.transferBudget-=money(amount);s.history.push({type:'expense',amount:money(amount),reason,date:new Date().toISOString()});this.save()}
