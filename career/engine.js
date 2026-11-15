@@ -131,17 +131,17 @@ export class CareerEngine{
 
  pressConference({offerId=null,kind='signing',questionIndex,answer}){
   const s=this.current();
-  if(!['signing','preMatch','postMatch'].includes(kind))throw Error('Tipo de coletiva inválido');
+  if(!['signing','preMatch','postMatch','player'].includes(kind))throw Error('Tipo de coletiva inválido');
   if(!Number.isInteger(questionIndex)||questionIndex<0||questionIndex>3)throw Error('Pergunta inválida');
   if(!['positive','neutral','demanding'].includes(answer))throw Error('Resposta inválida');
   const offer=offerId?s.offers.find(o=>o.id===offerId&&o.status==='completed'):null;
   if(kind==='signing'&&!offer)throw Error('Contratação não confirmada');
-  s.press=s.press||{board:50,fans:50,records:[]};
+  s.press=s.press||{board:50,fans:50,records:[],reputation:50,dressingRoom:50};
   const key=kind+':'+(offerId||s.season)+':'+questionIndex;
   if(s.press.records.some(x=>x.key===key))throw Error('Esta pergunta já foi respondida');
   const effects={positive:{morale:4,board:1,fans:3},neutral:{morale:1,board:1,fans:0},demanding:{morale:-3,board:2,fans:-1}}[answer];
   const clamp=n=>Math.max(0,Math.min(100,n));
-  s.press.board=clamp(s.press.board+effects.board);s.press.fans=clamp(s.press.fans+effects.fans);
+  s.press.board=clamp(s.press.board+effects.board);s.press.fans=clamp(s.press.fans+effects.fans);s.press.reputation=clamp((s.press.reputation??50)+(answer==='positive'?2:answer==='demanding'?-1:0));s.press.dressingRoom=clamp((s.press.dressingRoom??50)+(answer==='positive'?2:answer==='demanding'?-2:0));
   if(offer){const p=this.player(offer.playerId);p.morale=clamp((Number.isFinite(+p.morale)?+p.morale:50)+effects.morale)}
   const record={key,offerId,kind,questionIndex,answer,effects,date:new Date().toISOString()};
   s.press.records.push(record);this.save();return record;
