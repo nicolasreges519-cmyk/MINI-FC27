@@ -49,7 +49,42 @@ export function mountCareer(catalog){
  $('careerStart').onclick=()=>{try{engine.start($('careerClub').value,Number($('careerInitialBudget').value),Number($('careerInitialWages').value));startView()}catch(e){alert(e.message)}};
  $('careerSearch').oninput=render;$('careerPosition').onchange=render;
  root.querySelectorAll('[data-career-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.careerTab;render()});
- $('careerBuy').onclick=()=>{if(!selected)return;const p=engine.player(selected);const fee=prompt('Valor da proposta (€)',String(p.marketValue));if(fee===null)return;const wage=prompt('Salário semanal (€)',String(p.weeklyWage));if(wage===null)return;try{engine.offer({playerId:p.id,fromClubId:p.clubId,toClubId:engine.state.clubId,fee:Number(fee),weeklyWage:Number(wage),years:3});tab='offers';render()}catch(e){alert(e.message)}};
+
+ const negotiation=document.createElement('div');negotiation.id='negotiationScreen';negotiation.style.cssText='display:none;position:absolute;inset:0;z-index:5;background:linear-gradient(120deg,#071b39,#173f65 55%,#0c1834);color:white;padding:12px;overflow:auto;box-sizing:border-box';
+ negotiation.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="negTitle">NEGOCIAR TRANSFERÊNCIA</h2><button id="negExit">ENCERRAR NEGOCIAÇÃO</button></div><div id="negInfo"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><section style="background:#ffffff16;padding:12px;border-radius:12px"><label>Valor (€) <input id="negFee" type="number" min="0"></label><label>Parcelas <select id="negParts"><option>1</option><option>2</option><option>3</option><option>4</option></select></label><label>Bônus (€) <input id="negBonus" type="number" min="0" value="0"></label><label>Futura venda (%) <input id="negSellOn" type="number" min="0" max="50" value="0"></label><label>Jogador em troca <select id="negExchange"><option value="">Nenhum</option></select></label><div id="negCosts"></div><div id="negContract" hidden><label>Salário semanal (€) <input id="negWage" type="number" min="0"></label><label>Duração (anos) <select id="negYears"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><label>Bônus de assinatura (€) <input id="negSigning" type="number" min="0" value="0"></label><label>Papel <select id="negRole"><option value="starter">Titular</option><option value="important">Importante</option><option value="rotation">Rotação</option><option value="reserve">Reserva</option></select></label></div><button id="negSubmit">FAZER PROPOSTA</button></section><section style="background:#ffffff16;padding:12px;border-radius:12px"><h3 id="negRepresentative">Representante virtual do clube</h3><div id="negTension">Tensão baixa</div><div id="negMessages" style="max-height:35vh;overflow:auto;white-space:pre-wrap"></div><div id="negPlayer"></div></section></div>';
+ root.appendChild(negotiation);
+ const ng=id=>negotiation.querySelector('#'+id);
+ let activeOffer=null,negPlayerId=null;
+ function showNegotiation(playerId,offer=null){
+  const p=engine.player(playerId);negPlayerId=playerId;activeOffer=offer;
+  negotiation.style.display='block';ng('negFee').value=offer?.counterFee??p.marketValue;
+  ng('negWage').value=offer?.requestedWage??p.weeklyWage;
+  ng('negPlayer').textContent=p.name+' · '+(p.position||'—')+' · GER '+p.overall+' · '+fmt(p.marketValue);
+  ng('negRepresentative').textContent=offer?.status==='clubAccepted'||offer?.status==='contractCounter'?'Representante virtual do jogador':'Representante virtual de '+currentName(p.clubId);
+  ng('negContract').hidden=!offer||!['clubAccepted','contractCounter'].includes(offer.status);
+  ng('negTitle').textContent=ng('negContract').hidden?'NEGOCIAR TRANSFERÊNCIA':'NEGOCIAR CONTRATO';
+  ng('negSubmit').textContent=ng('negContract').hidden?'FAZER PROPOSTA':'ENVIAR CONTRATO';
+  ng('negTension').textContent=offer?.status==='rejected'?'Negociação encerrada':offer?.tension>=3?'Alta tensão':offer?.tension>=1?'Tensão moderada':'Baixa tensão';
+  ng('negMessages').textContent=(offer?.messages||['Prepare sua proposta. Esta é uma simulação de negociação, não uma chamada real.']).join('\n\n');
+  ng('negExchange').innerHTML='<option value="">Nenhum</option>'+Object.values(engine.state.players).filter(x=>x.clubId===engine.state.clubId).map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>').join('');
+  ng('negInfo').textContent='Orçamento disponível: '+fmt(engine.club(engine.state.clubId).transferBudget);
+  updateCosts();
+ }
+ function updateCosts(){const fee=Number(ng('negFee').value)||0,parts=Number(ng('negParts').value)||1,bonus=Number(ng('negBonus').value)||0,budget=engine.club(engine.state.clubId).transferBudget;ng('negCosts').textContent='Imediato: '+fmt(Math.ceil(fee/parts)+bonus)+' | Futuro: '+fmt(fee-Math.ceil(fee/parts))+' | Restante: '+fmt(budget-Math.ceil(fee/parts)-bonus)}
+ for(const id of ['negFee','negParts','negBonus'])ng(id).addEventListener('input',updateCosts);
+ ng('negExit').onclick=()=>{if(activeOffer&&activeOffer.status!=='completed'&&activeOffer.status!=='rejected')try{engine.cancelNegotiation(activeOffer.id)}catch(e){}negotiation.style.display='none';render()};
+ ng('negSubmit').onclick=()=>{try{
+  if(!ng('negContract').hidden){
+   const o=engine.negotiateContract(activeOffer.id,{weeklyWage:Number(ng('negWage').value),years:Number(ng('negYears').value),signingBonus:Number(ng('negSigning').value),role:ng('negRole').value});
+   if(o.status==='completed'){ng('negMessages').textContent='ACORDO CONCLUÍDO! Jogador transferido e orçamento atualizado.';ng('negSubmit').disabled=true;render()}else showNegotiation(negPlayerId,o);
+  }else{
+   const p=engine.player(negPlayerId);
+   const o=engine.negotiateClub({playerId:p.id,fee:Number(ng('negFee').value),installments:Number(ng('negParts').value),bonus:Number(ng('negBonus').value),sellOn:Number(ng('negSellOn').value),exchangePlayerId:ng('negExchange').value||null});
+   showNegotiation(negPlayerId,o);
+   if(o.status==='rejected')ng('negSubmit').disabled=true;
+  }
+ }catch(e){alert(e.message)}};
+ $('careerBuy').textContent='NEGOCIAR';$('careerBuy').onclick=()=>{if(selected)showNegotiation(selected)};
  $('careerSell').onclick=()=>{try{engine.listForSale(selected);render();alert('Atleta colocado à venda. Propostas automáticas da IA ainda pendentes.')}catch(e){alert(e.message)}};
  $('careerExport').onclick=()=>{try{const a=document.createElement('a'),blob=new Blob([engine.export()],{type:'application/json'});const url=URL.createObjectURL(blob);a.href=url;a.download='mini-fc27-carreira.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}catch(e){alert(e.message)}};
  $('careerImport').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{engine.import(await file.text());startView()}catch(err){alert('Importação falhou: '+err.message)}};
