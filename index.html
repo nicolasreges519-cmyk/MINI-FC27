@@ -175,7 +175,45 @@ function person(x,z,color){
  g.position.set(x,.35,z);scene.add(g);g.userData={limbs,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0};animatedPlayers.push(g);return g
 }
 function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}}
-const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];const foes=[[-12,-13],[12,-13],[0,-28],[0,-40]].map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
+const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];
+/* Departamento médico — etapa 1: fadiga, lesão por contato e dias de recuperação.
+   Simulação simplificada; sem diagnóstico clínico real ou animação de maca. */
+const medical=new Map();
+for(const athlete of blueRoster)medical.set(athlete,{fatigue:0,days:0,severity:'',number:blueRoster.indexOf(athlete)+1});
+const medicalStatus=document.getElementById('medicalStatus');
+function medicalAvailable(p){return !expelledPlayers.has(p)&&(!medical.has(p)||medical.get(p).days===0)}
+function medicalUpdateHud(){
+ const unavailable=[...medical.entries()].filter(([p,m])=>m.days>0);
+ medicalStatus.textContent=unavailable.length?unavailable.map(([p,m])=>'Jogador '+m.number+': '+m.severity+' ('+m.days+' dia(s))').join(' · '):'Elenco disponível';
+}
+function medicalRecoverDay(){
+ for(const [p,m] of medical){if(m.days>0){m.days--;if(m.days===0){m.severity='';m.fatigue=.25;p.visible=true}}}
+ medicalUpdateHud();showRule('RECUPERAÇÃO ATUALIZADA',1.8);
+}
+function medicalInjury(p,contact){
+ const m=medical.get(p);if(!m||m.days>0)return false;
+ // Fadiga alta aumenta o risco; contato forte é o gatilho principal.
+ const risk=contact?(.10+m.fatigue*.4):0;
+ if(Math.random()>=risk)return false;
+ m.days=m.fatigue>.72?3:1;
+ m.severity=m.days===3?'Lesão moderada':'Lesão leve';
+ p.visible=false;
+ if(p===controlledPlayer){const replacement=blueRoster.find(q=>q!==p&&medicalAvailable(q));if(replacement){controlledPlayer=replacement;selectedIndex=blueRoster.indexOf(replacement)}}
+ attached=false;aiPossessor=null;cooldown=.7;
+ medicalUpdateHud();
+ showRule('ATENDIMENTO MÉDICO · '+m.days+' DIA(S) DE RECUPERAÇÃO',3);
+ return true;
+}
+function medicalTick(dt){
+ const m=medical.get(controlledPlayer);
+ if(m&&m.days===0){
+  const moving=Math.abs(input.x)+Math.abs(input.z)>0.15||keys.w||keys.a||keys.s||keys.d||keys.arrowup||keys.arrowdown||keys.arrowleft||keys.arrowright;
+  m.fatigue=THREE.MathUtils.clamp(m.fatigue+(moving?(sprintHeld?.014:.004):-.007)*dt,0,1);
+ }
+}
+document.getElementById('medicalRecover').addEventListener('click',medicalRecoverDay);
+medicalUpdateHud();
+const foes=[[-12,-13],[12,-13],[0,-28],[0,-40]].map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
 const keepers=[person(0,-45.5,0xffd23f),person(0,45.5,0x4be0b6)];
 for(const k of keepers){
  k.userData.isKeeper=true;k.userData.saveTime=0;k.userData.diveDir=0;
@@ -433,43 +471,6 @@ function updateAim(){
  p.needsUpdate=true;aimGeometry.computeBoundingSphere();
 }
 
-/* Departamento médico — etapa 1: fadiga, lesão por contato e dias de recuperação.
-   Simulação simplificada; sem diagnóstico clínico real ou animação de maca. */
-const medical=new Map();
-for(const athlete of blueRoster)medical.set(athlete,{fatigue:0,days:0,severity:'',number:blueRoster.indexOf(athlete)+1});
-const medicalStatus=document.getElementById('medicalStatus');
-function medicalAvailable(p){return !expelledPlayers.has(p)&&(!medical.has(p)||medical.get(p).days===0)}
-function medicalUpdateHud(){
- const unavailable=[...medical.entries()].filter(([p,m])=>m.days>0);
- medicalStatus.textContent=unavailable.length?unavailable.map(([p,m])=>'Jogador '+m.number+': '+m.severity+' ('+m.days+' dia(s))').join(' · '):'Elenco disponível';
-}
-function medicalRecoverDay(){
- for(const [p,m] of medical){if(m.days>0){m.days--;if(m.days===0){m.severity='';m.fatigue=.25;p.visible=true}}}
- medicalUpdateHud();showRule('RECUPERAÇÃO ATUALIZADA',1.8);
-}
-function medicalInjury(p,contact){
- const m=medical.get(p);if(!m||m.days>0)return false;
- // Fadiga alta aumenta o risco; contato forte é o gatilho principal.
- const risk=contact?(.10+m.fatigue*.4):0;
- if(Math.random()>=risk)return false;
- m.days=m.fatigue>.72?3:1;
- m.severity=m.days===3?'Lesão moderada':'Lesão leve';
- p.visible=false;
- if(p===controlledPlayer){const replacement=blueRoster.find(q=>q!==p&&medicalAvailable(q));if(replacement){controlledPlayer=replacement;selectedIndex=blueRoster.indexOf(replacement)}}
- attached=false;aiPossessor=null;cooldown=.7;
- medicalUpdateHud();
- showRule('ATENDIMENTO MÉDICO · '+m.days+' DIA(S) DE RECUPERAÇÃO',3);
- return true;
-}
-function medicalTick(dt){
- const m=medical.get(controlledPlayer);
- if(m&&m.days===0){
-  const moving=Math.abs(input.x)+Math.abs(input.z)>0.15||keys.w||keys.a||keys.s||keys.d||keys.arrowup||keys.arrowdown||keys.arrowleft||keys.arrowright;
-  m.fatigue=THREE.MathUtils.clamp(m.fatigue+(moving?(sprintHeld?.014:.004):-.007)*dt,0,1);
- }
-}
-document.getElementById('medicalRecover').addEventListener('click',medicalRecoverDay);
-medicalUpdateHud();
 // MINI FC27 v8.0 — arbitragem e reposições simplificadas, sem dependências extras.
 let yellowCards=0,redCards=0,redSuspension=false;const expelledPlayers=new Set();
 let restartState=null,restartTimer=0,lastTouch='blue',lastKickWasPass=false;
