@@ -86,7 +86,7 @@
  #miniMap{bottom:26%!important}
  #hud{top:3%!important;left:2%!important;min-width:210px!important;font-size:12px!important}
 }
-</style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><script type="module">
+</style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><div id="medicalPanel" style="font-size:13px;text-align:left;margin-top:12px"><strong>DEPARTAMENTO MÉDICO</strong><div id="medicalStatus" style="margin-top:5px;color:#c7e4ff">Elenco disponível</div><button id="medicalRecover" style="width:auto;height:auto;border-radius:8px;padding:8px 12px;margin-top:8px">Avançar recuperação (+1 dia)</button></div><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 let gamePaused=false,sprintHeld=false;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x82bad6);const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,300);const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x42613a,2));const sun=new THREE.DirectionalLight(0xffffff,1.3);sun.position.set(-20,35,15);scene.add(sun);
@@ -175,7 +175,45 @@ function person(x,z,color){
  g.position.set(x,.35,z);scene.add(g);g.userData={limbs,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0};animatedPlayers.push(g);return g
 }
 function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}}
-const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];const foes=[[-12,-13],[12,-13],[0,-28],[0,-40]].map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
+const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];
+/* Departamento médico — etapa 1: fadiga, lesão por contato e dias de recuperação.
+   Simulação simplificada; sem diagnóstico clínico real ou animação de maca. */
+const medical=new Map();
+for(const athlete of blueRoster)medical.set(athlete,{fatigue:0,days:0,severity:'',number:blueRoster.indexOf(athlete)+1});
+const medicalStatus=document.getElementById('medicalStatus');
+function medicalAvailable(p){return !expelledPlayers.has(p)&&(!medical.has(p)||medical.get(p).days===0)}
+function medicalUpdateHud(){
+ const unavailable=[...medical.entries()].filter(([p,m])=>m.days>0);
+ medicalStatus.textContent=unavailable.length?unavailable.map(([p,m])=>'Jogador '+m.number+': '+m.severity+' ('+m.days+' dia(s))').join(' · '):'Elenco disponível';
+}
+function medicalRecoverDay(){
+ for(const [p,m] of medical){if(m.days>0){m.days--;if(m.days===0){m.severity='';m.fatigue=.25;p.visible=true}}}
+ medicalUpdateHud();showRule('RECUPERAÇÃO ATUALIZADA',1.8);
+}
+function medicalInjury(p,contact){
+ const m=medical.get(p);if(!m||m.days>0)return false;
+ // Fadiga alta aumenta o risco; contato forte é o gatilho principal.
+ const risk=contact?(.10+m.fatigue*.4):0;
+ if(Math.random()>=risk)return false;
+ m.days=m.fatigue>.72?3:1;
+ m.severity=m.days===3?'Lesão moderada':'Lesão leve';
+ p.visible=false;
+ if(p===controlledPlayer){const replacement=blueRoster.find(q=>q!==p&&medicalAvailable(q));if(replacement){controlledPlayer=replacement;selectedIndex=blueRoster.indexOf(replacement)}}
+ attached=false;aiPossessor=null;cooldown=.7;
+ medicalUpdateHud();
+ showRule('ATENDIMENTO MÉDICO · '+m.days+' DIA(S) DE RECUPERAÇÃO',3);
+ return true;
+}
+function medicalTick(dt){
+ const m=medical.get(controlledPlayer);
+ if(m&&m.days===0){
+  const moving=Math.abs(input.x)+Math.abs(input.z)>0.15||keys.w||keys.a||keys.s||keys.d||keys.arrowup||keys.arrowdown||keys.arrowleft||keys.arrowright;
+  m.fatigue=THREE.MathUtils.clamp(m.fatigue+(moving?(sprintHeld?.014:.004):-.007)*dt,0,1);
+ }
+}
+document.getElementById('medicalRecover').addEventListener('click',medicalRecoverDay);
+medicalUpdateHud();
+const foes=[[-12,-13],[12,-13],[0,-28],[0,-40]].map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
 const keepers=[person(0,-45.5,0xffd23f),person(0,45.5,0x4be0b6)];
 for(const k of keepers){
  k.userData.isKeeper=true;k.userData.saveTime=0;k.userData.diveDir=0;
@@ -432,6 +470,7 @@ function updateAim(){
  point(6,start,width*.65);point(7,start+length,0);point(8,start+length*.5,width*.36);
  p.needsUpdate=true;aimGeometry.computeBoundingSphere();
 }
+
 // MINI FC27 v8.0 — arbitragem e reposições simplificadas, sem dependências extras.
 let yellowCards=0,redCards=0,redSuspension=false;const expelledPlayers=new Set();
 let restartState=null,restartTimer=0,lastTouch='blue',lastKickWasPass=false;
@@ -490,6 +529,7 @@ function refereeTackle(){
  if(!target){showRule('CARRINHO SEM CONTATO',.9);return}
  const ballDist=Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z);
  // Uma entrada próxima à bola pode ser limpa; longe da bola é falta.
+ if(medicalInjury(controlledPlayer,true)){awardRestart('FALTA! ATENDIMENTO MÉDICO',controlledPlayer.position.x,controlledPlayer.position.z,'red');return}
  if(ballDist<1.4&&!attached){lastTouch='blue';velocity.set(0,0,-7);showRule('DESARME LIMPO!',1);return}
  yellowCards++;
  if(yellowCards>=2){redCards++;redSuspension=false;const sentOff=controlledPlayer;expelledPlayers.add(sentOff);sentOff.visible=false;const replacement=blueRoster.find(p=>!expelledPlayers.has(p));if(replacement){controlledPlayer=replacement;selectedIndex=blueRoster.indexOf(replacement)}attached=false;aiPossessor=null;cooldown=.7;}
@@ -500,7 +540,7 @@ function refereeTackle(){
  awardRestart(inBlueBox?'PÊNALTI ADVERSÁRIO!':redCards?'SEGUNDO AMARELO! VERMELHO!':'FALTA! CARTÃO AMARELO!',controlledPlayer.position.x,controlledPlayer.position.z,'red');
 }
 document.getElementById('tackle').addEventListener('pointerdown',e=>{e.preventDefault();refereeTackle()});
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){controlledPlayer=blueRoster.find(p=>!expelledPlayers.has(p))||player;selectedIndex=blueRoster.indexOf(controlledPlayer);aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){controlledPlayer=blueRoster.find(p=>medicalAvailable(p))||player;selectedIndex=blueRoster.indexOf(controlledPlayer);aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
 // Finalização original inspirada em jogos de futebol: mira livre, assistência leve e força carregável.
 let chargingShot=false,chargeStart=0,chargePointer=null;
 const shootButton=document.getElementById('shoot');
@@ -597,7 +637,7 @@ selectionTriangle.rotation.x=Math.PI;scene.add(selectionTriangle);
 function switchControlledPlayer(){
  if(gamePaused||restartState)return;
  const old=controlledPlayer;
- const candidates=blueRoster.filter(p=>p!==old&&!expelledPlayers.has(p));
+ const candidates=blueRoster.filter(p=>p!==old&&medicalAvailable(p));
  candidates.sort((a,b)=>Math.hypot(a.position.x-ball.position.x,a.position.z-ball.position.z)-Math.hypot(b.position.x-ball.position.x,b.position.z-ball.position.z));
  const next=candidates[0];if(!next)return;
  if(attached){attached=false;aiPossessor=old;lastTouch='blue';aiDecisionClock=.5;cooldown=.6}
@@ -607,7 +647,7 @@ function switchControlledPlayer(){
  showRule('JOGADOR '+(selectedIndex+1)+' SELECIONADO',.9);
 }
 document.getElementById('switchPlayer').addEventListener('pointerdown',e=>{e.preventDefault();switchControlledPlayer()});
-const joy=document.getElementById('joy'),stick=document.getElementById('stick');function joystick(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dz=e.clientY-r.top-r.height/2,dist=Math.hypot(dx,dz),limit=r.width*.32,scale=Math.min(dist,limit)/Math.max(1,dist);stick.style.transform=`translate(${dx*scale}px,${dz*scale}px)`;input.x=dx/Math.max(limit,dist);input.z=dz/Math.max(limit,dist)}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);joystick(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))joystick(e)});function stop(){input.x=0;input.z=0;stick.style.transform=''}joy.addEventListener('pointerup',stop);joy.addEventListener('pointercancel',stop);window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();kick(34,true)}if(e.key.toLowerCase()==='e')kick(16,false);if(e.key.toLowerCase()==='q')switchControlledPlayer()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.getElementById('restart').onclick=()=>{scores=[0,0];elapsed=0;yellowCards=0;redCards=0;redSuspension=false;expelledPlayers.clear();blueRoster.forEach(p=>p.visible=true);offsideCount=0;penaltyCount=0;updateRuleHud();scoreEl.textContent='0 × 0';kickoff()};let lastControlMode='';
+const joy=document.getElementById('joy'),stick=document.getElementById('stick');function joystick(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dz=e.clientY-r.top-r.height/2,dist=Math.hypot(dx,dz),limit=r.width*.32,scale=Math.min(dist,limit)/Math.max(1,dist);stick.style.transform=`translate(${dx*scale}px,${dz*scale}px)`;input.x=dx/Math.max(limit,dist);input.z=dz/Math.max(limit,dist)}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);joystick(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))joystick(e)});function stop(){input.x=0;input.z=0;stick.style.transform=''}joy.addEventListener('pointerup',stop);joy.addEventListener('pointercancel',stop);window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();kick(34,true)}if(e.key.toLowerCase()==='e')kick(16,false);if(e.key.toLowerCase()==='q')switchControlledPlayer()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.getElementById('restart').onclick=()=>{for(const [p,m] of medical){m.fatigue=0;m.days=0;m.severity='';p.visible=true}medicalUpdateHud();scores=[0,0];elapsed=0;yellowCards=0;redCards=0;redSuspension=false;expelledPlayers.clear();blueRoster.forEach(p=>p.visible=true);offsideCount=0;penaltyCount=0;updateRuleHud();scoreEl.textContent='0 × 0';kickoff()};let lastControlMode='';
 function updateControlMode(){
  const hasBlueBall=attached||(aiPossessor&&blueRoster.includes(aiPossessor));
  const mode=hasBlueBall?'attack':'defense';
@@ -617,7 +657,7 @@ function updateControlMode(){
  for(const id of ['tackle','switchPlayer'])document.getElementById(id).hidden=hasBlueBall;
  document.getElementById('sprint').textContent=hasBlueBall?'CORRER':'CORRER';
 }
-function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderer.render(scene,camera);return}elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderer.render(scene,camera);return}elapsed+=dt;medicalTick(dt);if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
 const m=camera.matrixWorld.elements;
 let rx=m[0],rz=m[2],ux=m[4],uz=m[6];
 const rl=Math.hypot(rx,rz),ul=Math.hypot(ux,uz);
