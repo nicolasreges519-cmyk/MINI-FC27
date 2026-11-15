@@ -169,6 +169,22 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
  content:""!important;width:85px!important;height:4px!important;
  background:#7affb3!important;box-shadow:0 0 12px #55f5a2!important;opacity:1!important;
 }
+
+/* Destaque forte e exclusivo para o modo ativo */
+#fcMenu .fcOption.fcSelected{
+ background:linear-gradient(90deg,rgba(145,239,45,.48) 0%,rgba(110,220,80,.21) 70%,transparent 100%)!important;
+ border-left:5px solid #a7ff5d!important;
+ padding-left:12px!important;
+ color:#fff!important;
+ text-shadow:0 0 10px rgba(185,255,174,.6),0 2px 5px #000!important;
+ box-shadow:inset 0 0 22px rgba(130,255,90,.12)!important;
+}
+#fcMenu .fcOption.fcSelected::after{
+ width:160px!important;height:5px!important;background:#8dffad!important;
+ box-shadow:0 0 16px #68ff9c,0 0 5px #baffc6!important;
+}
+#fcMenu .fcOption:not(.fcSelected){opacity:.78!important}
+#fcMenu .fcOption:not(.fcSelected)::after{opacity:.5!important;box-shadow:none!important}
 </style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><div style="font-size:13px;margin-top:14px;text-align:left"><label for="weatherChoice">CLIMA</label><select id="weatherChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="auto">Automático</option><option value="sun">Ensolarado</option><option value="cloud">Nublado</option><option value="rain">Chuvoso</option><option value="snow">Neve</option><option value="random">Aleatório</option></select><label for="timeChoice">HORÁRIO</label><select id="timeChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="day">Tarde</option><option value="morning">Manhã</option><option value="dusk">Entardecer</option><option value="night">Noite</option></select><div id="weatherStatus" style="margin-top:5px;color:#c8dbea">Ensolarado · gramado seco</div></div><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><div id="arrivalHud" style="display:none;position:fixed;inset:0;z-index:11;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99);color:white"><div style="position:absolute;left:5%;bottom:8%;font-size:clamp(17px,3vw,30px);font-weight:bold">MINI FC27 · CHEGADA AO ESTÁDIO<div id="arrivalCaption" style="font-size:14px;font-weight:normal;margin-top:8px">O ônibus da equipe se aproxima do estádio</div></div><button id="arrivalSkip" style="position:absolute;right:3%;top:5%;pointer-events:auto;width:auto;height:auto;padding:10px 16px;border-radius:8px">Pular ▶</button></div>
 <div id="fcMenu">
   <div class="fcTop"><div class="fcBrand">MINI <span>FC27</span></div><div class="fcBadge">FUTEBOL 3D · ANDROID</div></div>
