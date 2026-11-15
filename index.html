@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><title>MINI FC27 v8.2 — Pênaltis e impedimentos</title><meta name="theme-color" content="#081622"><meta name="description" content="MINI FC27: futebol 3D para Android e navegador"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png" type="image/png"><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#081622;color:white;font-family:Arial,sans-serif;touch-action:none}canvas{display:block}#hud{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#081728df;padding:10px 16px;border-radius:12px;font-weight:bold;white-space:nowrap;z-index:2}#tip{position:absolute;top:12px;left:12px;font-size:12px;color:#e0e7ef}#joy{position:absolute;bottom:22px;left:22px;width:112px;height:112px;border:3px solid #ffffff8a;border-radius:50%;background:#ffffff22;touch-action:none}#stick{position:absolute;width:42px;height:42px;left:32px;top:32px;background:#ffffffa8;border-radius:50%}#buttons{position:absolute;bottom:24px;right:20px;display:flex;gap:12px;align-items:end}button{border:2px solid #ffffff88;border-radius:50%;background:#2863cfda;color:white;font-weight:800;width:75px;height:75px;touch-action:none}#pass{width:66px;height:66px;background:#119568dd}#cameraMode{position:absolute;left:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:9px 12px;background:#132742;z-index:4;font-size:12px}#restart{position:absolute;right:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:8px 12px;background:#132742}#banner{position:absolute;top:28%;width:100%;text-align:center;font-size:36px;font-weight:900;text-shadow:0 3px 8px #000;pointer-events:none}#error{position:absolute;top:50%;left:10%;width:80%;text-align:center;color:#fff;background:#9b2630;padding:12px;display:none}@media(max-width:600px){#tip{display:none}#hud{font-size:12px;padding:8px}#buttons button{width:63px;height:63px}}</style></head><body><div id="hud">AZUL <span id="score">0 × 0</span> VERMELHO · <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">PASSE</button><button id="shoot">CHUTE</button></div><div id="error"></div><script type="module">
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><title>MINI FC27 v8.3 — Pênaltis e impedimentos</title><meta name="theme-color" content="#081622"><meta name="description" content="MINI FC27: futebol 3D para Android e navegador"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png" type="image/png"><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#081622;color:white;font-family:Arial,sans-serif;touch-action:none}canvas{display:block}#hud{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#081728df;padding:10px 16px;border-radius:12px;font-weight:bold;white-space:nowrap;z-index:2}#tip{position:absolute;top:12px;left:12px;font-size:12px;color:#e0e7ef}#joy{position:absolute;bottom:22px;left:22px;width:112px;height:112px;border:3px solid #ffffff8a;border-radius:50%;background:#ffffff22;touch-action:none}#stick{position:absolute;width:42px;height:42px;left:32px;top:32px;background:#ffffffa8;border-radius:50%}#buttons{position:absolute;bottom:24px;right:20px;display:flex;gap:12px;align-items:end}button{border:2px solid #ffffff88;border-radius:50%;background:#2863cfda;color:white;font-weight:800;width:75px;height:75px;touch-action:none}#pass{width:66px;height:66px;background:#119568dd}#cameraMode{position:absolute;left:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:9px 12px;background:#132742;z-index:4;font-size:12px}#restart{position:absolute;right:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:8px 12px;background:#132742}#banner{position:absolute;top:28%;width:100%;text-align:center;font-size:36px;font-weight:900;text-shadow:0 3px 8px #000;pointer-events:none}#error{position:absolute;top:50%;left:10%;width:80%;text-align:center;color:#fff;background:#9b2630;padding:12px;display:none}@media(max-width:600px){#tip{display:none}#hud{font-size:12px;padding:8px}#buttons button{width:63px;height:63px}}</style></head><body><div id="hud">AZUL <span id="score">0 × 0</span> VERMELHO · <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">PASSE</button><button id="shoot">CHUTE</button></div><div id="error"></div><script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x82bad6);const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,300);const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x42613a,2));const sun=new THREE.DirectionalLight(0xffffff,1.3);sun.position.set(-20,35,15);scene.add(sun);
 const pitch=new THREE.Mesh(new THREE.PlaneGeometry(64,100),new THREE.MeshLambertMaterial({color:0x258343}));pitch.rotation.x=-Math.PI/2;scene.add(pitch);const white=new THREE.LineBasicMaterial({color:0xffffff});function draw(points){scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points.map(([x,z])=>new THREE.Vector3(x,.035,z))),white))}draw([[-30,-48],[30,-48],[30,48],[-30,48],[-30,-48]]);draw([[-30,0],[30,0]]);let circle=[];for(let i=0;i<=72;i++){let a=i*2*Math.PI/72;circle.push([9.15*Math.cos(a),9.15*Math.sin(a)])}draw(circle);for(const s of [-1,1]){const z=s*48;draw([[-20,z],[-20,z-s*16],[20,z-s*16],[20,z]]);draw([[-9,z],[-9,z-s*6],[9,z-s*6],[9,z]])}function goal(z){const mat=new THREE.MeshBasicMaterial({color:0xffffff});for(const [x,y,w,h] of [[-4,1.5,.18,3],[4,1.5,.18,3],[0,3,8,.18]]){const bar=new THREE.Mesh(new THREE.BoxGeometry(w,h,.18),mat);bar.position.set(x,y,z);scene.add(bar)}}goal(-48);goal(48);
@@ -95,9 +95,21 @@ for(const k of keepers){
   const glove=new THREE.Mesh(new THREE.BoxGeometry(.27,.24,.26),gloveMat);glove.position.set(0,-.8,0);arm.add(glove)
  }
 }
-// IA v8.2: decisão de equipe, cobertura, marcação e passes sem custo alto no Android.
+// IA v8.3: decisão de equipe, cobertura, marcação e passes sem custo alto no Android.
 const aiHomeBlue=[[-15,5],[15,5],[0,28]],aiHomeRed=[[-12,-13],[12,-13],[0,-28],[0,-40]];
 const aiMemory=new Map();let aiPossessor=null,aiThinkClock=0,aiDecisionClock=0;
+let aiDribbleSide=1,aiDribbleClock=0;
+function aiStrategy(){const diff=scores[1]-scores[0];const late=elapsed>120;return diff<0&&late?'attack':diff>0?'defend':'balanced'}
+function aiLaneRisk(a,b,defenders){
+ const ax=a.position.x,az=a.position.z,bx=b.position.x,bz=b.position.z;
+ const vx=bx-ax,vz=bz-az,dd=vx*vx+vz*vz||1;
+ let risk=0;
+ for(const q of defenders){const wx=q.position.x-ax,wz=q.position.z-az;
+  const t=THREE.MathUtils.clamp((wx*vx+wz*vz)/dd,0,1);
+  const dist=Math.hypot(wx-vx*t,wz-vz*t);
+  if(t>.08&&t<.92&&dist<3.5)risk+=(3.5-dist)*5;
+ }return risk;
+}
 function aiDist(a,b){return Math.hypot(a.position.x-b.position.x,a.position.z-b.position.z)}
 function aiMove(p,x,z,speed,dt){
  const dx=x-p.position.x,dz=z-p.position.z,d=Math.hypot(dx,dz);
@@ -113,7 +125,10 @@ function aiPass(carrier,receivers,goalZ){
   const dx=p.position.x-carrier.position.x,dz=p.position.z-carrier.position.z;
   const distance=Math.hypot(dx,dz);
   const pressure=(goalZ<0?foes:teammates.concat(player)).filter(q=>q!==carrier).reduce((n,q)=>n+(aiDist(p,q)<5?1:0),0);
-  return {p,score:(goalZ<0?-dz:dz)*.45-pressure*8-Math.abs(distance-13)*.28};
+  const defenders=goalZ<0?foes:teammates.concat(player);
+  const lane=aiLaneRisk(carrier,p,defenders);
+  const forward=goalZ<0?-dz:dz;
+  return {p,score:forward*.5-pressure*7-lane-Math.abs(distance-14)*.3+(Math.abs(p.position.x)<23?2:0)};
  }).sort((a,b)=>b.score-a.score);
  const pick=candidates[0];if(!pick)return false;
  const dx=pick.p.position.x-carrier.position.x,dz=pick.p.position.z-carrier.position.z;
@@ -127,6 +142,7 @@ function aiPlay(dt){
  const target=attached?player.position:ball.position;
  const blueChaser=aiNearest(teammates,target),redChaser=aiNearest(foes,target);
  const blueHasBall=attached||(aiPossessor&&teammates.includes(aiPossessor));
+ const strategy=aiStrategy();const aggression=strategy==='attack'?1.3:strategy==='defend'?.72:1;
  const redHasBall=aiPossessor&&foes.includes(aiPossessor);
  const bluePress=!blueHasBall&&blueChaser;
  const redPress=!redHasBall&&redChaser;
@@ -135,7 +151,12 @@ function aiPlay(dt){
   if(p===aiPossessor)continue;
   let x=home[0],z=home[1];
   if(p===bluePress){x=ball.position.x;z=ball.position.z}
-  else if(blueHasBall){x=THREE.MathUtils.clamp(home[0]*.65+player.position.x*.35,-26,26);z=THREE.MathUtils.clamp(Math.min(home[1],player.position.z-7-(i%2)*4),-43,40)}
+  else if(blueHasBall){
+   const laneSide=i===0?-1:i===1?1:(player.position.x>0?-1:1);
+   x=THREE.MathUtils.clamp(player.position.x+laneSide*(9+i*2),-25,25);
+   z=THREE.MathUtils.clamp(player.position.z-9-(i%2)*6,-42,37);
+   if(foes.some(q=>Math.hypot(q.position.x-x,q.position.z-z)<4))x=THREE.MathUtils.clamp(x+laneSide*5,-26,26);
+  }
   else{x=home[0]*.6+ball.position.x*.4;z=home[1]*.6+ball.position.z*.4}
   aiMove(p,x,z,p===bluePress?7.4:5.3,dt);
  }
@@ -146,22 +167,38 @@ function aiPlay(dt){
   else if(blueHasBall){
    const mark=i%2===0?player:(teammates[(i-1)%teammates.length]||player);
    x=home[0]*.3+mark.position.x*.7;z=THREE.MathUtils.clamp(mark.position.z-3+(i%2)*2,-44,43);
-  }else if(redHasBall){x=home[0]*.55+aiPossessor.position.x*.45;z=Math.min(42,home[1]*.35+aiPossessor.position.z*.65+7)}
+  }else if(redHasBall){
+   const side=i%2===0?-1:1;
+   x=THREE.MathUtils.clamp(aiPossessor.position.x+side*(8+i),-25,25);
+   z=THREE.MathUtils.clamp(aiPossessor.position.z+8+(i%2)*5,-39,43);
+   if(teammates.concat(player).some(q=>Math.hypot(q.position.x-x,q.position.z-z)<4))x=THREE.MathUtils.clamp(x+side*5,-26,26);
+  }
   else{x=home[0]*.6+ball.position.x*.4;z=home[1]*.65+ball.position.z*.35}
-  aiMove(p,x,z,p===redPress?7.1:5.1,dt);
+  aiMove(p,x,z,p===redPress?7.1*aggression:5.1*aggression,dt);
  }
  // O adversário com a bola progride, procura companheiros ou finaliza.
  if(redHasBall){
   const c=aiPossessor;
-  aiMove(c,THREE.MathUtils.clamp(c.position.x*.78,-23,23),45,6.8,dt);
+  const defenders=teammates.concat(player);
+  const closest=aiNearest(defenders,c.position);
+  const distance=closest?aiDist(c,closest):99;
+  aiDribbleClock=Math.max(0,aiDribbleClock-dt);
+  if(distance<5&&aiDribbleClock<=0){
+   aiDribbleSide=(closest.position.x>c.position.x?-1:1);
+   if(Math.abs(c.position.x)>22)aiDribbleSide=-Math.sign(c.position.x);
+   aiDribbleClock=.55+Math.random()*.45;
+  }
+  const lateral=distance<6?aiDribbleSide*5:0;
+  aiMove(c,THREE.MathUtils.clamp(c.position.x+lateral,-24,24),45,6.6*aggression,dt);
   ball.position.set(c.position.x,.37,c.position.z+1.0);
-  const nearby=teammates.concat(player).filter(p=>aiDist(c,p)<4).length;
   if(aiDecisionClock<=0){
-   aiDecisionClock=.75+Math.random()*.35;
-   if(c.position.z>28&&Math.abs(c.position.x)<17){
+   aiDecisionClock=(strategy==='attack'?.5:.85)+Math.random()*.25;
+   if(c.position.z>27&&Math.abs(c.position.x)<17&&distance>1.6){
     const gx=THREE.MathUtils.clamp((Math.random()-.5)*5,-3,3)-ball.position.x,gz=48-ball.position.z;
     const d=Math.hypot(gx,gz)||1;velocity.set(gx/d*38,0,gz/d*38);aiPossessor=null;shotActive=true;cooldown=.65;lastTouch='red';
-   }else if(nearby>=1){aiPass(c,foes,48)}
+   }else if(distance<3.4||strategy==='defend'&&c.position.z<18){
+    aiPass(c,foes,48);
+   }
   }
  }
  // Disputa pela bola solta, com posse física e cooldown para evitar trocas instantâneas.
@@ -365,7 +402,7 @@ function refereeTackle(){
  awardRestart(inBlueBox?'PÊNALTI ADVERSÁRIO!':redSuspension?'SEGUNDO AMARELO! VERMELHO!':'FALTA! CARTÃO AMARELO!',player.position.x,player.position.z,'red');
 }
 document.getElementById('tackle').addEventListener('pointerdown',e=>{e.preventDefault();refereeTackle()});
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){aiPossessor=null;aiDecisionClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;player.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;player.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
 // Finalização original inspirada em jogos de futebol: mira livre, assistência leve e força carregável.
 let chargingShot=false,chargeStart=0,chargePointer=null;
 const shootButton=document.getElementById('shoot');
