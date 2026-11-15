@@ -541,8 +541,8 @@ function recordReplay(dt){
 }
 function goalCinematic(goalZ){
  if(cinema)return;
- const frames=[];for(let i=0;i<replaySize;i++)frames.push(replayHistory[(replayWrite-replaySize+i+replayCapacity)%replayCapacity]);
- const scorer=lastBallTouch&&lastBallTouch.visible?lastBallTouch:(goalZ<0?controlledPlayer:foes[0]);
+ const frames=[];for(let i=0;i<replaySize;i++)frames.push(replayHistory[(replayWrite-replaySize+i+replayCapacity)%replayCapacity]);if(frames.length<2){recordReplay(.06);frames.push(replayHistory[(replayWrite-1+replayCapacity)%replayCapacity]);}
+ const scorer=(goalZ<0&&blueRoster.includes(lastBallTouch)&&lastBallTouch.visible)||(goalZ>0&&foes.includes(lastBallTouch))?lastBallTouch:(goalZ<0?controlledPlayer:foes[0]);
  const team=goalZ<0?'blue':'red';
  const original=replayActors.map(p=>({p,x:p.position.x,y:p.position.y,z:p.position.z,r:p.rotation.y}));
  const ballOriginal=[ball.position.x,ball.position.y,ball.position.z];
@@ -580,7 +580,7 @@ function advanceCinema(dt){
  }else if(c.stage==='countdown'){
   const left=Math.max(1,3-Math.floor(c.time));
   countdownUI.textContent=String(left);
-  if(c.time>=3){cinema=null;countdownUI.style.display='none';cinemaUI.style.display='none';skipReplay.style.display='none';lastControlMode='';updateControlMode()}
+  if(c.time>=3){cinema=null;replaySize=0;replayWrite=0;replayAccum=0;countdownUI.style.display='none';cinemaUI.style.display='none';skipReplay.style.display='none';lastControlMode='';updateControlMode()}
  }
  animateStadium(dt);renderer.render(scene,camera);
 }
@@ -599,7 +599,7 @@ skipReplay.addEventListener('click',endReplay);
 function checkRulesOut(){
  if(restartState)return;
  const x=ball.position.x,z=ball.position.z;
- if(Math.abs(z)>=48){
+ if(Math.abs(z)>=48.37){
   if(penaltyKick){const scored=Math.abs(x)<=4;showRule(scored?'GOL DE PÊNALTI!':'PÊNALTI PARA FORA!',2);penaltyKick=null;if(scored){scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ');goalCinematic(z)}else kickoff();return;}
   if(Math.abs(x)<=4){
    scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ');goalCinematic(z);showRule('GOOOL!',2.1);return;
