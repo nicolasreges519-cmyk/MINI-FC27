@@ -86,7 +86,7 @@
  #miniMap{bottom:26%!important}
  #hud{top:3%!important;left:2%!important;min-width:210px!important;font-size:12px!important}
 }
-</style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><script type="module">
+</style><style id="varStyles">#varOverlay{position:fixed;inset:0;z-index:9;background:#071323cb;display:none;align-items:center;justify-content:center;pointer-events:none}#varOverlay .varPanel{padding:22px 30px;border-radius:12px;border:2px solid #8ab9ff;background:#10294a;color:white;text-align:center;max-width:85vw;font-weight:bold}#varTitle{font-size:clamp(17px,3vw,28px)}#varDetail{font-size:13px;margin-top:10px;color:#c8ddff}</style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><div style="margin-top:12px;font-size:13px;text-align:left"><label><input type="checkbox" id="varEnabled" checked> VAR ativado</label><br><label>Apresentação <select id="varSpeed" style="padding:5px;background:#111936;color:white"><option value="fast">Rápida</option><option value="full">Completa</option></select></label></div><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><div id="varOverlay" role="status" aria-live="polite"><div class="varPanel"><div id="varTitle">VAR — VERIFICANDO GOL</div><div id="varDetail">Analisando posição da bola</div></div></div><script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 let gamePaused=false,sprintHeld=false;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x82bad6);const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,300);const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x42613a,2));const sun=new THREE.DirectionalLight(0xffffff,1.3);sun.position.set(-20,35,15);scene.add(sun);
@@ -466,14 +466,42 @@ function resumeRule(){
   velocity.set((Math.random()-.5)*4,0,dz*18);
  }
 }
+
+/* VAR etapa 1: verificação determinística de gol e pausa de apresentação.
+   Não simula vídeo, impedimento ou infrações sem dados de eventos. */
+let varReview=null;
+const varOverlay=document.getElementById('varOverlay');
+const varTitle=document.getElementById('varTitle');
+const varDetail=document.getElementById('varDetail');
+const varEnabled=document.getElementById('varEnabled');
+const varSpeed=document.getElementById('varSpeed');
+function startGoalReview(x,z){
+ if(varReview)return;
+ const legal=Math.abs(x)<=4 && Math.abs(z)>=48;
+ const side=z<0?0:1;
+ if(!varEnabled.checked){if(legal){scores[side]++;scoreEl.textContent=scores.join(' × ')}kickoff();showRule(legal?'GOOOL!':'TIRO DE META!',2);return;}
+ varReview={remaining:varSpeed.value==='full'?3:1,legal,side};
+ velocity.set(0,0,0);attached=false;shotActive=false;
+ varOverlay.style.display='flex';
+ varTitle.textContent='VAR — VERIFICANDO GOL';
+ varDetail.textContent='Verificando se a bola cruzou a linha dentro das traves';
+}
+function advanceGoalReview(dt){
+ if(!varReview)return false;
+ varReview.remaining-=dt;
+ if(varReview.remaining>0)return true;
+ const result=varReview;varReview=null;varOverlay.style.display='none';
+ if(result.legal){scores[result.side]++;scoreEl.textContent=scores.join(' × ')}
+ kickoff();showRule(result.legal?'VAR — GOL CONFIRMADO':'VAR — GOL NÃO CONFIRMADO',2.5);
+ return true;
+}
 function checkRulesOut(){
  if(restartState)return;
  const x=ball.position.x,z=ball.position.z;
  if(Math.abs(z)>=48){
   if(penaltyKick){const scored=Math.abs(x)<=4;showRule(scored?'GOL DE PÊNALTI!':'PÊNALTI PARA FORA!',2);penaltyKick=null;if(scored){scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ')}kickoff();return;}
   if(Math.abs(x)<=4){
-   scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ');
-   kickoff();showRule('GOOOL!',2.1);return;
+   startGoalReview(x,z);return;
   }
   // Equipe azul ataca o gol negativo; última posse determina escanteio/tiro de meta.
   const blueAttacks=z<0;
@@ -607,7 +635,7 @@ function switchControlledPlayer(){
  showRule('JOGADOR '+(selectedIndex+1)+' SELECIONADO',.9);
 }
 document.getElementById('switchPlayer').addEventListener('pointerdown',e=>{e.preventDefault();switchControlledPlayer()});
-const joy=document.getElementById('joy'),stick=document.getElementById('stick');function joystick(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dz=e.clientY-r.top-r.height/2,dist=Math.hypot(dx,dz),limit=r.width*.32,scale=Math.min(dist,limit)/Math.max(1,dist);stick.style.transform=`translate(${dx*scale}px,${dz*scale}px)`;input.x=dx/Math.max(limit,dist);input.z=dz/Math.max(limit,dist)}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);joystick(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))joystick(e)});function stop(){input.x=0;input.z=0;stick.style.transform=''}joy.addEventListener('pointerup',stop);joy.addEventListener('pointercancel',stop);window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();kick(34,true)}if(e.key.toLowerCase()==='e')kick(16,false);if(e.key.toLowerCase()==='q')switchControlledPlayer()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.getElementById('restart').onclick=()=>{scores=[0,0];elapsed=0;yellowCards=0;redCards=0;redSuspension=false;expelledPlayers.clear();blueRoster.forEach(p=>p.visible=true);offsideCount=0;penaltyCount=0;updateRuleHud();scoreEl.textContent='0 × 0';kickoff()};let lastControlMode='';
+const joy=document.getElementById('joy'),stick=document.getElementById('stick');function joystick(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dz=e.clientY-r.top-r.height/2,dist=Math.hypot(dx,dz),limit=r.width*.32,scale=Math.min(dist,limit)/Math.max(1,dist);stick.style.transform=`translate(${dx*scale}px,${dz*scale}px)`;input.x=dx/Math.max(limit,dist);input.z=dz/Math.max(limit,dist)}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);joystick(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))joystick(e)});function stop(){input.x=0;input.z=0;stick.style.transform=''}joy.addEventListener('pointerup',stop);joy.addEventListener('pointercancel',stop);window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();kick(34,true)}if(e.key.toLowerCase()==='e')kick(16,false);if(e.key.toLowerCase()==='q')switchControlledPlayer()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.getElementById('restart').onclick=()=>{varReview=null;varOverlay.style.display='none';scores=[0,0];elapsed=0;yellowCards=0;redCards=0;redSuspension=false;expelledPlayers.clear();blueRoster.forEach(p=>p.visible=true);offsideCount=0;penaltyCount=0;updateRuleHud();scoreEl.textContent='0 × 0';kickoff()};let lastControlMode='';
 function updateControlMode(){
  const hasBlueBall=attached||(aiPossessor&&blueRoster.includes(aiPossessor));
  const mode=hasBlueBall?'attack':'defense';
@@ -617,7 +645,7 @@ function updateControlMode(){
  for(const id of ['tackle','switchPlayer'])document.getElementById(id).hidden=hasBlueBall;
  document.getElementById('sprint').textContent=hasBlueBall?'CORRER':'CORRER';
 }
-function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderer.render(scene,camera);return}elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderer.render(scene,camera);return}if(advanceGoalReview(dt)){renderer.render(scene,camera);return}elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
 const m=camera.matrixWorld.elements;
 let rx=m[0],rz=m[2],ux=m[4],uz=m[6];
 const rl=Math.hypot(rx,rz),ul=Math.hypot(ux,uz);
