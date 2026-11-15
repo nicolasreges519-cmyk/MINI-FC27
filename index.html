@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><title>MINI FC27 — Setinha pelo analógico v7.6</title><meta name="theme-color" content="#081622"><meta name="description" content="MINI FC27: futebol 3D para Android e navegador"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png" type="image/png"><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#081622;color:white;font-family:Arial,sans-serif;touch-action:none}canvas{display:block}#hud{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#081728df;padding:10px 16px;border-radius:12px;font-weight:bold;white-space:nowrap;z-index:2}#tip{position:absolute;top:12px;left:12px;font-size:12px;color:#e0e7ef}#joy{position:absolute;bottom:22px;left:22px;width:112px;height:112px;border:3px solid #ffffff8a;border-radius:50%;background:#ffffff22;touch-action:none}#stick{position:absolute;width:42px;height:42px;left:32px;top:32px;background:#ffffffa8;border-radius:50%}#buttons{position:absolute;bottom:24px;right:20px;display:flex;gap:12px;align-items:end}button{border:2px solid #ffffff88;border-radius:50%;background:#2863cfda;color:white;font-weight:800;width:75px;height:75px;touch-action:none}#pass{width:66px;height:66px;background:#119568dd}#cameraMode{position:absolute;left:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:9px 12px;background:#132742;z-index:4;font-size:12px}#restart{position:absolute;right:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:8px 12px;background:#132742}#banner{position:absolute;top:28%;width:100%;text-align:center;font-size:36px;font-weight:900;text-shadow:0 3px 8px #000;pointer-events:none}#error{position:absolute;top:50%;left:10%;width:80%;text-align:center;color:#fff;background:#9b2630;padding:12px;display:none}@media(max-width:600px){#tip{display:none}#hud{font-size:12px;padding:8px}#buttons button{width:63px;height:63px}}</style></head><body><div id="hud">AZUL <span id="score">0 × 0</span> VERMELHO · <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="banner"></div><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="pass">PASSE</button><button id="shoot">CHUTE</button></div><div id="error"></div><script type="module">
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><title>MINI FC27 v8.0 — Setinha pelo analógico v7.6</title><meta name="theme-color" content="#081622"><meta name="description" content="MINI FC27: futebol 3D para Android e navegador"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png" type="image/png"><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#081622;color:white;font-family:Arial,sans-serif;touch-action:none}canvas{display:block}#hud{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#081728df;padding:10px 16px;border-radius:12px;font-weight:bold;white-space:nowrap;z-index:2}#tip{position:absolute;top:12px;left:12px;font-size:12px;color:#e0e7ef}#joy{position:absolute;bottom:22px;left:22px;width:112px;height:112px;border:3px solid #ffffff8a;border-radius:50%;background:#ffffff22;touch-action:none}#stick{position:absolute;width:42px;height:42px;left:32px;top:32px;background:#ffffffa8;border-radius:50%}#buttons{position:absolute;bottom:24px;right:20px;display:flex;gap:12px;align-items:end}button{border:2px solid #ffffff88;border-radius:50%;background:#2863cfda;color:white;font-weight:800;width:75px;height:75px;touch-action:none}#pass{width:66px;height:66px;background:#119568dd}#cameraMode{position:absolute;left:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:9px 12px;background:#132742;z-index:4;font-size:12px}#restart{position:absolute;right:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:8px 12px;background:#132742}#banner{position:absolute;top:28%;width:100%;text-align:center;font-size:36px;font-weight:900;text-shadow:0 3px 8px #000;pointer-events:none}#error{position:absolute;top:50%;left:10%;width:80%;text-align:center;color:#fff;background:#9b2630;padding:12px;display:none}@media(max-width:600px){#tip{display:none}#hud{font-size:12px;padding:8px}#buttons button{width:63px;height:63px}}</style></head><body><div id="hud">AZUL <span id="score">0 × 0</span> VERMELHO · <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">PASSE</button><button id="shoot">CHUTE</button></div><div id="error"></div><script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x82bad6);const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,300);const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x42613a,2));const sun=new THREE.DirectionalLight(0xffffff,1.3);sun.position.set(-20,35,15);scene.add(sun);
 const pitch=new THREE.Mesh(new THREE.PlaneGeometry(64,100),new THREE.MeshLambertMaterial({color:0x258343}));pitch.rotation.x=-Math.PI/2;scene.add(pitch);const white=new THREE.LineBasicMaterial({color:0xffffff});function draw(points){scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points.map(([x,z])=>new THREE.Vector3(x,.035,z))),white))}draw([[-30,-48],[30,-48],[30,48],[-30,48],[-30,-48]]);draw([[-30,0],[30,0]]);let circle=[];for(let i=0;i<=72;i++){let a=i*2*Math.PI/72;circle.push([9.15*Math.cos(a),9.15*Math.sin(a)])}draw(circle);for(const s of [-1,1]){const z=s*48;draw([[-20,z],[-20,z-s*16],[20,z-s*16],[20,z]]);draw([[-9,z],[-9,z-s*6],[9,z-s*6],[9,z]])}function goal(z){const mat=new THREE.MeshBasicMaterial({color:0xffffff});for(const [x,y,w,h] of [[-4,1.5,.18,3],[4,1.5,.18,3],[0,3,8,.18]]){const bar=new THREE.Mesh(new THREE.BoxGeometry(w,h,.18),mat);bar.position.set(x,y,z);scene.add(bar)}}goal(-48);goal(48);
@@ -126,7 +126,7 @@ function animateKeepers(dt){
   k.position.z=homeZ;
   // Só defender chutes que realmente chegam à área do goleiro.
   const ballDistance=Math.hypot(ball.position.x-k.position.x,ball.position.z-homeZ);
-  if(!attached&&toward&&s.saveCooldown===0&&ballDistance<2.5&&
+  if(!restartState&&!attached&&toward&&s.saveCooldown===0&&ballDistance<2.5&&
      Math.abs(ball.position.x)<4.4&&velocity.length()>5){
    const side=ball.position.x>=k.position.x?1:-1;
    s.side=side;s.dive=.65;s.recover=0;s.saveCooldown=1.25;
@@ -213,7 +213,63 @@ function updateAim(){
  point(6,start,width*.65);point(7,start+length,0);point(8,start+length*.5,width*.36);
  p.needsUpdate=true;aimGeometry.computeBoundingSphere();
 }
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){player.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
+// MINI FC27 v8.0 — arbitragem e reposições simplificadas, sem dependências extras.
+let yellowCards=0,redCards=0,redSuspension=false;
+let restartState=null,restartTimer=0,lastTouch='blue',lastKickWasPass=false;
+const ruleHud=document.getElementById('ruleHud');
+function updateRuleHud(){ruleHud.textContent='🟨 '+yellowCards+' · 🟥 '+redCards}
+function showRule(msg,seconds=1.7){banner.textContent=msg;bannerTime=seconds}
+function awardRestart(type,x,z,team){
+ if(restartState)return;
+ restartState={type,x:THREE.MathUtils.clamp(x,-29,29),z:THREE.MathUtils.clamp(z,-47,47),team};
+ restartTimer=1.7;attached=false;shotActive=false;velocity.set(0,0,0);
+ ball.position.set(restartState.x,.37,restartState.z);
+ showRule(type,1.7);
+}
+function resumeRule(){
+ if(!restartState)return;
+ const r=restartState;restartState=null;restartTimer=0;
+ if(r.team==='blue'&&!redSuspension){
+  player.position.set(THREE.MathUtils.clamp(r.x,-28,28),.35,THREE.MathUtils.clamp(r.z+1.1,-46,46));
+  attached=true;ball.position.set(r.x,.37,r.z);lastTouch='blue';
+ }else{
+  attached=false;cooldown=1;lastTouch='red';
+  const dz=r.z<0?1:-1;
+  velocity.set((Math.random()-.5)*4,0,dz*18);
+ }
+}
+function checkRulesOut(){
+ if(restartState)return;
+ const x=ball.position.x,z=ball.position.z;
+ if(Math.abs(z)>=48){
+  if(Math.abs(x)<=4){
+   scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ');
+   kickoff();showRule('GOOOL!',2.1);return;
+  }
+  // Equipe azul ataca o gol negativo; última posse determina escanteio/tiro de meta.
+  const blueAttacks=z<0;
+  const corner=(blueAttacks&&lastTouch==='red')||(!blueAttacks&&lastTouch==='blue');
+  const team=corner?(blueAttacks?'blue':'red'):(blueAttacks?'red':'blue');
+  awardRestart(corner?'ESCANTEIO!':'TIRO DE META!',corner?Math.sign(x||1)*28:0,Math.sign(z)*(corner?46:42),team);
+ }else if(Math.abs(x)>=30){
+  awardRestart('LATERAL!',Math.sign(x)*28.5,THREE.MathUtils.clamp(z,-46,46),lastTouch==='blue'?'red':'blue');
+ }
+}
+function refereeTackle(){
+ if(redSuspension||restartState)return;
+ const target=foes.find(f=>Math.hypot(f.position.x-player.position.x,f.position.z-player.position.z)<2.5);
+ if(!target){showRule('CARRINHO SEM CONTATO',.9);return}
+ const ballDist=Math.hypot(ball.position.x-player.position.x,ball.position.z-player.position.z);
+ // Uma entrada próxima à bola pode ser limpa; longe da bola é falta.
+ if(ballDist<1.4&&!attached){lastTouch='blue';velocity.set(0,0,-7);showRule('DESARME LIMPO!',1);return}
+ yellowCards++;
+ if(yellowCards>=2){redCards=1;redSuspension=true}
+ updateRuleHud();
+ const inBlueBox=player.position.z>32&&Math.abs(player.position.x)<20;
+ awardRestart(inBlueBox?'PÊNALTI ADVERSÁRIO!':redSuspension?'SEGUNDO AMARELO! VERMELHO!':'FALTA! CARTÃO AMARELO!',player.position.x,player.position.z,'red');
+}
+document.getElementById('tackle').addEventListener('pointerdown',e=>{e.preventDefault();refereeTackle()});
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){restartState=null;restartTimer=0;player.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
 // Finalização original inspirada em jogos de futebol: mira livre, assistência leve e força carregável.
 let chargingShot=false,chargeStart=0,chargePointer=null;
 const shootButton=document.getElementById('shoot');
@@ -222,6 +278,7 @@ const powerFill=document.createElement('div');
 powerFill.style.cssText='position:absolute;bottom:0;left:0;width:100%;height:0%;background:rgba(255,255,255,.28);pointer-events:none;transition:height .04s linear';
 shootButton.appendChild(powerFill);
 function kick(power,isShot=false){
+ if(restartState||redSuspension)return;
  if(!attached || Math.hypot(ball.position.x-player.position.x,ball.position.z-player.position.z)>2.5)return;
  const analog=analogDirection();
  const goalX=THREE.MathUtils.clamp(ball.position.x*.04,-1.5,1.5);
@@ -248,7 +305,7 @@ function kick(power,isShot=false){
  }
  const len=Math.hypot(dx,dz)||1;
  velocity.set(dx/len*power,0,dz/len*power);
- shotActive=isShot;attached=false;cooldown=.55;player.userData.kickTime=.3;
+ shotActive=isShot;lastTouch='blue';lastKickWasPass=!isShot;attached=false;cooldown=.55;player.userData.kickTime=.3;
 }
 function releaseShot(e){
  if(!chargingShot || (e&&chargePointer!==null&&e.pointerId!==chargePointer))return;
@@ -264,7 +321,7 @@ shootButton.addEventListener('pointerdown',e=>{
 shootButton.addEventListener('pointerup',releaseShot);
 shootButton.addEventListener('pointercancel',()=>{chargingShot=false;chargePointer=null;powerFill.style.height='0%'});
 document.getElementById('pass').addEventListener('pointerdown',e=>{e.preventDefault();kick(16,false)});
-const joy=document.getElementById('joy'),stick=document.getElementById('stick');function joystick(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dz=e.clientY-r.top-r.height/2,dist=Math.hypot(dx,dz),limit=r.width*.32,scale=Math.min(dist,limit)/Math.max(1,dist);stick.style.transform=`translate(${dx*scale}px,${dz*scale}px)`;input.x=dx/Math.max(limit,dist);input.z=dz/Math.max(limit,dist)}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);joystick(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))joystick(e)});function stop(){input.x=0;input.z=0;stick.style.transform=''}joy.addEventListener('pointerup',stop);joy.addEventListener('pointercancel',stop);window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();kick(34,true)}if(e.key.toLowerCase()==='e')kick(16,false)});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.getElementById('restart').onclick=()=>{scores=[0,0];elapsed=0;scoreEl.textContent='0 × 0';kickoff()};function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;elapsed+=dt;cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
+const joy=document.getElementById('joy'),stick=document.getElementById('stick');function joystick(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dz=e.clientY-r.top-r.height/2,dist=Math.hypot(dx,dz),limit=r.width*.32,scale=Math.min(dist,limit)/Math.max(1,dist);stick.style.transform=`translate(${dx*scale}px,${dz*scale}px)`;input.x=dx/Math.max(limit,dist);input.z=dz/Math.max(limit,dist)}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);joystick(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))joystick(e)});function stop(){input.x=0;input.z=0;stick.style.transform=''}joy.addEventListener('pointerup',stop);joy.addEventListener('pointercancel',stop);window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();kick(34,true)}if(e.key.toLowerCase()==='e')kick(16,false)});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.getElementById('restart').onclick=()=>{scores=[0,0];elapsed=0;yellowCards=0;redCards=0;redSuspension=false;updateRuleHud();scoreEl.textContent='0 × 0';kickoff()};function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState&&!redSuspension){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
 const m=camera.matrixWorld.elements;
 let rx=m[0],rz=m[2],ux=m[4],uz=m[6];
 const rl=Math.hypot(rx,rz),ul=Math.hypot(ux,uz);
@@ -275,5 +332,5 @@ const ml=Math.hypot(mx,mz)||1;
 const moveX=mx/ml,moveZ=mz/ml;
 player.position.x=THREE.MathUtils.clamp(player.position.x+moveX*11*dt,-29,29);
 player.position.z=THREE.MathUtils.clamp(player.position.z+moveZ*11*dt,-47,47);
-player.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ball.position.set(player.position.x,.37,player.position.z-1.15)}else{ball.position.addScaledVector(velocity,dt);velocity.multiplyScalar(Math.exp(-(shotActive?.16:1.25)*dt));if(Math.abs(ball.position.x)>29.6){ball.position.x=THREE.MathUtils.clamp(ball.position.x,-29.6,29.6);velocity.x*=-.6}if(Math.hypot(ball.position.x-player.position.x,ball.position.z-player.position.z)<1.3&&cooldown===0&&velocity.length()<12)attached=true;shotActive=false;}for(const f of foes){const target=attached?player.position:ball.position;const fx=target.x-f.position.x,fz=target.z-f.position.z,dist=Math.hypot(fx,fz);if(dist>2){f.position.x+=fx/dist*dt*3.4;f.position.z+=fz/dist*dt*3.4}if(dist<1.15&&attached){attached=false;shotActive=false;velocity.set((Math.random()-.5)*8,0,15)}}animateKeepers(dt);if(Math.abs(ball.position.z)>48){if(Math.abs(ball.position.x)<4){scores[ball.position.z<0?0:1]++;scoreEl.textContent=scores.join(' × ');banner.textContent='GOOOL!';bannerTime=2}kickoff()}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');updateAim();animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});kickoff();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
+player.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ball.position.set(player.position.x,.37,player.position.z-1.15)}else if(!restartState){ball.position.addScaledVector(velocity,dt);velocity.multiplyScalar(Math.exp(-(shotActive?.16:1.25)*dt));if(Math.hypot(ball.position.x-player.position.x,ball.position.z-player.position.z)<1.3&&cooldown===0&&velocity.length()<12&&!redSuspension){attached=true;lastTouch='blue'}shotActive=false;}for(const f of foes){if(restartState)break;const target=attached?player.position:ball.position;const fx=target.x-f.position.x,fz=target.z-f.position.z,dist=Math.hypot(fx,fz);if(dist>2){f.position.x+=fx/dist*dt*3.4;f.position.z+=fz/dist*dt*3.4}if(dist<1.15&&attached){attached=false;lastTouch='red';shotActive=false;velocity.set((Math.random()-.5)*8,0,15)}}animateKeepers(dt);checkRulesOut();const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');updateAim();animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn))}</script></body></html>
