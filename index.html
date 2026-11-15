@@ -422,6 +422,69 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
  #fcQuick .miniEmblem{width:clamp(50px,16vh,76px)!important;height:clamp(50px,16vh,76px)!important}
  #fcQuick .miniGender,#fcQuick .miniLeagueFooter{padding:2px 5px!important}
 }
+
+/* MINI FC27 — refinamento de fidelidade da seleção de equipes (sem alterar a gameplay) */
+#fcMenu #fcQuick.fcScreen{
+ background:radial-gradient(ellipse 49% 68% at 51% 43%,#39dbac 0%,#24c49d 27%,#0c9d83 49%,#06584e 71%,#04191b 91%,#02080c 100%)!important;
+}
+#fcMenu #fcQuick::before{
+ display:block!important;content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;
+ background:
+ linear-gradient(180deg,#020609ee 0%,transparent 20%,transparent 79%,#020609c9 100%),
+ linear-gradient(90deg,#01090bd9 0%,transparent 16%,transparent 84%,#01090bd9 100%),
+ linear-gradient(155deg,transparent 32%,#bbffe826 32.2%,transparent 49%),
+ linear-gradient(27deg,transparent 44%,#a6ffd826 44.2%,transparent 66%),
+ repeating-linear-gradient(152deg,transparent 0 190px,#043f3e13 191px 230px)!important;
+}
+#fcQuick .miniQuickArena{
+ grid-template-columns:minmax(22px,.55fr) minmax(0,2.95fr) minmax(78px,1.85fr) minmax(0,2.95fr) minmax(22px,.55fr)!important;
+ max-width:1240px!important;gap:clamp(5px,1.1vw,15px)!important;padding:clamp(6px,1.4vh,13px) 2.3vw!important;
+}
+#fcQuick .miniTeamCard{
+ width:100%!important;max-width:355px!important;height:min(84%,500px)!important;max-height:500px!important;
+ gap:clamp(3px,.75vh,7px)!important;
+ grid-template-rows:minmax(19px,.42fr) minmax(26px,.72fr) minmax(0,5fr) minmax(28px,.92fr)!important;
+}
+#fcQuick .miniGender,#fcQuick .miniLeague,#fcQuick .miniLeagueFooter{
+ border-radius:8px!important;background:linear-gradient(120deg,#153945dd,#0e3441c9)!important;
+ border:1px solid #a6d8ca35!important;box-shadow:0 3px 13px #001d2052!important;
+}
+#fcQuick .miniTeamMain{
+ border-radius:9px!important;border:1px solid #c5f2e2a0!important;
+ background:linear-gradient(145deg,#769f9c8c 0%,#3a6a718a 55%,#24475d9c 100%)!important;
+ box-shadow:inset 0 1px 0 #ffffff35,0 7px 22px #00191e6b!important;
+ padding:clamp(4px,.9vh,10px)!important;
+}
+#fcQuick .miniTeamMain h3{font-size:clamp(14px,1.9vw,25px)!important}
+#fcQuick .miniEmblem{
+ border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;
+ width:clamp(72px,25vh,155px)!important;height:clamp(72px,25vh,155px)!important;
+ font-size:clamp(10px,1.2vw,15px)!important;
+}
+#fcQuick .miniEmblem img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 5px 8px #001e2680)}
+#fcQuick .miniMissingCrest{color:#c6dcd8;font-size:clamp(9px,1.1vw,13px);line-height:1.4;max-width:100%;text-align:center}
+#fcQuick .miniEmblemRow button{min-width:28px!important;padding:5px!important;font-size:clamp(14px,1.8vw,21px)!important}
+#fcQuick .miniStars{font-size:clamp(12px,1.6vw,19px)!important}
+#fcQuick .miniStats{font-size:clamp(10px,1.1vw,14px)!important}
+#fcQuick .miniLeagueFooter{font-size:clamp(10px,1.3vw,16px)!important}
+#fcQuick .miniCenterOptions{height:auto!important;gap:clamp(8px,2vh,18px)!important}
+#fcQuick .miniCenterOptions button{
+ background:#07534460!important;border:1px solid #c0ffda2b!important;
+ border-radius:6px!important;padding:clamp(5px,1vh,10px) 3px!important;
+ font-size:clamp(9px,1vw,12px)!important;
+}
+#fcQuick .miniSideName{font-size:clamp(17px,2.8vw,40px)!important}
+#fcQuick .miniTeamCard.miniActive .miniTeamMain{border-color:#e7fff6!important;box-shadow:0 0 0 1px #e5fff5,0 0 18px #7fffd17a!important}
+@media (orientation:landscape) and (max-height:450px){
+ #fcQuick .miniTeamCard{height:91%!important;max-width:325px!important;grid-template-rows:18px 25px minmax(0,1fr) 25px!important}
+ #fcQuick .miniQuickArena{grid-template-columns:minmax(20px,.5fr) minmax(0,3fr) minmax(75px,1.7fr) minmax(0,3fr) minmax(20px,.5fr)!important;padding:3px 1.7vw!important}
+ #fcQuick .miniEmblem{width:clamp(54px,22vh,102px)!important;height:clamp(54px,22vh,102px)!important}
+ #fcQuick .miniCenterOptions{gap:7px!important}
+}
+@media (prefers-reduced-motion:reduce){
+ #fcQuick .miniTeamCard,#fcQuick .miniEmblem{transition:none!important}
+}
+
 </style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><div style="font-size:13px;margin-top:14px;text-align:left"><label for="weatherChoice">CLIMA</label><select id="weatherChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="auto">Automático</option><option value="sun">Ensolarado</option><option value="cloud">Nublado</option><option value="rain">Chuvoso</option><option value="snow">Neve</option><option value="random">Aleatório</option></select><label for="timeChoice">HORÁRIO</label><select id="timeChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="day">Tarde</option><option value="morning">Manhã</option><option value="dusk">Entardecer</option><option value="night">Noite</option></select><div id="weatherStatus" style="margin-top:5px;color:#c8dbea">Ensolarado · gramado seco</div></div><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><div id="arrivalHud" style="display:none;position:fixed;inset:0;z-index:11;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99);color:white"><div style="position:absolute;left:5%;bottom:8%;font-size:clamp(17px,3vw,30px);font-weight:bold">MINI FC27 · CHEGADA AO ESTÁDIO<div id="arrivalCaption" style="font-size:14px;font-weight:normal;margin-top:8px">O ônibus da equipe se aproxima do estádio</div></div><button id="arrivalSkip" style="position:absolute;right:3%;top:5%;pointer-events:auto;width:auto;height:auto;padding:10px 16px;border-radius:8px">Pular ▶</button></div>
 <div id="fcMenu">
   <div class="fcTop"><div class="fcBrand">MINI <span>FC27</span></div><div class="fcBadge">FUTEBOL 3D · ANDROID</div></div>
