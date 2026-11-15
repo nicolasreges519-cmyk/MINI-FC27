@@ -106,7 +106,17 @@
 #celebrationMenu .variants{display:none;padding-left:8px}
 #celebrationMenu .variants.open{display:block}
 @media(max-height:400px){#celebrationMenu{top:35px;width:min(225px,30vw);padding:5px}#celebrationMenu button{padding:4px;margin:2px 0;font-size:11px}}
-</style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="ownId" class="player-id"><small>🔵 AZU</small><strong id="ownName">—</strong><div class="stamina"><span id="ownStamina"></span></div></div><div id="enemyId" class="player-id"><small>🔴 VER</small><strong id="enemyName">—</strong><div class="stamina"><span id="enemyStamina"></span></div></div><div id="overheadName"></div><div id="goalOverlay"></div><div id="celebrationMenu" role="group" aria-label="Comemorações" hidden><header><span>COMEMORAÇÃO</span><span id="celebrationTimer">5s</span></header>
+#clubLauncher{position:fixed;inset:0;z-index:55;display:flex;align-items:center;justify-content:center;background:#040b17ed;color:#fff;font:14px Arial;padding:12px;overflow:auto}
+#clubPanel{background:#142136;border:1px solid #ffffff40;border-radius:15px;padding:16px;width:min(730px,94vw);max-height:94vh;overflow:auto;box-sizing:border-box}
+#clubPanel h2{margin:0 0 7px;font-size:20px}#clubPanel p{font-size:12px;color:#d1d8e4}
+#clubPanel .teamCols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#clubPanel label{display:block;font-size:12px;margin-top:7px;color:#cfd8e8}
+#clubPanel select{display:block;width:100%;margin-top:3px;padding:8px;background:#233652;color:#fff;border:1px solid #ffffff44;border-radius:7px}
+#clubPanel button{margin-top:10px;padding:10px 15px;border:0;border-radius:8px;background:#3475d8;color:#fff;font-weight:bold}
+#clubPanel button:disabled{opacity:.45}
+#clubPanel .status{font-size:12px;margin-top:7px;color:#ffd894;min-height:36px}
+@media(max-height:430px){#clubPanel{padding:9px}#clubPanel h2{font-size:15px}#clubPanel select{padding:4px}#clubPanel label{margin-top:3px}#clubPanel button{padding:6px}}
+</style></head><body><div id="clubLauncher"><div id="clubPanel"><h2>MINI FC27 · Seleção de clubes</h2><p id="catalogSummary">Carregando catálogo oficial 2026/27...</p><div class="teamCols"><section><strong>🏠 CASA</strong><label>País<select id="homeCountry"></select></label><label>Liga<select id="homeLeague"></select></label><label>Clube<select id="homeClub"></select></label><div id="homeStatus" class="status"></div></section><section><strong>✈️ FORA</strong><label>País<select id="awayCountry"></select></label><label>Liga<select id="awayLeague"></select></label><label>Clube<select id="awayClub"></select></label><div id="awayStatus" class="status"></div></section></div><button id="launchVerifiedMatch" disabled>JOGAR COM ELENCOS VERIFICADOS</button><button id="continuePrototype">CONTINUAR PARTIDA DE TESTE (AZU × VER)</button><p>Clubes sem escalação verificada aparecem para consulta, mas não podem iniciar partidas. A partida de teste mantém os jogadores genéricos existentes.</p></div></div><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="ownId" class="player-id"><small>🔵 AZU</small><strong id="ownName">—</strong><div class="stamina"><span id="ownStamina"></span></div></div><div id="enemyId" class="player-id"><small>🔴 VER</small><strong id="enemyName">—</strong><div class="stamina"><span id="enemyStamina"></span></div></div><div id="overheadName"></div><div id="goalOverlay"></div><div id="celebrationMenu" role="group" aria-label="Comemorações" hidden><header><span>COMEMORAÇÃO</span><span id="celebrationTimer">5s</span></header>
 <button data-category="individual">⭐ Individual</button><div class="variants" data-group="individual"><button data-clip="1">Mãos no rosto</button><button data-clip="2">Mãos no peito</button><button data-clip="3">Gesto para câmera</button><button data-clip="4">Braços abertos</button></div>
 <button data-category="danca">🎵 Dança em grupo</button><div class="variants" data-group="danca"><button data-clip="6">Dança sincronizada</button><button data-clip="0">Festa coletiva</button></div>
 <button data-category="companheiros">🙌 Companheiros</button><div class="variants" data-group="companheiros"><button data-clip="8">Abraço em grupo</button><button data-clip="0">Corrida coletiva</button></div>
@@ -115,6 +125,43 @@
 <button data-category="especial">✨ Especial</button><div class="variants" data-group="especial"><button data-clip="5">Dança individual</button><button data-clip="12">Gestos com as mãos</button></div></div><button id="skipReplay" type="button">PULAR REPLAY ⏭</button><div id="cinemaCountdown"></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 let gamePaused=false,sprintHeld=false;
+let clubCatalog=[],selectedHome=null,selectedAway=null;
+const clubLauncher=document.getElementById('clubLauncher');
+document.getElementById('continuePrototype').addEventListener('click',()=>{clubLauncher.style.display='none'});
+function optionSelect(el,items,label){
+ el.replaceChildren();for(const item of items){const o=document.createElement('option');o.value=item.value;o.textContent=item.text;el.appendChild(o)}
+ if(!items.length){const o=document.createElement('option');o.textContent=label;o.value='';el.appendChild(o)}
+}
+function clubStatus(c){
+ if(!c)return 'Selecione um clube';
+ const missing=[];
+ if(!Array.isArray(c.roster)||c.roster.length<11||!c.rosterVerified)missing.push('elenco');
+ if(!c.formation)missing.push('formação');
+ if(!c.kits)missing.push('uniformes');
+ if(!c.ratings)missing.push('avaliações');
+ return missing.length?'⚠️ '+c.name+' — pendente: '+missing.join(', '):'✓ '+c.name+' — dados completos';
+}
+function setupTeamSelector(side){
+ const country=document.getElementById(side+'Country'),league=document.getElementById(side+'League'),club=document.getElementById(side+'Club'),status=document.getElementById(side+'Status');
+ optionSelect(country,[...new Set(clubCatalog.map(c=>c.country))].map(s=>({value:s,text:s})),'Sem países');
+ function refreshLeagues(){const matches=[...new Map(clubCatalog.filter(c=>c.country===country.value).map(c=>[c.leagueId,c.league])).entries()];optionSelect(league,matches.map(([value,text])=>({value,text})),'Sem ligas');refreshClubs()}
+ function refreshClubs(){optionSelect(club,clubCatalog.filter(c=>c.leagueId===league.value).map(c=>({value:c.id,text:c.name})),'Sem clubes');refreshStatus()}
+ function refreshStatus(){const c=clubCatalog.find(c=>c.id===club.value)||null;if(side==='home')selectedHome=c;else selectedAway=c;status.textContent=clubStatus(c);const ready=x=>x&&x.playable&&x.rosterVerified&&x.roster.length>=11&&x.kits&&x.formation;document.getElementById('launchVerifiedMatch').disabled=!(ready(selectedHome)&&ready(selectedAway))}
+ country.addEventListener('change',refreshLeagues);league.addEventListener('change',refreshClubs);club.addEventListener('change',refreshStatus);refreshLeagues();
+}
+async function loadClubCatalog(){
+ try{
+  const response=await fetch('./data/clubs-2026.json',{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);
+  const data=await response.json();clubCatalog=data.clubs;
+  const expected={'premier-league':20,'la-liga':20,'serie-a-it':20,'bundesliga':18,'ligue-1':18,'brasileirao':20};
+  const ids=new Set(clubCatalog.map(c=>c.id));
+  if(clubCatalog.length!==116||ids.size!==116||Object.entries(expected).some(([id,n])=>clubCatalog.filter(c=>c.leagueId===id).length!==n))throw Error('Contagem de clubes inválida');
+  document.getElementById('catalogSummary').textContent='116 clubes participantes verificados · 6 ligas · Elencos e recursos oficiais pendentes';
+  setupTeamSelector('home');setupTeamSelector('away');
+ }catch(error){document.getElementById('catalogSummary').textContent='Não foi possível carregar o catálogo: '+error.message}
+}
+loadClubCatalog();
+
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x82bad6);const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,300);const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x42613a,2));const sun=new THREE.DirectionalLight(0xffffff,1.3);sun.position.set(-20,35,15);scene.add(sun);
 const pitch=new THREE.Mesh(new THREE.PlaneGeometry(64,100),new THREE.MeshLambertMaterial({color:0x258343}));pitch.rotation.x=-Math.PI/2;scene.add(pitch);const white=new THREE.LineBasicMaterial({color:0xffffff});function draw(points){scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points.map(([x,z])=>new THREE.Vector3(x,.035,z))),white))}draw([[-30,-48],[30,-48],[30,48],[-30,48],[-30,-48]]);draw([[-30,0],[30,0]]);let circle=[];for(let i=0;i<=72;i++){let a=i*2*Math.PI/72;circle.push([9.15*Math.cos(a),9.15*Math.sin(a)])}draw(circle);for(const s of [-1,1]){const z=s*48;draw([[-20,z],[-20,z-s*16],[20,z-s*16],[20,z]]);draw([[-9,z],[-9,z-s*6],[9,z-s*6],[9,z]])}function goal(z){const mat=new THREE.MeshBasicMaterial({color:0xffffff});for(const [x,y,w,h] of [[-4,1.5,.18,3],[4,1.5,.18,3],[0,3,8,.18]]){const bar=new THREE.Mesh(new THREE.BoxGeometry(w,h,.18),mat);bar.position.set(x,y,z);scene.add(bar)}}goal(-48);goal(48);
 
