@@ -422,22 +422,89 @@ function animateStadium(dt){
  if(phase%12===0)ads.forEach((ad,i)=>ad.material.color.setHex(adPalette[(Math.floor(phase/12)+i)%adPalette.length]));
 }
 
+
+/* Jogadores humanos procedurais v1: materiais compartilhados e anatomia arredondada.
+   Mantem a mesma API person(x,z,color), membros e colisao da jogabilidade. */
 const animatedPlayers=[];
+const humanGeo={
+ torso:new THREE.CapsuleGeometry(.43,.55,4,10),head:new THREE.SphereGeometry(.30,14,12),
+ ear:new THREE.SphereGeometry(.085,8,6),eye:new THREE.SphereGeometry(.048,8,6),
+ pupil:new THREE.SphereGeometry(.024,6,6),nose:new THREE.SphereGeometry(.072,8,6),
+ lip:new THREE.SphereGeometry(.10,8,6),brow:new THREE.BoxGeometry(.12,.027,.045),
+ arm:new THREE.CylinderGeometry(.13,.11,.59,9),forearm:new THREE.CylinderGeometry(.105,.085,.45,8),
+ thigh:new THREE.CylinderGeometry(.19,.145,.65,10),calf:new THREE.CylinderGeometry(.14,.105,.56,9),
+ joint:new THREE.SphereGeometry(.135,9,7),hand:new THREE.SphereGeometry(.105,8,7),
+ foot:new THREE.BoxGeometry(.27,.15,.48),hair:new THREE.SphereGeometry(.305,12,9),
+ cloth:new THREE.CapsuleGeometry(.40,.52,4,10),shorts:new THREE.CylinderGeometry(.35,.33,.33,10)
+};
+const humanMat=(c)=>new THREE.MeshLambertMaterial({color:c});
+const humanSkin=[0xf0bc95,0xd9a178,0xb97952,0x8e583e,0x6c4032].map(humanMat);
+const humanHair=[0x18171b,0x36241b,0x77513a,0xb89a65,0x2a2826].map(humanMat);
+const humanWhite=humanMat(0xf6f4ed),humanIris=[0x403326,0x386b7e,0x527747].map(humanMat);
+const humanDark=humanMat(0x10141a),humanBoot=humanMat(0x111821),humanShorts=humanMat(0x18263d);
+let humanCounter=0;
 function person(x,z,color){
- const g=new THREE.Group();const kit=new THREE.MeshLambertMaterial({color});const skin=new THREE.MeshLambertMaterial({color:0xc98c67});const shorts=new THREE.MeshLambertMaterial({color:0x17233b});const sock=new THREE.MeshLambertMaterial({color:color});const boots=new THREE.MeshLambertMaterial({color:0x141414});const hair=new THREE.MeshLambertMaterial({color:0x1b1716});
- function shape(parent,geo,mat,x,y,z){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);parent.add(m);return m}
- const torso=shape(g,new THREE.BoxGeometry(.92,1.02,.48),kit,0,1.62,0);shape(g,new THREE.BoxGeometry(.85,.4,.5),shorts,0,.95,0);
- const neck=shape(g,new THREE.CylinderGeometry(.15,.17,.18,8),skin,0,2.25,0);
- shape(g,new THREE.SphereGeometry(.34,12,10),skin,0,2.55,0);shape(g,new THREE.SphereGeometry(.34,12,8,0,Math.PI*2,0,Math.PI*.48),hair,0,2.66,0);
- for(const s of [-1,1]){shape(g,new THREE.SphereGeometry(.065,8,6),new THREE.MeshLambertMaterial({color:0x151515}),s*.13,2.56,-.29)}
- const limbs=[];
- for(const s of [-1,1]){
-   const arm=new THREE.Group();arm.position.set(s*.59,2.01,0);g.add(arm);shape(arm,new THREE.CylinderGeometry(.16,.13,.74,8),kit,0,-.35,0);shape(arm,new THREE.SphereGeometry(.13,8,8),skin,0,-.76,0);limbs.push(arm);
-   const leg=new THREE.Group();leg.position.set(s*.24,.82,0);g.add(leg);shape(leg,new THREE.CylinderGeometry(.19,.14,.78,8),skin,0,-.35,0);shape(leg,new THREE.CylinderGeometry(.145,.13,.36,8),sock,0,-.82,0);shape(leg,new THREE.BoxGeometry(.29,.18,.48),boots,0,-1.06,-.12);limbs.push(leg);
+ const id=humanCounter++,g=new THREE.Group(),kit=humanMat(color),skin=humanSkin[id%humanSkin.length],
+ hair=humanHair[(id*3)%humanHair.length],sock=humanMat(color);
+ const scale=.94+(id%6)*.023;g.scale.setScalar(scale);
+ function shape(parent,geo,mat,x,y,z,sx=1,sy=1,sz=1){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);parent.add(m);return m}
+ const torso=shape(g,humanGeo.torso,kit,0,1.66,0,1.08,1,1.0);
+ shape(g,humanGeo.shorts,humanShorts,0,1.00,0);
+ shape(g,new THREE.CylinderGeometry(.13,.16,.18,10),skin,0,2.28,0);
+ const headPivot=new THREE.Group();headPivot.position.set(0,2.52,0);g.add(headPivot);
+ shape(headPivot,humanGeo.head,skin,0,0,0,1,.99,.89);
+ for(const side of [-1,1]){
+   shape(headPivot,humanGeo.ear,skin,side*.295,-.015,.005,.65,1,.8);
+   shape(headPivot,humanGeo.eye,humanWhite,side*.115,.055,-.262,.9,.75,.5);
+   shape(headPivot,humanGeo.pupil,humanIris[id%humanIris.length],side*.115,.055,-.286);
+   shape(headPivot,humanGeo.brow,hair,side*.115,.145,-.274,1,1,1);
  }
- g.position.set(x,.35,z);scene.add(g);g.userData={limbs,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0};animatedPlayers.push(g);return g
+ shape(headPivot,humanGeo.nose,skin,0,-.02,-.306,.76,1.25,1.1);
+ shape(headPivot,humanGeo.lip,humanMat(0x945d54),0,-.165,-.265,1,.26,.38);
+ const hairStyle=id%7;
+ if(hairStyle!==6){
+   const crown=shape(headPivot,humanGeo.hair,hair,0,.17,.025,1, hairStyle===3?.62:.38,1);
+   if(hairStyle===1||hairStyle===4){for(let k=0;k<7;k++)shape(headPivot,new THREE.SphereGeometry(.095,7,6),hair,(k-3)*.075,.25+(k%2)*.045,-.09,.9,1.2,1)}
+   if(hairStyle===2||hairStyle===5){shape(headPivot,humanGeo.hair,hair,0,.08,.18,.94,.75,.7)}
+   if(hairStyle===3)shape(headPivot,new THREE.SphereGeometry(.16,8,7),hair,0,.30,.18);
+ }
+ if(id%5===0){shape(headPivot,new THREE.SphereGeometry(.19,10,8),hair,0,-.20,.11,1,.32,1.2)}
+ const limbs=[];
+ for(const side of [-1,1]){
+   const arm=new THREE.Group();arm.position.set(side*.52,2.04,0);g.add(arm);
+   shape(arm,humanGeo.arm,kit,side*.02,-.27,0);
+   shape(arm,humanGeo.joint,skin,side*.02,-.60,0,.76,.76,.76);
+   const forearm=shape(arm,humanGeo.forearm,skin,side*.02,-.82,0);
+   shape(arm,humanGeo.hand,skin,side*.02,-1.08,-.015,.9,1,.8);limbs.push(arm);
+   const leg=new THREE.Group();leg.position.set(side*.21,.96,0);g.add(leg);
+   shape(leg,humanGeo.thigh,humanShorts,0,-.28,0);
+   shape(leg,humanGeo.joint,skin,0,-.64,0,.86,.86,.86);
+   shape(leg,humanGeo.calf,sock,0,-.92,0);
+   shape(leg,humanGeo.foot,humanBoot,0,-1.20,-.13);limbs.push(leg);
+ }
+ // Costas do jogador, com numero individual sem depender de fontes ou texturas externas.
+ const badge=document.createElement('canvas');badge.width=64;badge.height=64;
+ const ctx=badge.getContext('2d');ctx.clearRect(0,0,64,64);ctx.fillStyle='#ffffff';
+ ctx.textAlign='center';ctx.font='bold 46px Arial';ctx.fillText(String(id%11+1),32,47);
+ const badgeTex=new THREE.CanvasTexture(badge);
+ const badgeMesh=new THREE.Mesh(new THREE.PlaneGeometry(.33,.34),new THREE.MeshBasicMaterial({map:badgeTex,transparent:true,depthWrite:false,side:THREE.DoubleSide}));
+ badgeMesh.position.set(0,1.78,.46);badgeMesh.rotation.y=Math.PI;g.add(badgeMesh);
+ g.position.set(x,.35,z);scene.add(g);
+ g.userData={limbs,headPivot,phase:(id*2.399)%6.28,lastX:x,lastZ:z,kickTime:0,expression:0};
+ animatedPlayers.push(g);return g;
 }
-function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}}
+function animatePlayers(dt){
+ for(const g of animatedPlayers){
+ const d=g.userData,speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);
+ d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;
+ d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;
+ d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;
+ d.kickTime=Math.max(0,d.kickTime-dt);
+ if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k}
+ d.headPivot.rotation.y=Math.sin(d.phase*.28)*.045;
+ g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z;
+ }
+}
 const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];
 /* Departamento médico — etapa 1: fadiga, lesão por contato e dias de recuperação.
    Simulação simplificada; sem diagnóstico clínico real ou animação de maca. */
