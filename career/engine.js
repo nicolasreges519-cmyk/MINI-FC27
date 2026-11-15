@@ -128,6 +128,24 @@ export class CareerEngine{
   this.save();return o;
  }
  cancelNegotiation(id){const o=this.current().offers.find(x=>x.id===id);if(!o||o.status==='completed')throw Error('Negociação não pode ser cancelada');o.status='cancelled';this.save();return o}
+
+ pressConference({offerId=null,kind='signing',questionIndex,answer}){
+  const s=this.current();
+  if(!['signing','preMatch','postMatch'].includes(kind))throw Error('Tipo de coletiva inválido');
+  if(!Number.isInteger(questionIndex)||questionIndex<0||questionIndex>3)throw Error('Pergunta inválida');
+  if(!['positive','neutral','demanding'].includes(answer))throw Error('Resposta inválida');
+  const offer=offerId?s.offers.find(o=>o.id===offerId&&o.status==='completed'):null;
+  if(kind==='signing'&&!offer)throw Error('Contratação não confirmada');
+  s.press=s.press||{board:50,fans:50,records:[]};
+  const key=kind+':'+(offerId||s.season)+':'+questionIndex;
+  if(s.press.records.some(x=>x.key===key))throw Error('Esta pergunta já foi respondida');
+  const effects={positive:{morale:4,board:1,fans:3},neutral:{morale:1,board:1,fans:0},demanding:{morale:-3,board:2,fans:-1}}[answer];
+  const clamp=n=>Math.max(0,Math.min(100,n));
+  s.press.board=clamp(s.press.board+effects.board);s.press.fans=clamp(s.press.fans+effects.fans);
+  if(offer){const p=this.player(offer.playerId);p.morale=clamp((Number.isFinite(+p.morale)?+p.morale:50)+effects.morale)}
+  const record={key,offerId,kind,questionIndex,answer,effects,date:new Date().toISOString()};
+  s.press.records.push(record);this.save();return record;
+ }
  listForSale(playerId){const p=this.player(playerId);if(p.clubId!==this.current().clubId)throw Error('Não pertence ao clube');p.listed=true;this.save()}
  credit(amount,reason){if(money(amount)===null||!reason)throw Error('Receita inválida');const s=this.current();this.club(s.clubId).transferBudget+=money(amount);s.history.push({type:'revenue',amount:money(amount),reason,date:new Date().toISOString()});this.save()}
  debit(amount,reason){const s=this.current(),c=this.club(s.clubId);if(money(amount)===null||c.transferBudget<money(amount)||!reason)throw Error('Despesa inválida');c.transferBudget-=money(amount);s.history.push({type:'expense',amount:money(amount),reason,date:new Date().toISOString()});this.save()}
