@@ -138,6 +138,7 @@ for(let z=-42;z<=42;z+=14)for(const side of [-1,1])ads.push(stadiumBox(.25,1.3,1
 for(let x=-25;x<=25;x+=10)for(const side of [-1,1])ads.push(stadiumBox(9,1.3,.25,x,.7,side*49.6,0x142a46));
 const adPalette=[0x1459a4,0x1d8667,0x8b2339,0x293e62];
 // Painéis LED: uma textura Canvas compartilhada, deslocada por UV em todos os painéis.
+// A geometria frontal é um plano compartilhado por segmento; cada painel usa o mesmo mapa.
 const adCanvas=document.createElement('canvas');adCanvas.width=1024;adCanvas.height=64;
 const adCtx=adCanvas.getContext('2d'),adTexture=new THREE.CanvasTexture(adCanvas);
 adTexture.wrapS=THREE.RepeatWrapping;adTexture.colorSpace=THREE.SRGBColorSpace;
@@ -145,7 +146,13 @@ const adMessages=['MINI FC27','ARENA NOVA','GOL DIGITAL','FUTEBOL TOTAL'];
 let adMessageIndex=-1,adCycle=0;
 function paintAd(){adCtx.fillStyle=['#092b61','#13503f','#551c4a','#132c49'][adMessageIndex%4];adCtx.fillRect(0,0,1024,64);adCtx.fillStyle='#f5fcff';adCtx.font='bold 38px Arial';adCtx.textAlign='center';for(let i=0;i<4;i++)adCtx.fillText(adMessages[adMessageIndex],128+i*256,45);adTexture.needsUpdate=true}
 adMessageIndex=0;paintAd();
-for(const ad of ads){ad.material=new THREE.MeshBasicMaterial({map:adTexture,color:0xffffff,side:THREE.DoubleSide});}
+for(const ad of ads){
+ const old=ad.geometry,sidePanel=ad.geometry.parameters.width<1;
+ ad.geometry=new THREE.PlaneGeometry(sidePanel?12:9,1.3);
+ ad.rotation.y=sidePanel?Math.PI/2:0;
+ ad.material=new THREE.MeshBasicMaterial({map:adTexture,color:0xffffff,side:THREE.DoubleSide,depthWrite:true});
+ old.dispose();
+}
 
 // Bandeiras triangulares com animação leve nas arquibancadas.
 const flags=[];
@@ -165,6 +172,7 @@ for(const x of [-49,49])for(const z of [-70,70]){
 let stadiumCheer=0;const stadiumAnimClock={time:0,phase:-1};
 function animateStadium(dt){
  stadiumAnimClock.time+=dt;
+ if(ballKidDelivery){ballKidDelivery.elapsed+=dt;}
  // Atualizar em lotes para preservar desempenho em celulares.
  const phase=Math.floor(stadiumAnimClock.time*5);
  if(phase!==stadiumAnimClock.phase){stadiumAnimClock.phase=phase;
@@ -174,7 +182,7 @@ function animateStadium(dt){
   }
   fans.instanceMatrix.needsUpdate=true;
  }
- flags.forEach((flag,i)=>{flag.rotation.y=Math.sin(stadiumAnimClock.time*2+i)*(.18+stadiumCheer*.15)});for(const s of staff){if(s.role==='gandula'){s.group.position.y=.04*Math.sin(stadiumAnimClock.time*2+s.phase);if(restartState&&Math.hypot(s.baseX-ball.position.x,s.baseZ-ball.position.z)<20){s.group.rotation.y=Math.atan2(ball.position.x-s.baseX,ball.position.z-s.baseZ);const dist=Math.hypot(s.baseX-ball.position.x,s.baseZ-ball.position.z);const approach=Math.min(2,Math.max(0,dist-3));s.group.position.x=s.baseX+(ball.position.x-s.baseX)/Math.max(dist,.01)*approach;s.group.position.z=s.baseZ+(ball.position.z-s.baseZ)/Math.max(dist,.01)*approach}else{s.group.position.x+=(s.baseX-s.group.position.x)*Math.min(1,dt*3);s.group.position.z+=(s.baseZ-s.group.position.z)*Math.min(1,dt*3)}}}
+ flags.forEach((flag,i)=>{flag.rotation.y=Math.sin(stadiumAnimClock.time*2+i)*(.18+stadiumCheer*.15)});for(const s of staff){if(s.role==='gandula'){s.group.position.y=.04*Math.sin(stadiumAnimClock.time*2+s.phase);if(restartState&&Math.hypot(s.baseX-ball.position.x,s.baseZ-ball.position.z)<20){s.group.rotation.y=Math.atan2(ball.position.x-s.baseX,ball.position.z-s.baseZ);const dist=Math.hypot(s.baseX-ball.position.x,s.baseZ-ball.position.z);const approach=Math.min(2.2,Math.max(0,dist-3));s.group.position.x=s.baseX+(ball.position.x-s.baseX)/Math.max(dist,.01)*approach;s.group.position.z=s.baseZ+(ball.position.z-s.baseZ)/Math.max(dist,.01)*approach}else{s.group.position.x+=(s.baseX-s.group.position.x)*Math.min(1,dt*3);s.group.position.z+=(s.baseZ-s.group.position.z)*Math.min(1,dt*3)}}}
  adTexture.offset.x=-(stadiumAnimClock.time*.065%1);
  const cycle=Math.floor(stadiumAnimClock.time/6)%adMessages.length;
  if(cycle!==adCycle){adCycle=cycle;adMessageIndex=cycle;paintAd()}
@@ -184,6 +192,7 @@ function animateStadium(dt){
 
 // Elementos simples, com baixo número de polígonos e sem colisões com jogadores.
 const staff=[],ballKids=[];
+let ballKidDelivery=null;
 function stadiumStaff(x,z,color,role){
  const group=new THREE.Group(),mat=new THREE.MeshLambertMaterial({color});
  const body=new THREE.Mesh(new THREE.CylinderGeometry(.32,.36,1.2,6),mat);body.position.y=.95;group.add(body);
@@ -483,12 +492,18 @@ function showRule(msg,seconds=1.7){banner.textContent=msg;bannerTime=seconds}
 function awardRestart(type,x,z,team){
  if(restartState)return;
  restartState={type,x:THREE.MathUtils.clamp(x,-29,29),z:THREE.MathUtils.clamp(z,-47,47),team};
- restartTimer=1.7;attached=false;shotActive=false;velocity.set(0,0,0);
+ restartTimer=2.2;attached=false;shotActive=false;velocity.set(0,0,0);
+ // Gandula mais próximo da saída de bola faz uma aproximação visual;
+ // a reposição regulamentar só ocorre ao fim da animação.
+ const origin=new THREE.Vector3(ball.position.x,0,ball.position.z);
+ const kid=ballKids.reduce((best,k)=>!best||k.position.distanceToSquared(origin)<best.position.distanceToSquared(origin)?k:best,null);
+ ballKidDelivery=kid?{kid,origin:origin.clone(),target:new THREE.Vector3(restartState.x,0,restartState.z),elapsed:0}:null;
  ball.position.set(restartState.x,.37,restartState.z);
  showRule(type,1.7);
 }
 function resumeRule(){
  if(!restartState)return;
+ ballKidDelivery=null;
  const r=restartState;restartState=null;restartTimer=0;
  if(r.type.includes('PÊNALTI')){
   penaltyKick={team:r.team,goalZ:r.team==='blue'?-48:48};
@@ -542,10 +557,12 @@ function refereeTackle(){
 }
 document.getElementById('tackle').addEventListener('pointerdown',e=>{e.preventDefault();refereeTackle()});
 const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');
+// Nomes persistentes: sem inventar nomes de atletas reais que não constam no elenco.
 const playerNames=new Map();
 blueRoster.forEach((p,i)=>playerNames.set(p,'AZU '+String(i+1).padStart(2,'0')));
 foes.forEach((p,i)=>playerNames.set(p,'VER '+String(i+1).padStart(2,'0')));
 keepers.forEach((p,i)=>playerNames.set(p,(i===0?'VER ':'AZU ')+'01'));
+const ownStamina=document.getElementById('ownStamina'),enemyStamina=document.getElementById('enemyStamina');
 const ownNameEl=document.getElementById('ownName'),enemyNameEl=document.getElementById('enemyName'),overheadEl=document.getElementById('overheadName');
 const namePos=new THREE.Vector3();let nameUpdateClock=0;
 function updatePlayerLabels(dt){
@@ -553,7 +570,9 @@ function updatePlayerLabels(dt){
  const enemyCarrier=aiPossessor&&foes.includes(aiPossessor)?aiPossessor:null;
  const relevant=enemyCarrier||aiNearest(foes,attached?controlledPlayer.position:ball.position);
  ownNameEl.textContent=playerNames.get(controlledPlayer)||'AZU';
+ ownStamina.style.width=(sprintHeld?'78%':'100%');
  enemyNameEl.textContent=playerNames.get(relevant)||'VER';
+ enemyStamina.style.width='100%';
  const p=attached?controlledPlayer:(enemyCarrier||controlledPlayer);
  namePos.copy(p.position);namePos.y+=3.45;namePos.project(camera);
  const visible=namePos.z>-1&&namePos.z<1&&Math.abs(namePos.x)<.98&&Math.abs(namePos.y)<.98;
