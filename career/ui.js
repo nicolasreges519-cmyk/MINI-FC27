@@ -57,7 +57,7 @@ export function mountCareer(catalog){
  let activeOffer=null,negPlayerId=null;
  function showNegotiation(playerId,offer=null){
   const p=engine.player(playerId);negPlayerId=playerId;activeOffer=offer;
-  negotiation.style.display='block';ng('negFee').value=offer?.counterFee??p.marketValue;
+  negotiation.style.display='block';ng('negSubmit').disabled=false;ng('negFee').value=offer?.counterFee??p.marketValue;
   ng('negWage').value=offer?.requestedWage??p.weeklyWage;
   ng('negPlayer').textContent=p.name+' · '+(p.position||'—')+' · GER '+p.overall+' · '+fmt(p.marketValue);
   ng('negRepresentative').textContent=offer?.status==='clubAccepted'||offer?.status==='contractCounter'?'Representante virtual do jogador':'Representante virtual de '+currentName(p.clubId);
@@ -76,7 +76,7 @@ export function mountCareer(catalog){
  ng('negSubmit').onclick=()=>{try{
   if(!ng('negContract').hidden){
    const o=engine.negotiateContract(activeOffer.id,{weeklyWage:Number(ng('negWage').value),years:Number(ng('negYears').value),signingBonus:Number(ng('negSigning').value),role:ng('negRole').value});
-   if(o.status==='completed'){ng('negMessages').textContent='ACORDO CONCLUÍDO! Jogador transferido e orçamento atualizado.';ng('negSubmit').disabled=true;render()}else showNegotiation(negPlayerId,o);
+   if(o.status==='completed'){render();ng('negMessages').textContent='ACORDO CONCLUÍDO! Jogador transferido e orçamento atualizado.';ng('negSubmit').disabled=true;}else showNegotiation(negPlayerId,o);
   }else{
    const p=engine.player(negPlayerId);
    const o=engine.negotiateClub({playerId:p.id,fee:Number(ng('negFee').value),installments:Number(ng('negParts').value),bonus:Number(ng('negBonus').value),sellOn:Number(ng('negSellOn').value),exchangePlayerId:ng('negExchange').value||null});
