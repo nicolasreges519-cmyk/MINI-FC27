@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><title>MINI FC27 v8.8 — Jogabilidade realista</title><meta name="theme-color" content="#081622"><meta name="description" content="MINI FC27: futebol 3D para Android e navegador"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png" type="image/png"><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#081622;color:white;font-family:Arial,sans-serif;touch-action:none}canvas{display:block}#hud{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#081728df;padding:10px 16px;border-radius:12px;font-weight:bold;white-space:nowrap;z-index:2}#tip{position:absolute;top:12px;left:12px;font-size:12px;color:#e0e7ef}#joy{position:absolute;bottom:22px;left:22px;width:112px;height:112px;border:3px solid #ffffff8a;border-radius:50%;background:#ffffff22;touch-action:none}#stick{position:absolute;width:42px;height:42px;left:32px;top:32px;background:#ffffffa8;border-radius:50%}#buttons{position:absolute;bottom:24px;right:20px;display:flex;gap:12px;align-items:end}button{border:2px solid #ffffff88;border-radius:50%;background:#2863cfda;color:white;font-weight:800;width:75px;height:75px;touch-action:none}#pass{width:66px;height:66px;background:#119568dd}#cameraMode{position:absolute;left:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:9px 12px;background:#132742;z-index:4;font-size:12px}#restart{position:absolute;right:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:8px 12px;background:#132742}#banner{position:absolute;top:28%;width:100%;text-align:center;font-size:36px;font-weight:900;text-shadow:0 3px 8px #000;pointer-events:none}#error{position:absolute;top:50%;left:10%;width:80%;text-align:center;color:#fff;background:#9b2630;padding:12px;display:none}@media(max-width:600px){#tip{display:none}#hud{font-size:12px;padding:8px}#buttons button{width:63px;height:63px}}
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><title>MINI FC27 v8.9 — Estádio e transmissão (prévia)</title><meta name="theme-color" content="#081622"><meta name="description" content="MINI FC27: futebol 3D para Android e navegador"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png" type="image/png"><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#081622;color:white;font-family:Arial,sans-serif;touch-action:none}canvas{display:block}#hud{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#081728df;padding:10px 16px;border-radius:12px;font-weight:bold;white-space:nowrap;z-index:2}#tip{position:absolute;top:12px;left:12px;font-size:12px;color:#e0e7ef}#joy{position:absolute;bottom:22px;left:22px;width:112px;height:112px;border:3px solid #ffffff8a;border-radius:50%;background:#ffffff22;touch-action:none}#stick{position:absolute;width:42px;height:42px;left:32px;top:32px;background:#ffffffa8;border-radius:50%}#buttons{position:absolute;bottom:24px;right:20px;display:flex;gap:12px;align-items:end}button{border:2px solid #ffffff88;border-radius:50%;background:#2863cfda;color:white;font-weight:800;width:75px;height:75px;touch-action:none}#pass{width:66px;height:66px;background:#119568dd}#cameraMode{position:absolute;left:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:9px 12px;background:#132742;z-index:4;font-size:12px}#restart{position:absolute;right:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:8px 12px;background:#132742}#banner{position:absolute;top:28%;width:100%;text-align:center;font-size:36px;font-weight:900;text-shadow:0 3px 8px #000;pointer-events:none}#error{position:absolute;top:50%;left:10%;width:80%;text-align:center;color:#fff;background:#9b2630;padding:12px;display:none}@media(max-width:600px){#tip{display:none}#hud{font-size:12px;padding:8px}#buttons button{width:63px;height:63px}}
 /* MINI FC27 v8.4 — HUD de transmissão e controles mobile */
 #hud{top:12px;left:14px;transform:none;border-radius:3px;background:#221b4c;box-shadow:0 3px 0 #0c0927;min-width:285px;padding:8px 12px;font-size:18px;letter-spacing:.4px;z-index:5}
 #hud #clock{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#211844;padding:3px 12px;border-radius:3px;font-size:12px}
@@ -86,7 +86,16 @@
  #miniMap{bottom:26%!important}
  #hud{top:3%!important;left:2%!important;min-width:210px!important;font-size:12px!important}
 }
-</style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><script type="module">
+
+/* v8.9 — identidade dos jogadores sem cobrir o gramado */
+.player-id{position:fixed;bottom:4%;z-index:5;pointer-events:none;background:#0d1a30dc;border-left:4px solid #438bff;padding:7px 12px;border-radius:4px;min-width:142px;font-size:12px;box-shadow:0 3px 12px #0006}
+.player-id strong{display:block;font-size:13px;margin:3px 0}.player-id small{color:#b9d4e6}
+.player-id .stamina{height:4px;background:#283d4d;margin-top:5px;border-radius:5px;overflow:hidden}.player-id .stamina span{display:block;width:100%;height:100%;background:#55d5a2}
+#ownId{left:2%;bottom:2%}#enemyId{right:2%;bottom:2%;border-left-color:#f06c6c}
+#overheadName{position:fixed;z-index:4;pointer-events:none;color:white;text-shadow:0 2px 4px #000,0 0 4px #000;font:bold 11px Arial;transform:translate(-50%,-100%);white-space:nowrap}
+#hud.goal-flash{animation:scoreFlash .6s ease-out 2}@keyframes scoreFlash{50%{filter:brightness(1.8);transform:scale(1.025)}}
+@media(max-width:700px){.player-id{font-size:10px;min-width:95px;padding:4px 6px}.player-id strong{font-size:11px}#ownId,#enemyId{bottom:1%}#miniMap{bottom:5%!important}}
+</style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="ownId" class="player-id"><small>🔵 AZU</small><strong id="ownName">—</strong><div class="stamina"><span id="ownStamina"></span></div></div><div id="enemyId" class="player-id"><small>🔴 VER</small><strong id="enemyName">—</strong><div class="stamina"><span id="enemyStamina"></span></div></div><div id="overheadName"></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 let gamePaused=false,sprintHeld=false;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x82bad6);const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,300);const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);scene.add(new THREE.HemisphereLight(0xffffff,0x42613a,2));const sun=new THREE.DirectionalLight(0xffffff,1.3);sun.position.set(-20,35,15);scene.add(sun);
@@ -105,7 +114,7 @@ for(let tier=0;tier<7;tier++){
  }
 }
 // Um único desenho para milhares de torcedores aparentes: InstancedMesh economiza chamadas de desenho.
-const fanCount=2700,fanGeo=new THREE.CapsuleGeometry(.22,.43,2,4);
+const fanCount=3600,fanGeo=new THREE.CapsuleGeometry(.22,.43,2,4);
 const fans=new THREE.InstancedMesh(fanGeo,new THREE.MeshLambertMaterial({color:0xffffff}),fanCount);
 fans.instanceMatrix.setUsage(THREE.DynamicDrawUsage);fans.frustumCulled=false;
 const dummy=new THREE.Object3D(),fanData=[];
@@ -128,6 +137,16 @@ const ads=[];
 for(let z=-42;z<=42;z+=14)for(const side of [-1,1])ads.push(stadiumBox(.25,1.3,12,side*31.6,.7,z,0x142a46));
 for(let x=-25;x<=25;x+=10)for(const side of [-1,1])ads.push(stadiumBox(9,1.3,.25,x,.7,side*49.6,0x142a46));
 const adPalette=[0x1459a4,0x1d8667,0x8b2339,0x293e62];
+// Painéis LED: uma textura Canvas compartilhada, deslocada por UV em todos os painéis.
+const adCanvas=document.createElement('canvas');adCanvas.width=1024;adCanvas.height=64;
+const adCtx=adCanvas.getContext('2d'),adTexture=new THREE.CanvasTexture(adCanvas);
+adTexture.wrapS=THREE.RepeatWrapping;adTexture.colorSpace=THREE.SRGBColorSpace;
+const adMessages=['MINI FC27','ARENA NOVA','GOL DIGITAL','FUTEBOL TOTAL'];
+let adMessageIndex=-1,adCycle=0;
+function paintAd(){adCtx.fillStyle=['#092b61','#13503f','#551c4a','#132c49'][adMessageIndex%4];adCtx.fillRect(0,0,1024,64);adCtx.fillStyle='#f5fcff';adCtx.font='bold 38px Arial';adCtx.textAlign='center';for(let i=0;i<4;i++)adCtx.fillText(adMessages[adMessageIndex],128+i*256,45);adTexture.needsUpdate=true}
+adMessageIndex=0;paintAd();
+for(const ad of ads){ad.material=new THREE.MeshBasicMaterial({map:adTexture,color:0xffffff,side:THREE.DoubleSide});}
+
 // Bandeiras triangulares com animação leve nas arquibancadas.
 const flags=[];
 for(let i=0;i<16;i++){
@@ -143,22 +162,42 @@ for(const x of [-49,49])for(const z of [-70,70]){
  const lamps=stadiumBox(8,2.5,1.1,x,17.2,z,0xdbeaf4);
  lamps.material=new THREE.MeshBasicMaterial({color:0xe9f5ff});
 }
-const stadiumAnimClock={time:0,phase:-1};
+let stadiumCheer=0;const stadiumAnimClock={time:0,phase:-1};
 function animateStadium(dt){
  stadiumAnimClock.time+=dt;
  // Atualizar em lotes para preservar desempenho em celulares.
  const phase=Math.floor(stadiumAnimClock.time*5);
  if(phase!==stadiumAnimClock.phase){stadiumAnimClock.phase=phase;
   for(let i=0;i<fanCount;i++){
-   const f=fanData[i];dummy.position.set(f.x,f.y+(f.active?.13*Math.sin(stadiumAnimClock.time*4+f.phase):0),f.z);
+   const f=fanData[i];dummy.position.set(f.x,f.y+(f.active?(.13+stadiumCheer*.24)*Math.sin(stadiumAnimClock.time*(4+stadiumCheer*3)+f.phase):0),f.z);
    dummy.rotation.set(0,f.phase,0);dummy.scale.set(1,1,1);dummy.updateMatrix();fans.setMatrixAt(i,dummy.matrix);
   }
   fans.instanceMatrix.needsUpdate=true;
  }
- flags.forEach((flag,i)=>{flag.rotation.y=Math.sin(stadiumAnimClock.time*2+i)*.18});
- if(phase%12===0)ads.forEach((ad,i)=>ad.material.color.setHex(adPalette[(Math.floor(phase/12)+i)%adPalette.length]));
+ flags.forEach((flag,i)=>{flag.rotation.y=Math.sin(stadiumAnimClock.time*2+i)*(.18+stadiumCheer*.15)});for(const s of staff){if(s.role==='gandula'){s.group.position.y=.04*Math.sin(stadiumAnimClock.time*2+s.phase);if(restartState&&Math.hypot(s.baseX-ball.position.x,s.baseZ-ball.position.z)<20)s.group.rotation.y=Math.atan2(ball.position.x-s.baseX,ball.position.z-s.baseZ)}}
+ adTexture.offset.x=-(stadiumAnimClock.time*.065%1);
+ const cycle=Math.floor(stadiumAnimClock.time/6)%adMessages.length;
+ if(cycle!==adCycle){adCycle=cycle;adMessageIndex=cycle;paintAd()}
+ if(stadiumCheer>0)stadiumCheer=Math.max(0,stadiumCheer-dt);
+
 }
 
+// Elementos simples, com baixo número de polígonos e sem colisões com jogadores.
+const staff=[],ballKids=[];
+function stadiumStaff(x,z,color,role){
+ const group=new THREE.Group(),mat=new THREE.MeshLambertMaterial({color});
+ const body=new THREE.Mesh(new THREE.CylinderGeometry(.32,.36,1.2,6),mat);body.position.y=.95;group.add(body);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.25,8,6),new THREE.MeshLambertMaterial({color:0xcda484}));head.position.y=1.78;group.add(head);
+ group.position.set(x,0,z);stadium.add(group);staff.push({group,role,baseX:x,baseZ:z,phase:Math.random()*6.28});
+ if(role==='gandula')ballKids.push(group);
+}
+for(const x of [-32.8,32.8])for(const z of [-34,0,34])stadiumStaff(x,z,0xe2c84d,'gandula');
+for(const z of [-51.4,51.4])for(const x of [-19,19])stadiumStaff(x,z,0xe2c84d,'gandula');
+for(const x of [-34.5,34.5])for(const z of [-22,22])stadiumStaff(x,z,0xf2e7d1,'fotografo');
+for(const x of [-35,35])for(const z of [-38,38])stadiumStaff(x,z,0x58a8d5,'seguranca');
+for(const x of [-29,29])for(const z of [-47,47]){stadiumBox(.09,1.5,.09,x,.75,z,0xf8f8f8);stadiumBox(.65,.38,.08,x+.3,1.3,z,0xf0a524)}
+stadiumBox(9,.6,2,-40,.3,6,0x425466);stadiumBox(9,.6,2,-40,.3,-6,0x425466);
+stadiumBox(8,3,2,0,1.5,72,0x273542);
 const animatedPlayers=[];
 function person(x,z,color){
  const g=new THREE.Group();const kit=new THREE.MeshLambertMaterial({color});const skin=new THREE.MeshLambertMaterial({color:0xc98c67});const shorts=new THREE.MeshLambertMaterial({color:0x17233b});const sock=new THREE.MeshLambertMaterial({color:color});const boots=new THREE.MeshLambertMaterial({color:0x141414});const hair=new THREE.MeshLambertMaterial({color:0x1b1716});
@@ -175,7 +214,9 @@ function person(x,z,color){
  g.position.set(x,.35,z);scene.add(g);g.userData={limbs,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0};animatedPlayers.push(g);return g
 }
 function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}}
-const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];const foes=[[-12,-13],[12,-13],[0,-28],[0,-40]].map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
+const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const extraBlue=[[-23,19],[23,19],[-19,-6],[19,-6],[-8,-17],[8,-17]].map(p=>person(...p,0x2072ff));
+const blueRoster=[player,...teammates,...extraBlue];
+const foes=[[-12,-13],[12,-13],[0,-28],[0,-40],[-23,-4],[23,-4],[-20,16],[20,16],[-8,29],[8,29]].map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
 const keepers=[person(0,-45.5,0xffd23f),person(0,45.5,0x4be0b6)];
 for(const k of keepers){
  k.userData.isKeeper=true;k.userData.saveTime=0;k.userData.diveDir=0;
@@ -185,7 +226,7 @@ for(const k of keepers){
  }
 }
 // IA v8.3: decisão de equipe, cobertura, marcação e passes sem custo alto no Android.
-const aiHomeBlue=[[-15,5],[15,5],[0,28]],aiHomeRed=[[-12,-13],[12,-13],[0,-28],[0,-40]];
+const aiHomeBlue=[[-15,5],[15,5],[0,28],[-23,19],[23,19],[-19,-6],[19,-6],[-8,-17],[8,-17]],aiHomeRed=[[-12,-13],[12,-13],[0,-28],[0,-40],[-23,-4],[23,-4],[-20,16],[20,16],[-8,29],[8,29]];
 const aiMemory=new Map();let aiPossessor=null,aiThinkClock=0,aiDecisionClock=0;
 let aiDribbleSide=1,aiDribbleClock=0;let ballSpin=0,ballBounce=0;
 function aiStrategy(){const diff=scores[1]-scores[0];const late=elapsed>120;return diff<0&&late?'attack':diff>0?'defend':'balanced'}
@@ -374,9 +415,9 @@ function updateBroadcastCamera(dt){
  const leadX=THREE.MathUtils.clamp(focus.x+(attached?0:velocity.x*.18),-15,15);
  if(cameraMode===0){
   // Lateral elevada, enquadra o campo e preserva a direção dos ataques.
-  cameraPosition.set(61,43,leadZ*.75);
-  cameraTarget.set(leadX*.45,0,leadZ);
-  camera.fov=49;
+  cameraPosition.set(66,44,leadZ*.70);
+  cameraTarget.set(leadX*.50,0,leadZ);
+  camera.fov=THREE.MathUtils.clamp(48+Math.abs(focus.x)*.07,48,51);
  }else if(cameraMode===1){
   cameraPosition.set(51,33,leadZ*.84);
   cameraTarget.set(leadX*.55,0,leadZ);
@@ -472,7 +513,7 @@ function checkRulesOut(){
  if(Math.abs(z)>=48){
   if(penaltyKick){const scored=Math.abs(x)<=4;showRule(scored?'GOL DE PÊNALTI!':'PÊNALTI PARA FORA!',2);penaltyKick=null;if(scored){scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ')}kickoff();return;}
   if(Math.abs(x)<=4){
-   scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ');
+   scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ');goalBroadcast();goalBroadcast();
    kickoff();showRule('GOOOL!',2.1);return;
   }
   // Equipe azul ataca o gol negativo; última posse determina escanteio/tiro de meta.
@@ -500,7 +541,27 @@ function refereeTackle(){
  awardRestart(inBlueBox?'PÊNALTI ADVERSÁRIO!':redCards?'SEGUNDO AMARELO! VERMELHO!':'FALTA! CARTÃO AMARELO!',controlledPlayer.position.x,controlledPlayer.position.z,'red');
 }
 document.getElementById('tackle').addEventListener('pointerdown',e=>{e.preventDefault();refereeTackle()});
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){controlledPlayer=blueRoster.find(p=>!expelledPlayers.has(p))||player;selectedIndex=blueRoster.indexOf(controlledPlayer);aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');
+const playerNames=new Map();
+blueRoster.forEach((p,i)=>playerNames.set(p,'AZU '+String(i+1).padStart(2,'0')));
+foes.forEach((p,i)=>playerNames.set(p,'VER '+String(i+1).padStart(2,'0')));
+keepers.forEach((p,i)=>playerNames.set(p,(i===0?'VER ':'AZU ')+'01'));
+const ownNameEl=document.getElementById('ownName'),enemyNameEl=document.getElementById('enemyName'),overheadEl=document.getElementById('overheadName');
+const namePos=new THREE.Vector3();let nameUpdateClock=0;
+function updatePlayerLabels(dt){
+ nameUpdateClock+=dt;if(nameUpdateClock<.12)return;nameUpdateClock=0;
+ const enemyCarrier=aiPossessor&&foes.includes(aiPossessor)?aiPossessor:null;
+ const relevant=enemyCarrier||aiNearest(foes,attached?controlledPlayer.position:ball.position);
+ ownNameEl.textContent=playerNames.get(controlledPlayer)||'AZU';
+ enemyNameEl.textContent=playerNames.get(relevant)||'VER';
+ const p=attached?controlledPlayer:(enemyCarrier||controlledPlayer);
+ namePos.copy(p.position);namePos.y+=3.45;namePos.project(camera);
+ const visible=namePos.z>-1&&namePos.z<1&&Math.abs(namePos.x)<.98&&Math.abs(namePos.y)<.98;
+ overheadEl.style.display=visible?'block':'none';
+ if(visible){overheadEl.textContent=playerNames.get(p)||'';overheadEl.style.left=((namePos.x+1)*50)+'%';overheadEl.style.top=((1-namePos.y)*50)+'%'}
+}
+function goalBroadcast(){stadiumCheer=1;const hud=document.getElementById('hud');hud.classList.remove('goal-flash');void hud.offsetWidth;hud.classList.add('goal-flash')}
+function kickoff(){controlledPlayer=blueRoster.find(p=>!expelledPlayers.has(p))||player;selectedIndex=blueRoster.indexOf(controlledPlayer);aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
 // Finalização original inspirada em jogos de futebol: mira livre, assistência leve e força carregável.
 let chargingShot=false,chargeStart=0,chargePointer=null;
 const shootButton=document.getElementById('shoot');
@@ -580,12 +641,12 @@ function drawRadar(dt){
  c.clearRect(0,0,w,h);c.fillStyle='#132c23b9';c.fillRect(0,0,w,h);
  c.strokeStyle='#e5f2e69c';c.lineWidth=1.2;c.strokeRect(7,7,w-14,h-14);
  c.beginPath();c.moveTo(w/2,7);c.lineTo(w/2,h-7);c.stroke();
- c.beginPath();c.ellipse(w/2,h/2,18,18,0,0,Math.PI*2);c.stroke();
+ c.beginPath();c.ellipse(w/2,h/2,18,18,0,0,Math.PI*2);c.stroke();for(const x of [7,w-7]){const bx=x===7?7:w-32;c.strokeRect(bx,h*.23,25,h*.54);c.strokeRect(x===7?7:w-20,h*.36,13,h*.28)}
  for(const x of [7,w-7]){c.strokeRect(x===7?x:w-27,h*.31,20,h*.38)}
  function dot(obj,color,r=3){if(!obj)return;const x=7+(obj.position.z+48)/96*(w-14),y=7+(obj.position.x+30)/60*(h-14);c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fillStyle=color;c.fill()}
- for(const p of animatedPlayers){if(p.userData.isKeeper)continue;dot(p,foes.includes(p)?'#f4f4f4':'#53a3ff',p===player?4.5:3)}
- for(const k of keepers)dot(k,'#ffe381',3);
- dot(ball,'#ffffff',2.2);
+ for(const p of animatedPlayers){if(p.userData.isKeeper||!p.visible)continue;dot(p,foes.includes(p)?'#f4f4f4':'#53a3ff',p===controlledPlayer?5:3)}
+ for(const k of keepers)dot(k,keepers.indexOf(k)===0?'#f4f4f4':'#53a3ff',3);
+ dot(ball,'#ffe873',2.2);
 }
 
 // Troca de jogador: escolhe o companheiro mais próximo da bola; toques seguintes alternam.
@@ -628,5 +689,5 @@ const ml=Math.hypot(mx,mz)||1;
 const moveX=mx/ml,moveZ=mz/ml;
 controlledPlayer.position.x=THREE.MathUtils.clamp(controlledPlayer.position.x+moveX*(sprintHeld?16:11)*dt,-29,29);
 controlledPlayer.position.z=THREE.MathUtils.clamp(controlledPlayer.position.z+moveZ*(sprintHeld?16:11)*dt,-47,47);
-controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ballSpin=0;ballBounce=0;ball.position.set(controlledPlayer.position.x,.37,controlledPlayer.position.z-1.15)}else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<12&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
+controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ballSpin=0;ballBounce=0;ball.position.set(controlledPlayer.position.x,.37,controlledPlayer.position.z-1.15)}else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<12&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);updatePlayerLabels(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn))}</script></body></html>
