@@ -527,7 +527,7 @@ for(const k of keepers){
 const aiHomeBlue=[[-15,5],[15,5],[0,28],[-23,19],[23,19],[-19,-6],[19,-6],[-8,-17],[8,-17]],aiHomeRed=[[-12,-13],[12,-13],[0,-28],[0,-40],[-23,-4],[23,-4],[-20,16],[20,16],[-8,29],[8,29]];
 const aiMemory=new Map();let aiPossessor=null,aiThinkClock=0,aiDecisionClock=0;
 let aiDribbleSide=1,aiDribbleClock=0;let ballSpin=0,ballBounce=0;
-function aiStrategy(){const diff=scores[1]-scores[0];const late=elapsed>120;return diff<0&&late?'attack':diff>0?'defend':'balanced'}
+function aiStrategy(){if(squadState.attack==='attack'||squadState.attack==='defend')return squadState.attack;const diff=scores[1]-scores[0];const late=elapsed>120;return diff<0&&late?'attack':diff>0?'defend':'balanced'}
 function aiLaneRisk(a,b,defenders){
  const ax=a.position.x,az=a.position.z,bx=b.position.x,bz=b.position.z;
  const vx=bx-ax,vz=bz-az,dd=vx*vx+vz*vz||1;
@@ -1505,7 +1505,7 @@ document.getElementById('lockerSkip').onclick=closeLocker;
 document.getElementById('openLockerRoom').onclick=()=>openLocker(elapsed>60?'half':'pre');
 function animateLocker(dt){
  lockerClock+=dt;
- for(let i=0;i<lockerActors.length;i++){const a=lockerActors[i];a.rotation.y=Math.sin(lockerClock*.6+i)*.08;const legs=a.userData.limbs||[];for(let j=0;j<legs.length;j++){const idx=blueRoster[i].children.indexOf(legs[j]);if(idx>=0&&a.children[idx])a.children[idx].rotation.x=Math.sin(lockerClock*1.4+i+j)*.045}}
+ for(let i=0;i<lockerActors.length;i++){const a=lockerActors[i];a.rotation.y=Math.sin(lockerClock*.6+i)*.08;const legs=blueRoster[i].userData.limbs||[];for(let j=0;j<legs.length;j++){const idx=blueRoster[i].children.indexOf(legs[j]);if(idx>=0&&a.children[idx])a.children[idx].rotation.x=Math.sin(lockerClock*1.4+i+j)*.045}}
  lockerCoach.rotation.y=Math.sin(lockerClock*.5)*.12;
  lockerCamera.position.set(5.4,3.4,7.6);lockerCamera.lookAt(0,1.6,-1.1);
  renderer.render(lockerScene,lockerCamera);
