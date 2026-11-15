@@ -76,7 +76,7 @@ export function mountCareer(catalog){
  ng('negSubmit').onclick=()=>{try{
   if(!ng('negContract').hidden){
    const o=engine.negotiateContract(activeOffer.id,{weeklyWage:Number(ng('negWage').value),years:Number(ng('negYears').value),signingBonus:Number(ng('negSigning').value),role:ng('negRole').value});
-   if(o.status==='completed'){render();ng('negMessages').textContent='ACORDO CONCLUÍDO! Jogador transferido e orçamento atualizado.';ng('negSubmit').disabled=true;}else showNegotiation(negPlayerId,o);
+   if(o.status==='completed'){window.dispatchEvent(new CustomEvent('mini-career-signing',{detail:{offerId:o.id}}));render();ng('negMessages').textContent='ACORDO CONCLUÍDO! Jogador transferido e orçamento atualizado.';ng('negSubmit').disabled=true;}else showNegotiation(negPlayerId,o);
   }else{
    const p=engine.player(negPlayerId);
    const o=engine.negotiateClub({playerId:p.id,fee:Number(ng('negFee').value),installments:Number(ng('negParts').value),bonus:Number(ng('negBonus').value),sellOn:Number(ng('negSellOn').value),exchangePlayerId:ng('negExchange').value||null});
@@ -86,6 +86,7 @@ export function mountCareer(catalog){
  }catch(e){alert(e.message)}};
  $('careerBuy').textContent='NEGOCIAR';$('careerBuy').onclick=()=>{if(selected)showNegotiation(selected)};
  $('careerSell').onclick=()=>{try{engine.listForSale(selected);render();alert('Atleta colocado à venda. Propostas automáticas da IA ainda pendentes.')}catch(e){alert(e.message)}};
+ const replay=document.createElement('button');replay.textContent='REVER ÚLTIMA APRESENTAÇÃO';replay.onclick=()=>{const o=[...engine.state.offers].reverse().find(x=>x.status==='completed');if(o)window.dispatchEvent(new CustomEvent('mini-career-signing',{detail:{offerId:o.id,replay:true}}));else alert('Nenhuma contratação concluída nesta carreira.')};$('careerContent').appendChild(replay);
  $('careerExport').onclick=()=>{try{const a=document.createElement('a'),blob=new Blob([engine.export()],{type:'application/json'});const url=URL.createObjectURL(blob);a.href=url;a.download='mini-fc27-carreira.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}catch(e){alert(e.message)}};
  $('careerImport').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{engine.import(await file.text());startView()}catch(err){alert('Importação falhou: '+err.message)}};
  $('careerClose').onclick=()=>{root.style.display='none';window.dispatchEvent(new Event('mini-career-close'))};
