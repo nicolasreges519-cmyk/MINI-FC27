@@ -174,7 +174,7 @@ function animateStadium(dt){
   }
   fans.instanceMatrix.needsUpdate=true;
  }
- flags.forEach((flag,i)=>{flag.rotation.y=Math.sin(stadiumAnimClock.time*2+i)*(.18+stadiumCheer*.15)});for(const s of staff){if(s.role==='gandula'){s.group.position.y=.04*Math.sin(stadiumAnimClock.time*2+s.phase);if(restartState&&Math.hypot(s.baseX-ball.position.x,s.baseZ-ball.position.z)<20)s.group.rotation.y=Math.atan2(ball.position.x-s.baseX,ball.position.z-s.baseZ)}}
+ flags.forEach((flag,i)=>{flag.rotation.y=Math.sin(stadiumAnimClock.time*2+i)*(.18+stadiumCheer*.15)});for(const s of staff){if(s.role==='gandula'){s.group.position.y=.04*Math.sin(stadiumAnimClock.time*2+s.phase);if(restartState&&Math.hypot(s.baseX-ball.position.x,s.baseZ-ball.position.z)<20){s.group.rotation.y=Math.atan2(ball.position.x-s.baseX,ball.position.z-s.baseZ);const dist=Math.hypot(s.baseX-ball.position.x,s.baseZ-ball.position.z);const approach=Math.min(2,Math.max(0,dist-3));s.group.position.x=s.baseX+(ball.position.x-s.baseX)/Math.max(dist,.01)*approach;s.group.position.z=s.baseZ+(ball.position.z-s.baseZ)/Math.max(dist,.01)*approach}else{s.group.position.x+=(s.baseX-s.group.position.x)*Math.min(1,dt*3);s.group.position.z+=(s.baseZ-s.group.position.z)*Math.min(1,dt*3)}}}
  adTexture.offset.x=-(stadiumAnimClock.time*.065%1);
  const cycle=Math.floor(stadiumAnimClock.time/6)%adMessages.length;
  if(cycle!==adCycle){adCycle=cycle;adMessageIndex=cycle;paintAd()}
@@ -511,9 +511,9 @@ function checkRulesOut(){
  if(restartState)return;
  const x=ball.position.x,z=ball.position.z;
  if(Math.abs(z)>=48){
-  if(penaltyKick){const scored=Math.abs(x)<=4;showRule(scored?'GOL DE PÊNALTI!':'PÊNALTI PARA FORA!',2);penaltyKick=null;if(scored){scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ')}kickoff();return;}
+  if(penaltyKick){const scored=Math.abs(x)<=4;showRule(scored?'GOL DE PÊNALTI!':'PÊNALTI PARA FORA!',2);penaltyKick=null;if(scored){scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ');goalBroadcast()}kickoff();return;}
   if(Math.abs(x)<=4){
-   scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ');goalBroadcast();goalBroadcast();
+   scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ');goalBroadcast();
    kickoff();showRule('GOOOL!',2.1);return;
   }
   // Equipe azul ataca o gol negativo; última posse determina escanteio/tiro de meta.
