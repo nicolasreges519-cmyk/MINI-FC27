@@ -19,6 +19,17 @@
 #ruleHud{top:75px!important;left:12px!important;transform:none!important;font-size:10px!important}
 @media(orientation:portrait){#buttons{width:57vw;height:53vh}#shoot{right:4%;top:0}#lob{right:45%;top:22%}#pass{right:48%;bottom:8%}#sprint{right:4%;bottom:2%}#tackle{right:76%;bottom:36%}#miniMap{bottom:29%;width:32vw;height:19vw}#joy{bottom:7%;left:3%}#hud{min-width:235px;font-size:13px}#pauseGame{width:42px;height:42px}}
 @media(max-width:600px){#buttons button{width:66px;height:66px;font-size:11px}#tackle{width:52px!important;height:52px!important;font-size:9px!important}#hud{padding:7px 8px}}
+/* v8.6: botões separados na tela, com área de toque independente */
+#buttons{position:fixed!important;right:0!important;bottom:0!important;width:100vw!important;height:100dvh!important;pointer-events:none!important;z-index:6!important}
+#buttons button{position:absolute!important;pointer-events:auto!important;width:clamp(64px,10vw,102px)!important;height:clamp(64px,10vw,102px)!important}
+#shoot{right:2%!important;top:auto!important;bottom:43%!important}
+#lob{right:16%!important;top:auto!important;bottom:28%!important}
+#pass{right:17%!important;top:auto!important;bottom:7%!important}
+#sprint{right:2%!important;top:auto!important;bottom:7%!important}
+#switchPlayer{right:2%!important;top:auto!important;bottom:70%!important;width:clamp(54px,8vw,78px)!important;height:clamp(54px,8vw,78px)!important}
+#tackle{right:30%!important;top:auto!important;bottom:7%!important;width:clamp(54px,8vw,78px)!important;height:clamp(54px,8vw,78px)!important}
+#joy{left:5%!important;bottom:10%!important;z-index:7!important}
+#miniMap{left:50%!important;transform:translateX(-50%)!important;bottom:5%!important;z-index:4!important}
 </style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 let gamePaused=false,sprintHeld=false;
@@ -159,10 +170,10 @@ function aiPass(carrier,receivers,goalZ){
  attached=false;aiPossessor=null;shotActive=false;cooldown=.65;lastTouch=goalZ<0?'blue':'red';return true;
 }
 function aiPlay(dt){
- if(restartState||penaltyKick||redSuspension){aiPossessor=null;return}
+ if(restartState||penaltyKick){aiPossessor=null;return}
  aiThinkClock+=dt;aiDecisionClock=Math.max(0,aiDecisionClock-dt);
  const target=attached?controlledPlayer.position:ball.position;
- const blueChaser=aiNearest(blueRoster.filter(p=>p!==controlledPlayer),target),redChaser=aiNearest(foes,target);
+ const blueChaser=aiNearest(blueRoster.filter(p=>p!==controlledPlayer&&!expelledPlayers.has(p)),target),redChaser=aiNearest(foes,target);
  const blueHasBall=attached||(aiPossessor&&blueRoster.includes(aiPossessor));
  const strategy=aiStrategy();const aggression=strategy==='attack'?1.3:strategy==='defend'?.72:1;
  const redHasBall=aiPossessor&&foes.includes(aiPossessor);
@@ -170,6 +181,7 @@ function aiPlay(dt){
  const redPress=!redHasBall&&redChaser;
  for(let i=0;i<blueRoster.length;i++){
   const p=blueRoster[i],home=i===0?[0,12]:aiHomeBlue[i-1];
+  if(expelledPlayers.has(p))continue;
   if(p===controlledPlayer)continue;
   if(p===aiPossessor)continue;
   let x=home[0],z=home[1];
@@ -365,7 +377,7 @@ function updateAim(){
  p.needsUpdate=true;aimGeometry.computeBoundingSphere();
 }
 // MINI FC27 v8.0 — arbitragem e reposições simplificadas, sem dependências extras.
-let yellowCards=0,redCards=0,redSuspension=false;
+let yellowCards=0,redCards=0,redSuspension=false;const expelledPlayers=new Set();
 let restartState=null,restartTimer=0,lastTouch='blue',lastKickWasPass=false;
 let penaltyKick=null,offsidePending=null,offsideCount=0,penaltyCount=0;
 const ruleHud=document.getElementById('ruleHud');
@@ -385,11 +397,11 @@ function resumeRule(){
   penaltyKick={team:r.team,goalZ:r.team==='blue'?-48:48};
   const spotZ=r.team==='blue'?-37:37;
   ball.position.set(0,.37,spotZ);
-  if(r.team==='blue'&&!redSuspension){controlledPlayer.position.set(0,.35,spotZ+1.2);attached=true;lastTouch='blue';showRule('PÊNALTI! MIRE E CHUTE',2)}
+  if(r.team==='blue'){controlledPlayer.position.set(0,.35,spotZ+1.2);attached=true;lastTouch='blue';showRule('PÊNALTI! MIRE E CHUTE',2)}
   else{attached=false;lastTouch='red';cooldown=1;velocity.set(0,0,spotZ>0?32:-32);showRule('PÊNALTI ADVERSÁRIO!',2)}
   return;
  }
- if(r.team==='blue'&&!redSuspension){
+ if(r.team==='blue'){
   controlledPlayer.position.set(THREE.MathUtils.clamp(r.x,-28,28),.35,THREE.MathUtils.clamp(r.z+1.1,-46,46));
   attached=true;ball.position.set(r.x,.37,r.z);lastTouch='blue';
  }else{
@@ -417,22 +429,22 @@ function checkRulesOut(){
  }
 }
 function refereeTackle(){
- if(redSuspension||restartState)return;
+ if(restartState)return;
  const target=foes.find(f=>Math.hypot(f.position.x-controlledPlayer.position.x,f.position.z-controlledPlayer.position.z)<2.5);
  if(!target){showRule('CARRINHO SEM CONTATO',.9);return}
  const ballDist=Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z);
  // Uma entrada próxima à bola pode ser limpa; longe da bola é falta.
  if(ballDist<1.4&&!attached){lastTouch='blue';velocity.set(0,0,-7);showRule('DESARME LIMPO!',1);return}
  yellowCards++;
- if(yellowCards>=2){redCards=1;redSuspension=true}
+ if(yellowCards>=2){redCards++;redSuspension=false;const sentOff=controlledPlayer;expelledPlayers.add(sentOff);sentOff.visible=false;const replacement=blueRoster.find(p=>!expelledPlayers.has(p));if(replacement){controlledPlayer=replacement;selectedIndex=blueRoster.indexOf(replacement)}attached=false;aiPossessor=null;cooldown=.7;}
  updateRuleHud();
  const inBlueBox=controlledPlayer.position.z>32&&Math.abs(controlledPlayer.position.x)<20;
  if(inBlueBox)penaltyCount++;
  updateRuleHud();
- awardRestart(inBlueBox?'PÊNALTI ADVERSÁRIO!':redSuspension?'SEGUNDO AMARELO! VERMELHO!':'FALTA! CARTÃO AMARELO!',controlledPlayer.position.x,controlledPlayer.position.z,'red');
+ awardRestart(inBlueBox?'PÊNALTI ADVERSÁRIO!':redCards?'SEGUNDO AMARELO! VERMELHO!':'FALTA! CARTÃO AMARELO!',controlledPlayer.position.x,controlledPlayer.position.z,'red');
 }
 document.getElementById('tackle').addEventListener('pointerdown',e=>{e.preventDefault();refereeTackle()});
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){controlledPlayer=player;selectedIndex=0;aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){controlledPlayer=blueRoster.find(p=>!expelledPlayers.has(p))||player;selectedIndex=blueRoster.indexOf(controlledPlayer);aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
 // Finalização original inspirada em jogos de futebol: mira livre, assistência leve e força carregável.
 let chargingShot=false,chargeStart=0,chargePointer=null;
 const shootButton=document.getElementById('shoot');
@@ -442,7 +454,7 @@ powerFill.style.cssText='position:absolute;bottom:0;left:0;width:100%;height:0%;
 shootButton.appendChild(powerFill);
 function kick(power,isShot=false){
  aiPossessor=null;
- if(gamePaused||restartState||redSuspension)return;
+ if(gamePaused||restartState)return;
  if(!attached || Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)>2.5)return;
  const analog=analogDirection();
  if(!isShot&&!penaltyKick){
@@ -527,9 +539,9 @@ selectionRing.rotation.x=-Math.PI/2;selectionRing.position.y=.085;scene.add(sele
 const selectionTriangle=new THREE.Mesh(new THREE.ConeGeometry(.36,.58,3),new THREE.MeshBasicMaterial({color:0x50f6ed,depthTest:false}));
 selectionTriangle.rotation.x=Math.PI;scene.add(selectionTriangle);
 function switchControlledPlayer(){
- if(gamePaused||restartState||redSuspension)return;
+ if(gamePaused||restartState)return;
  const old=controlledPlayer;
- const candidates=blueRoster.filter(p=>p!==old);
+ const candidates=blueRoster.filter(p=>p!==old&&!expelledPlayers.has(p));
  candidates.sort((a,b)=>Math.hypot(a.position.x-ball.position.x,a.position.z-ball.position.z)-Math.hypot(b.position.x-ball.position.x,b.position.z-ball.position.z));
  const next=candidates[0];if(!next)return;
  if(attached){attached=false;aiPossessor=old;lastTouch='blue';aiDecisionClock=.5;cooldown=.6}
@@ -539,7 +551,7 @@ function switchControlledPlayer(){
  showRule('JOGADOR '+(selectedIndex+1)+' SELECIONADO',.9);
 }
 document.getElementById('switchPlayer').addEventListener('pointerdown',e=>{e.preventDefault();switchControlledPlayer()});
-const joy=document.getElementById('joy'),stick=document.getElementById('stick');function joystick(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dz=e.clientY-r.top-r.height/2,dist=Math.hypot(dx,dz),limit=r.width*.32,scale=Math.min(dist,limit)/Math.max(1,dist);stick.style.transform=`translate(${dx*scale}px,${dz*scale}px)`;input.x=dx/Math.max(limit,dist);input.z=dz/Math.max(limit,dist)}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);joystick(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))joystick(e)});function stop(){input.x=0;input.z=0;stick.style.transform=''}joy.addEventListener('pointerup',stop);joy.addEventListener('pointercancel',stop);window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();kick(34,true)}if(e.key.toLowerCase()==='e')kick(16,false);if(e.key.toLowerCase()==='q')switchControlledPlayer()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.getElementById('restart').onclick=()=>{scores=[0,0];elapsed=0;yellowCards=0;redCards=0;redSuspension=false;offsideCount=0;penaltyCount=0;updateRuleHud();scoreEl.textContent='0 × 0';kickoff()};function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderer.render(scene,camera);return}elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState&&!redSuspension){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
+const joy=document.getElementById('joy'),stick=document.getElementById('stick');function joystick(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dz=e.clientY-r.top-r.height/2,dist=Math.hypot(dx,dz),limit=r.width*.32,scale=Math.min(dist,limit)/Math.max(1,dist);stick.style.transform=`translate(${dx*scale}px,${dz*scale}px)`;input.x=dx/Math.max(limit,dist);input.z=dz/Math.max(limit,dist)}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);joystick(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))joystick(e)});function stop(){input.x=0;input.z=0;stick.style.transform=''}joy.addEventListener('pointerup',stop);joy.addEventListener('pointercancel',stop);window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();kick(34,true)}if(e.key.toLowerCase()==='e')kick(16,false);if(e.key.toLowerCase()==='q')switchControlledPlayer()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.getElementById('restart').onclick=()=>{scores=[0,0];elapsed=0;yellowCards=0;redCards=0;redSuspension=false;expelledPlayers.clear();blueRoster.forEach(p=>p.visible=true);offsideCount=0;penaltyCount=0;updateRuleHud();scoreEl.textContent='0 × 0';kickoff()};function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderer.render(scene,camera);return}elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
 const m=camera.matrixWorld.elements;
 let rx=m[0],rz=m[2],ux=m[4],uz=m[6];
 const rl=Math.hypot(rx,rz),ul=Math.hypot(ux,uz);
@@ -550,5 +562,5 @@ const ml=Math.hypot(mx,mz)||1;
 const moveX=mx/ml,moveZ=mz/ml;
 controlledPlayer.position.x=THREE.MathUtils.clamp(controlledPlayer.position.x+moveX*(sprintHeld?16:11)*dt,-29,29);
 controlledPlayer.position.z=THREE.MathUtils.clamp(controlledPlayer.position.z+moveZ*(sprintHeld?16:11)*dt,-47,47);
-controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ball.position.set(controlledPlayer.position.x,.37,controlledPlayer.position.z-1.15)}else if(!restartState&&!aiPossessor){ball.position.addScaledVector(velocity,dt);velocity.multiplyScalar(Math.exp(-(shotActive?.16:1.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<12&&!redSuspension&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
+controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ball.position.set(controlledPlayer.position.x,.37,controlledPlayer.position.z-1.15)}else if(!restartState&&!aiPossessor){ball.position.addScaledVector(velocity,dt);velocity.multiplyScalar(Math.exp(-(shotActive?.16:1.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<12&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn))}</script></body></html>
