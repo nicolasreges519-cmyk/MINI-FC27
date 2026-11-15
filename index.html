@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><title>MINI FC27 v8.7.2 — HUD referência</title><meta name="theme-color" content="#081622"><meta name="description" content="MINI FC27: futebol 3D para Android e navegador"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png" type="image/png"><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#081622;color:white;font-family:Arial,sans-serif;touch-action:none}canvas{display:block}#hud{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#081728df;padding:10px 16px;border-radius:12px;font-weight:bold;white-space:nowrap;z-index:2}#tip{position:absolute;top:12px;left:12px;font-size:12px;color:#e0e7ef}#joy{position:absolute;bottom:22px;left:22px;width:112px;height:112px;border:3px solid #ffffff8a;border-radius:50%;background:#ffffff22;touch-action:none}#stick{position:absolute;width:42px;height:42px;left:32px;top:32px;background:#ffffffa8;border-radius:50%}#buttons{position:absolute;bottom:24px;right:20px;display:flex;gap:12px;align-items:end}button{border:2px solid #ffffff88;border-radius:50%;background:#2863cfda;color:white;font-weight:800;width:75px;height:75px;touch-action:none}#pass{width:66px;height:66px;background:#119568dd}#cameraMode{position:absolute;left:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:9px 12px;background:#132742;z-index:4;font-size:12px}#restart{position:absolute;right:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:8px 12px;background:#132742}#banner{position:absolute;top:28%;width:100%;text-align:center;font-size:36px;font-weight:900;text-shadow:0 3px 8px #000;pointer-events:none}#error{position:absolute;top:50%;left:10%;width:80%;text-align:center;color:#fff;background:#9b2630;padding:12px;display:none}@media(max-width:600px){#tip{display:none}#hud{font-size:12px;padding:8px}#buttons button{width:63px;height:63px}}
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><title>MINI FC27 v8.8 — Jogabilidade realista</title><meta name="theme-color" content="#081622"><meta name="description" content="MINI FC27: futebol 3D para Android e navegador"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png" type="image/png"><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#081622;color:white;font-family:Arial,sans-serif;touch-action:none}canvas{display:block}#hud{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#081728df;padding:10px 16px;border-radius:12px;font-weight:bold;white-space:nowrap;z-index:2}#tip{position:absolute;top:12px;left:12px;font-size:12px;color:#e0e7ef}#joy{position:absolute;bottom:22px;left:22px;width:112px;height:112px;border:3px solid #ffffff8a;border-radius:50%;background:#ffffff22;touch-action:none}#stick{position:absolute;width:42px;height:42px;left:32px;top:32px;background:#ffffffa8;border-radius:50%}#buttons{position:absolute;bottom:24px;right:20px;display:flex;gap:12px;align-items:end}button{border:2px solid #ffffff88;border-radius:50%;background:#2863cfda;color:white;font-weight:800;width:75px;height:75px;touch-action:none}#pass{width:66px;height:66px;background:#119568dd}#cameraMode{position:absolute;left:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:9px 12px;background:#132742;z-index:4;font-size:12px}#restart{position:absolute;right:12px;top:62px;width:auto;height:auto;border-radius:10px;padding:8px 12px;background:#132742}#banner{position:absolute;top:28%;width:100%;text-align:center;font-size:36px;font-weight:900;text-shadow:0 3px 8px #000;pointer-events:none}#error{position:absolute;top:50%;left:10%;width:80%;text-align:center;color:#fff;background:#9b2630;padding:12px;display:none}@media(max-width:600px){#tip{display:none}#hud{font-size:12px;padding:8px}#buttons button{width:63px;height:63px}}
 /* MINI FC27 v8.4 — HUD de transmissão e controles mobile */
 #hud{top:12px;left:14px;transform:none;border-radius:3px;background:#221b4c;box-shadow:0 3px 0 #0c0927;min-width:285px;padding:8px 12px;font-size:18px;letter-spacing:.4px;z-index:5}
 #hud #clock{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#211844;padding:3px 12px;border-radius:3px;font-size:12px}
@@ -174,7 +174,7 @@ function person(x,z,color){
  }
  g.position.set(x,.35,z);scene.add(g);g.userData={limbs,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0};animatedPlayers.push(g);return g
 }
-function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(3+speed*9);const stride=Math.sin(d.phase)*.58*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0)d.limbs[1].rotation.x=-1.1*Math.sin((.3-d.kickTime)/.3*Math.PI);d.lastX=g.position.x;d.lastZ=g.position.z}}
+function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}}
 const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];const foes=[[-12,-13],[12,-13],[0,-28],[0,-40]].map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
 const keepers=[person(0,-45.5,0xffd23f),person(0,45.5,0x4be0b6)];
 for(const k of keepers){
@@ -187,7 +187,7 @@ for(const k of keepers){
 // IA v8.3: decisão de equipe, cobertura, marcação e passes sem custo alto no Android.
 const aiHomeBlue=[[-15,5],[15,5],[0,28]],aiHomeRed=[[-12,-13],[12,-13],[0,-28],[0,-40]];
 const aiMemory=new Map();let aiPossessor=null,aiThinkClock=0,aiDecisionClock=0;
-let aiDribbleSide=1,aiDribbleClock=0;
+let aiDribbleSide=1,aiDribbleClock=0;let ballSpin=0,ballBounce=0;
 function aiStrategy(){const diff=scores[1]-scores[0];const late=elapsed>120;return diff<0&&late?'attack':diff>0?'defend':'balanced'}
 function aiLaneRisk(a,b,defenders){
  const ax=a.position.x,az=a.position.z,bx=b.position.x,bz=b.position.z;
@@ -245,8 +245,8 @@ function aiPlay(dt){
   else if(blueHasBall){
    const laneSide=i===0?-1:i===1?1:(controlledPlayer.position.x>0?-1:1);
    x=THREE.MathUtils.clamp(controlledPlayer.position.x+laneSide*(9+i*2),-25,25);
-   z=THREE.MathUtils.clamp(controlledPlayer.position.z-9-(i%2)*6,-42,37);
-   if(foes.some(q=>Math.hypot(q.position.x-x,q.position.z-z)<4))x=THREE.MathUtils.clamp(x+laneSide*5,-26,26);
+   z=THREE.MathUtils.clamp(controlledPlayer.position.z-10-(i%2)*7,-42,37);
+   if(foes.some(q=>Math.hypot(q.position.x-x,q.position.z-z)<5))x=THREE.MathUtils.clamp(x+laneSide*6,-26,26);
   }
   else{x=home[0]*.6+ball.position.x*.4;z=home[1]*.6+ball.position.z*.4}
   aiMove(p,x,z,p===bluePress?7.4:5.3,dt);
@@ -321,8 +321,8 @@ function animateKeepers(dt){
   const k=keepers[i],s=keeperState[i],homeZ=i===0?-45.5:45.5;
   const toward=i===0?velocity.z<0:velocity.z>0;
   const near=Math.abs(ball.position.z-homeZ)<24;
-  const predictedX=ball.position.x+(toward?velocity.x*Math.min(.42,Math.abs((homeZ-ball.position.z)/(velocity.z||1))):0);
-  const targetX=near?THREE.MathUtils.clamp(predictedX,-3.5,3.5):0;
+  const travelTime=Math.min(.75,Math.abs((homeZ-ball.position.z)/(velocity.z||.01)));const predictedX=ball.position.x+(toward?velocity.x*travelTime:0);
+  const targetX=near?THREE.MathUtils.clamp(predictedX,-3.65,3.65):THREE.MathUtils.clamp(ball.position.x*.10,-1.6,1.6);
   s.saveCooldown=Math.max(0,s.saveCooldown-dt);
   if(s.dive>0){
    s.dive=Math.max(0,s.dive-dt);
@@ -340,7 +340,7 @@ function animateKeepers(dt){
   }else{
    k.rotation.z=0;k.position.y=.35;
    k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;
-   k.position.x+=THREE.MathUtils.clamp(targetX-k.position.x,-dt*5.8,dt*5.8);
+   k.position.x+=THREE.MathUtils.clamp(targetX-k.position.x,-dt*(near?7.2:4.5),dt*(near?7.2:4.5));
   }
   k.position.z=homeZ;
   // Só defender chutes que realmente chegam à área do goleiro.
@@ -369,18 +369,18 @@ const cameraPosition=new THREE.Vector3(0,44,75);
 const smoothCameraLook=new THREE.Vector3(0,0,0);
 function updateBroadcastCamera(dt){
  const focus=attached?controlledPlayer.position:ball.position;
- const t=1-Math.exp(-dt*3.0);
- const leadZ=THREE.MathUtils.clamp(focus.z+(attached?-4:velocity.z*.25),-33,33);
+ const t=1-Math.exp(-dt*2.2);
+ const leadZ=THREE.MathUtils.clamp(focus.z+(attached?-3:velocity.z*.18),-32,32);
  const leadX=THREE.MathUtils.clamp(focus.x+(attached?0:velocity.x*.18),-15,15);
  if(cameraMode===0){
   // Lateral elevada, enquadra o campo e preserva a direção dos ataques.
-  cameraPosition.set(80,54,leadZ*.62);
-  cameraTarget.set(leadX*.30,0,leadZ);
-  camera.fov=53;
+  cameraPosition.set(61,43,leadZ*.75);
+  cameraTarget.set(leadX*.45,0,leadZ);
+  camera.fov=49;
  }else if(cameraMode===1){
-  cameraPosition.set(63,37,leadZ*.78);
+  cameraPosition.set(51,33,leadZ*.84);
   cameraTarget.set(leadX*.55,0,leadZ);
-  camera.fov=48;
+  camera.fov=46;
  }else{
   cameraPosition.set(controlledPlayer.position.x*.35,38,controlledPlayer.position.z+34);
   cameraTarget.set(controlledPlayer.position.x*.35,0,controlledPlayer.position.z-13);
@@ -545,7 +545,7 @@ function kick(power,isShot=false){
   dz=analog?analog.z:goalDir.z;
  }
  const len=Math.hypot(dx,dz)||1;
- velocity.set(dx/len*power,0,dz/len*power);
+ velocity.set(dx/len*power,0,dz/len*power);ballSpin=isShot?THREE.MathUtils.clamp((analog?analog.x:0)*.85,-.85,.85):0;ballBounce=isShot?Math.min(.32,power*.005):.05;
  if(penaltyKick&&isShot){power=Math.min(power,44);penaltyKick.taken=true;}
  shotActive=isShot;lastTouch='blue';lastKickWasPass=!isShot;attached=false;cooldown=.55;controlledPlayer.userData.kickTime=.3;
 }
@@ -628,5 +628,5 @@ const ml=Math.hypot(mx,mz)||1;
 const moveX=mx/ml,moveZ=mz/ml;
 controlledPlayer.position.x=THREE.MathUtils.clamp(controlledPlayer.position.x+moveX*(sprintHeld?16:11)*dt,-29,29);
 controlledPlayer.position.z=THREE.MathUtils.clamp(controlledPlayer.position.z+moveZ*(sprintHeld?16:11)*dt,-47,47);
-controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ball.position.set(controlledPlayer.position.x,.37,controlledPlayer.position.z-1.15)}else if(!restartState&&!aiPossessor){ball.position.addScaledVector(velocity,dt);velocity.multiplyScalar(Math.exp(-(shotActive?.16:1.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<12&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
+controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ballSpin=0;ballBounce=0;ball.position.set(controlledPlayer.position.x,.37,controlledPlayer.position.z-1.15)}else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<12&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn))}</script></body></html>
