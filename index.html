@@ -106,7 +106,7 @@
 #celebrationMenu .variants{display:none;padding-left:8px}
 #celebrationMenu .variants.open{display:block}
 @media(max-height:400px){#celebrationMenu{top:35px;width:min(225px,30vw);padding:5px}#celebrationMenu button{padding:4px;margin:2px 0;font-size:11px}}
-</style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="ownId" class="player-id"><small>🔵 AZU</small><strong id="ownName">—</strong><div class="stamina"><span id="ownStamina"></span></div></div><div id="enemyId" class="player-id"><small>🔴 VER</small><strong id="enemyName">—</strong><div class="stamina"><span id="enemyStamina"></span></div></div><div id="overheadName"></div><div id="goalOverlay"></div><div id="celebrationMenu" role="group" aria-label="Comemorações"><header><span>COMEMORAÇÃO</span><span id="celebrationTimer">5s</span></header>
+</style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="ownId" class="player-id"><small>🔵 AZU</small><strong id="ownName">—</strong><div class="stamina"><span id="ownStamina"></span></div></div><div id="enemyId" class="player-id"><small>🔴 VER</small><strong id="enemyName">—</strong><div class="stamina"><span id="enemyStamina"></span></div></div><div id="overheadName"></div><div id="goalOverlay"></div><div id="celebrationMenu" role="group" aria-label="Comemorações" hidden><header><span>COMEMORAÇÃO</span><span id="celebrationTimer">5s</span></header>
 <button data-category="individual">⭐ Individual</button><div class="variants" data-group="individual"><button data-clip="1">Mãos no rosto</button><button data-clip="2">Mãos no peito</button><button data-clip="3">Gesto para câmera</button><button data-clip="4">Braços abertos</button></div>
 <button data-category="danca">🎵 Dança em grupo</button><div class="variants" data-group="danca"><button data-clip="6">Dança sincronizada</button><button data-clip="0">Festa coletiva</button></div>
 <button data-category="companheiros">🙌 Companheiros</button><div class="variants" data-group="companheiros"><button data-clip="8">Abraço em grupo</button><button data-clip="0">Corrida coletiva</button></div>
@@ -561,7 +561,7 @@ function goalCinematic(goalZ){
  const ballOriginal=[ball.position.x,ball.position.y,ball.position.z];
  cinema={stage:'choose',time:0,frames,scorer,team,original,ballOriginal,style:-1,lastFrame:0,goalZ};matchState='GOAL';
  aiPossessor=null;attached=false;velocity.set(0,0,0);shotActive=false;chargingShot=false;powerFill.style.height='0%';
- goalBroadcast();cinemaUI.style.display='flex';cinemaUI.textContent='⚽ GOOOOOL!';skipReplay.style.display='none';countdownUI.style.display='none';celebrationMenu.style.display='block';celebrationMenu.querySelectorAll('.variants').forEach(v=>v.classList.remove('open'));lastControlMode='';updateControlMode();
+ goalBroadcast();cinemaUI.style.display='flex';cinemaUI.textContent='⚽ GOOOOOL!';skipReplay.style.display='none';countdownUI.style.display='none';celebrationMenu.style.display='none';lastControlMode='';updateControlMode();
 }
 function applyReplayFrame(frame){
  if(!frame)return;
@@ -569,6 +569,45 @@ function applyReplayFrame(frame){
  const k=replayActors.length*4;ball.position.set(frame[k],frame[k+1],frame[k+2]);ball.rotation.x=frame[k+3];
 }
 // Quatro coreografias originais aplicadas aos grupos articulados dos jogadores.
+// Prototipagem original não oficial: não usa marcas, rostos ou mascotes licenciados.
+const mascotDefinitions={}; // Reservado para mapeamento por clube quando o elenco de clubes existir.
+const mascots=[];
+function createOriginalMascot(team,color,x,z){
+ const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);
+ const cloth=new THREE.MeshLambertMaterial({color}),light=new THREE.MeshLambertMaterial({color:0xe7e2d2}),dark=new THREE.MeshLambertMaterial({color:0x263043});
+ const part=(parent,geo,mat,px,py,pz)=>{const mesh=new THREE.Mesh(geo,mat);mesh.position.set(px,py,pz);parent.add(mesh);return mesh};
+ part(group,new THREE.CapsuleGeometry(.45,.85,4,8),cloth,0,1.35,0);
+ const head=new THREE.Group();head.position.y=2.32;group.add(head);
+ part(head,new THREE.SphereGeometry(.48,10,8),light,0,0,0);
+ for(const side of [-1,1]){part(head,new THREE.ConeGeometry(.19,.44,6),cloth,side*.3,.43,0);part(head,new THREE.SphereGeometry(.065,6,4),dark,side*.17,.06,-.42)}
+ const arms=[],legs=[];
+ for(const side of [-1,1]){
+  const arm=new THREE.Group();arm.position.set(side*.51,1.83,0);group.add(arm);
+  part(arm,new THREE.CapsuleGeometry(.16,.62,3,6),cloth,0,-.45,0);part(arm,new THREE.SphereGeometry(.18,6,6),light,0,-.9,0);arms.push(arm);
+  const leg=new THREE.Group();leg.position.set(side*.24,.79,0);group.add(leg);
+  part(leg,new THREE.CapsuleGeometry(.2,.48,3,6),dark,0,-.42,0);legs.push(leg);
+ }
+ const mascot={team,group,head,arms,legs,homeX:x,homeZ:z,time:Math.random()*6,celebrate:false,official:false};mascots.push(mascot);return mascot;
+}
+createOriginalMascot('blue',0x2072ff,-32,-30);
+createOriginalMascot('red',0xf04747,32,30);
+function animateMascots(dt){
+ for(const m of mascots){
+  m.time+=dt;const t=m.time,celebrate=m.celebrate||(cinema&&cinema.team===m.team&&cinema.stage==='celebrate');
+  const motion=celebrate?7:2.1;
+  m.group.position.x=m.homeX+Math.sin(t*.25)*.65;
+  m.group.position.z=m.homeZ+Math.cos(t*.25)*1.2;
+  m.group.position.y=celebrate?Math.abs(Math.sin(t*5))*.14:Math.sin(t*2)*.035;
+  m.head.rotation.z=Math.sin(t*1.5)*.07;
+  m.arms[0].rotation.z=-(celebrate?1.3:.3)-Math.sin(t*motion)*.22;
+  m.arms[1].rotation.z=(celebrate?1.3:.3)+Math.sin(t*motion)*.22;
+  m.arms[0].rotation.x=Math.sin(t*motion)*.28;
+  m.arms[1].rotation.x=-Math.sin(t*motion)*.28;
+  m.legs[0].rotation.x=Math.sin(t*motion)*.18;
+  m.legs[1].rotation.x=-Math.sin(t*motion)*.18;
+  if(!cinema)m.celebrate=false;
+ }
+}
 const celebrationClips=[
  {id:'grupo',duration:5.2,angle:0},
  {id:'maos-rosto',duration:4.8,angle:1},
@@ -582,7 +621,8 @@ const celebrationClips=[
  {id:'torcida',duration:5.2,angle:3},
  {id:'deslize',duration:4.6,angle:1},
  {id:'painel',duration:5.1,angle:3},
- {id:'gestos-maos',duration:4.6,angle:2}
+ {id:'gestos-maos',duration:4.6,angle:2},
+ {id:'mascote',duration:5.2,angle:3}
 ];
 let lastCelebration=-1;
 function nextCelebration(){let n=Math.floor(Math.random()*celebrationClips.length);if(n===lastCelebration)n=(n+1+Math.floor(Math.random()*(celebrationClips.length-1)))%celebrationClips.length;lastCelebration=n;return n}
@@ -608,6 +648,9 @@ function celebrationPose(c,dt){
   });
   poseArm(armL,-.65,-1.2,0,fade);poseArm(armR,-.65,1.2,0,fade);
   d.limbs[1].rotation.x=Math.sin(t*11)*.35*run;d.limbs[3].rotation.x=-d.limbs[1].rotation.x;
+ }else if(c.style===13){
+  const mascot=mascots.find(m=>m.team===c.team);
+  if(mascot){const m=mascot.group,tx=m.position.x+(m.position.x<0?1.5:-1.5),tz=m.position.z+(m.position.z<0?1.3:-1.3);const a=Math.min(1,dt*4);p.position.x=THREE.MathUtils.lerp(p.position.x,tx,a);p.position.z=THREE.MathUtils.lerp(p.position.z,tz,a);poseArm(armL,-1.15,-.5,0,.2);poseArm(armR,-1.15,.5,0,.2);mascot.celebrate=true}
  }else if(c.style===10){
   const enter=smooth01(t/.8),leave=1-smooth01((t-3)/.9);
   p.position.z+=forward*dt*2.2*leave;
@@ -660,12 +703,6 @@ function chooseCelebration(style){
  celebrationMenu.style.display='none';skipReplay.style.display='block';skipReplay.textContent='PULAR COMEMORAÇÃO ⏭';return true;
 }
 function celebrationGesture(style){return matchState==='GOAL'&&chooseCelebration(style)}
-celebrationMenu.addEventListener('pointerdown',e=>{
- const btn=e.target.closest('button');if(!btn||matchState!=='GOAL')return;
- e.preventDefault();e.stopPropagation();
- if(btn.dataset.category){const panel=celebrationMenu.querySelector('[data-group="'+btn.dataset.category+'"]');if(panel)panel.classList.toggle('open')}
- if(btn.dataset.clip!==undefined)chooseCelebration(Number(btn.dataset.clip));
-});
 function advanceCinema(dt){
  if(!cinema)return;
  const c=cinema;c.time+=dt;
@@ -694,7 +731,7 @@ function advanceCinema(dt){
  }else if(c.stage==='countdown'){
   const left=Math.max(1,3-Math.floor(c.time));
   countdownUI.textContent=String(left);
-  if(c.time>=3){cinema=null;celebrationMenu.style.display='none';matchState='PLAYING';replaySize=0;replayWrite=0;replayAccum=0;countdownUI.style.display='none';cinemaUI.style.display='none';skipReplay.style.display='none';lastControlMode='';updateControlMode()}
+  if(c.time>=3){cinema=null;celebrationSwipes.clear();mascots.forEach(m=>m.celebrate=false);celebrationMenu.style.display='none';matchState='PLAYING';replaySize=0;replayWrite=0;replayAccum=0;countdownUI.style.display='none';cinemaUI.style.display='none';skipReplay.style.display='none';lastControlMode='';updateControlMode()}
  }
  animateStadium(dt);renderer.render(scene,camera);
 }
@@ -835,7 +872,30 @@ shootButton.addEventListener('pointerdown',e=>{
 });
 shootButton.addEventListener('pointerup',releaseShot);
 shootButton.addEventListener('pointercancel',()=>{chargingShot=false;chargePointer=null;powerFill.style.height='0%'});
-document.getElementById('pass').addEventListener('pointerdown',e=>{e.preventDefault();if(!cinema)kick(16,false)});
+const passControl=document.getElementById('pass');
+const celebrationSwipes=new Map();
+function attachMascotGesture(button,kind){
+ button.addEventListener('pointerdown',e=>{
+  if(matchState!=='GOAL')return;
+  e.preventDefault();e.stopImmediatePropagation();
+  celebrationSwipes.set(e.pointerId,{x:e.clientX,y:e.clientY,kind});
+  button.setPointerCapture(e.pointerId);
+ },{capture:true});
+ button.addEventListener('pointerup',e=>{
+  const start=celebrationSwipes.get(e.pointerId);if(!start)return;
+  celebrationSwipes.delete(e.pointerId);e.preventDefault();e.stopImmediatePropagation();
+  if(matchState!=='GOAL')return;
+  const dx=e.clientX-start.x,dy=e.clientY-start.y;
+  if(Math.hypot(dx,dy)<28)return;
+  if(kind==='pass'){
+   if(Math.abs(dy)>Math.abs(dx)&&dy<0)chooseCelebration(mascots.some(m=>m.team===cinema.team)?13:8);
+   else if(Math.abs(dx)>Math.abs(dy))chooseCelebration(dx<0?5:6);
+  }else if(dy<0&&Math.abs(dy)>Math.abs(dx))chooseCelebration(12);
+ },{capture:true});
+ button.addEventListener('pointercancel',e=>celebrationSwipes.delete(e.pointerId));
+}
+attachMascotGesture(passControl,'pass');attachMascotGesture(shootButton,'shoot');
+passControl.addEventListener('pointerdown',e=>{e.preventDefault();if(!cinema)kick(16,false)});
 const lobButton=document.getElementById('lob');
 lobButton.addEventListener('pointerdown',e=>{e.preventDefault();kick(28,false)});
 const sprintButton=document.getElementById('sprint');
@@ -891,7 +951,7 @@ function updateControlMode(){
  for(const id of ['tackle','switchPlayer'])document.getElementById(id).hidden=hasBlueBall;
  document.getElementById('sprint').textContent=hasBlueBall?'CORRER':'CORRER';
 }
-function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderer.render(scene,camera);return}if(cinema){advanceCinema(dt);return}elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderer.render(scene,camera);return}if(cinema){animateMascots(dt);advanceCinema(dt);return}animateMascots(dt);elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
 const m=camera.matrixWorld.elements;
 let rx=m[0],rz=m[2],ux=m[4],uz=m[6];
 const rl=Math.hypot(rx,rz),ul=Math.hypot(ux,uz);
