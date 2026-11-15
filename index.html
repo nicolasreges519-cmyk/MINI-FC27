@@ -116,7 +116,18 @@
 #clubPanel button:disabled{opacity:.45}
 #clubPanel .status{font-size:12px;margin-top:7px;color:#ffd894;min-height:36px}
 @media(max-height:430px){#clubPanel{padding:9px}#clubPanel h2{font-size:15px}#clubPanel select{padding:4px}#clubPanel label{margin-top:3px}#clubPanel button{padding:6px}}
-</style></head><body><div id="clubLauncher"><div id="clubPanel"><h2>MINI FC27 · Seleção de clubes</h2><p id="catalogSummary">Carregando catálogo oficial 2026/27...</p><div class="teamCols"><section><strong>🏠 CASA</strong><label>País<select id="homeCountry"></select></label><label>Liga<select id="homeLeague"></select></label><label>Clube<select id="homeClub"></select></label><div id="homeStatus" class="status"></div></section><section><strong>✈️ FORA</strong><label>País<select id="awayCountry"></select></label><label>Liga<select id="awayLeague"></select></label><label>Clube<select id="awayClub"></select></label><div id="awayStatus" class="status"></div></section></div><button id="launchVerifiedMatch" disabled>JOGAR COM ELENCOS VERIFICADOS</button><button id="continuePrototype">CONTINUAR PARTIDA DE TESTE (AZU × VER)</button><p>Clubes sem escalação verificada aparecem para consulta, mas não podem iniciar partidas. A partida de teste mantém os jogadores genéricos existentes.</p></div></div><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="ownId" class="player-id"><small>🔵 AZU</small><strong id="ownName">—</strong><div class="stamina"><span id="ownStamina"></span></div></div><div id="enemyId" class="player-id"><small>🔴 VER</small><strong id="enemyName">—</strong><div class="stamina"><span id="enemyStamina"></span></div></div><div id="overheadName"></div><div id="goalOverlay"></div><div id="celebrationMenu" role="group" aria-label="Comemorações" hidden><header><span>COMEMORAÇÃO</span><span id="celebrationTimer">5s</span></header>
+#kitScreen{position:fixed;inset:0;z-index:56;display:none;align-items:center;justify-content:center;background:#050d1af0;color:#fff;font:13px Arial;padding:10px}
+#kitPanel{width:min(760px,95vw);max-height:95vh;overflow:auto;background:#142136;border:1px solid #ffffff50;border-radius:14px;padding:12px;box-sizing:border-box}
+#kitPanel h2{margin:0 0 6px;font-size:18px}
+#kitPreview{display:block;width:min(100%,560px);height:160px;margin:auto;background:#1c2b3f;border-radius:10px}
+#kitPanel .kitRows{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+#kitPanel button{padding:8px;background:#305e9f;color:white;border:0;border-radius:7px}
+#kitPanel button:disabled{opacity:.4}
+#kitPanel .kitPicker{display:flex;align-items:center;justify-content:space-between;gap:4px}
+#kitPanel .kitPicker strong{font-size:11px;text-align:center}
+#kitPanel .kitStatus{color:#ffdf9b;font-size:11px;min-height:30px}
+@media(max-height:420px){#kitPreview{height:105px}#kitPanel{padding:7px}#kitPanel h2{font-size:14px}}
+</style></head><body><div id="kitScreen"><div id="kitPanel"><h2>ESCOLHER UNIFORMES</h2><p>Prévia 3D de teste. Sem uniforme oficial verificado, o modelo usa roupa neutra — não representa a camisa do clube.</p><canvas id="kitPreview" width="560" height="160"></canvas><div class="kitRows"><section><strong id="kitHomeName">CASA</strong><div class="kitPicker"><button id="kitHomePrev" aria-label="Uniforme anterior casa">◀</button><strong id="kitHomeLabel">Principal</strong><button id="kitHomeNext" aria-label="Próximo uniforme casa">▶</button></div><div id="kitHomeStatus" class="kitStatus"></div></section><section><strong id="kitAwayName">FORA</strong><div class="kitPicker"><button id="kitAwayPrev" aria-label="Uniforme anterior fora">◀</button><strong id="kitAwayLabel">Principal</strong><button id="kitAwayNext" aria-label="Próximo uniforme fora">▶</button></div><div id="kitAwayStatus" class="kitStatus"></div></section></div><div id="kitConflict" class="kitStatus"></div><button id="kitBack">VOLTAR</button> <button id="kitPlay" disabled>INICIAR PARTIDA</button></div></div><div id="clubLauncher"><div id="clubPanel"><h2>MINI FC27 · Seleção de clubes</h2><p id="catalogSummary">Carregando catálogo oficial 2026/27...</p><div class="teamCols"><section><strong>🏠 CASA</strong><label>País<select id="homeCountry"></select></label><label>Liga<select id="homeLeague"></select></label><label>Clube<select id="homeClub"></select></label><div id="homeStatus" class="status"></div></section><section><strong>✈️ FORA</strong><label>País<select id="awayCountry"></select></label><label>Liga<select id="awayLeague"></select></label><label>Clube<select id="awayClub"></select></label><div id="awayStatus" class="status"></div></section></div><button id="openKitScreen" disabled>ESCOLHER UNIFORMES</button><button id="launchVerifiedMatch" disabled hidden>JOGAR COM ELENCOS VERIFICADOS</button><button id="continuePrototype">CONTINUAR PARTIDA DE TESTE (AZU × VER)</button><p>Clubes sem escalação verificada aparecem para consulta, mas não podem iniciar partidas. A partida de teste mantém os jogadores genéricos existentes.</p></div></div><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="ownId" class="player-id"><small>🔵 AZU</small><strong id="ownName">—</strong><div class="stamina"><span id="ownStamina"></span></div></div><div id="enemyId" class="player-id"><small>🔴 VER</small><strong id="enemyName">—</strong><div class="stamina"><span id="enemyStamina"></span></div></div><div id="overheadName"></div><div id="goalOverlay"></div><div id="celebrationMenu" role="group" aria-label="Comemorações" hidden><header><span>COMEMORAÇÃO</span><span id="celebrationTimer">5s</span></header>
 <button data-category="individual">⭐ Individual</button><div class="variants" data-group="individual"><button data-clip="1">Mãos no rosto</button><button data-clip="2">Mãos no peito</button><button data-clip="3">Gesto para câmera</button><button data-clip="4">Braços abertos</button></div>
 <button data-category="danca">🎵 Dança em grupo</button><div class="variants" data-group="danca"><button data-clip="6">Dança sincronizada</button><button data-clip="0">Festa coletiva</button></div>
 <button data-category="companheiros">🙌 Companheiros</button><div class="variants" data-group="companheiros"><button data-clip="8">Abraço em grupo</button><button data-clip="0">Corrida coletiva</button></div>
@@ -126,6 +137,60 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 let gamePaused=false,sprintHeld=false;
 let clubCatalog=[],selectedHome=null,selectedAway=null;
+const kitSlots=['home','away','third'],kitLabels=['Principal','Reserva','Alternativo'],kitSelection={home:0,away:0};
+let kitPreviewRenderer=null,kitPreviewScene=null,kitPreviewCamera=null,kitModels=null;
+const kitScreen=document.getElementById('kitScreen');
+function verifiedKit(club,slot){const k=club?.kits?.[slot];return k&&k.status==='verified'&&k.shirt&&k.shorts&&k.socks&&k.source&&k.license?k:null}
+function playableClub(c){return !!(c&&c.playable&&c.rosterVerified&&c.roster?.length>=11&&c.formation&&c.ratings&&verifiedKit(c,'home'))}
+function kitClash(a,b){if(!a||!b)return false;const hex=x=>parseInt(String(x).replace('#',''),16);const dist=(x,y)=>{const p=hex(x),q=hex(y);return Math.hypot(((p>>16)&255)-((q>>16)&255),((p>>8)&255)-((q>>8)&255),(p&255)-(q&255))};return dist(a.shirt,b.shirt)<105&&dist(a.shorts,b.shorts)<130}
+function updateKitScreen(){
+ const a=verifiedKit(selectedHome,kitSlots[kitSelection.home]),b=verifiedKit(selectedAway,kitSlots[kitSelection.away]);
+ for(const side of ['home','away']){
+  const c=side==='home'?selectedHome:selectedAway,i=kitSelection[side],kit=verifiedKit(c,kitSlots[i]);
+  document.getElementById('kit'+(side==='home'?'Home':'Away')+'Name').textContent=c?.name||side;
+  document.getElementById('kit'+(side==='home'?'Home':'Away')+'Label').textContent=kitLabels[i];
+  document.getElementById('kit'+(side==='home'?'Home':'Away')+'Status').textContent=kit?'✓ Confirmado · '+kit.source:'⚠️ Uniforme não verificado ou não licenciado';
+ }
+ const clash=kitClash(a,b);document.getElementById('kitConflict').textContent=clash?'⚠️ Cores semelhantes: escolha outro uniforme (alteração manual).':'';
+ document.getElementById('kitPlay').disabled=!(playableClub(selectedHome)&&playableClub(selectedAway)&&a&&b&&!clash);
+ if(kitModels){for(const [side,model] of [['home',kitModels[0]],['away',kitModels[1]]]){const c=side==='home'?selectedHome:selectedAway,k=verifiedKit(c,kitSlots[kitSelection[side]]);model.userData.kitMats.shirt.color.set(k?.shirt||'#77808c');model.userData.kitMats.shorts.color.set(k?.shorts||'#303947');model.userData.kitMats.socks.color.set(k?.socks||'#aeb5c0')}}
+}
+function createKitPreview(){
+ if(kitPreviewRenderer)return;
+ const canvas=document.getElementById('kitPreview');
+ kitPreviewRenderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:false});
+ kitPreviewRenderer.setPixelRatio(Math.min(devicePixelRatio,1));kitPreviewRenderer.setSize(560,160,false);
+ kitPreviewScene=new THREE.Scene();kitPreviewScene.add(new THREE.HemisphereLight(0xffffff,0x69728b,2.2));
+ kitPreviewCamera=new THREE.PerspectiveCamera(38,560/160,.1,50);kitPreviewCamera.position.set(0,3.2,11);kitPreviewCamera.lookAt(0,1.5,0);
+ function mannequin(x){
+  const g=new THREE.Group();g.position.x=x;kitPreviewScene.add(g);
+  const mats={shirt:new THREE.MeshLambertMaterial({color:0x77808c}),shorts:new THREE.MeshLambertMaterial({color:0x303947}),socks:new THREE.MeshLambertMaterial({color:0xaeb5c0})};
+  const skin=new THREE.MeshLambertMaterial({color:0xc9a080});
+  const part=(geo,mat,x,y,z)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);g.add(m)};
+  part(new THREE.BoxGeometry(.9,1,.46),mats.shirt,0,1.65,0);
+  part(new THREE.BoxGeometry(.8,.4,.48),mats.shorts,0,.97,0);
+  part(new THREE.SphereGeometry(.32,10,8),skin,0,2.52,0);
+  for(const s of [-1,1]){part(new THREE.CylinderGeometry(.14,.13,.8,7),mats.shirt,s*.57,1.7,0);part(new THREE.CylinderGeometry(.17,.14,.7,7),skin,s*.24,.58,0);part(new THREE.CylinderGeometry(.14,.13,.4,7),mats.socks,s*.24,.23,0)}
+  g.userData.kitMats=mats;return g;
+ }
+ kitModels=[mannequin(-2.1),mannequin(2.1)];
+}
+function renderKitPreview(){if(kitScreen.style.display==='flex'&&kitPreviewRenderer){kitPreviewRenderer.render(kitPreviewScene,kitPreviewCamera)}}
+function openUniforms(){if(!selectedHome||!selectedAway)return;clubLauncher.style.display='none';kitScreen.style.display='flex';createKitPreview();updateKitScreen();renderKitPreview()}
+document.getElementById('openKitScreen').addEventListener('click',openUniforms);
+document.getElementById('kitBack').addEventListener('click',()=>{kitScreen.style.display='none';clubLauncher.style.display='flex'});
+for(const side of ['home','away'])for(const [suffix,delta] of [['Prev',-1],['Next',1]]){
+ const cap=side==='home'?'Home':'Away';
+ document.getElementById('kit'+cap+suffix).addEventListener('click',()=>{kitSelection[side]=(kitSelection[side]+delta+3)%3;updateKitScreen();renderKitPreview()});
+}
+document.getElementById('kitPlay').addEventListener('click',()=>{
+ if(document.getElementById('kitPlay').disabled)return;
+ const a=verifiedKit(selectedHome,kitSlots[kitSelection.home]),b=verifiedKit(selectedAway,kitSlots[kitSelection.away]);
+ if(!a||!b)return;
+ applyTeamKit(blueRoster,keepers[1],a);applyTeamKit(foes,keepers[0],b);
+ kitScreen.style.display='none';
+});
+
 const clubLauncher=document.getElementById('clubLauncher');
 document.getElementById('continuePrototype').addEventListener('click',()=>{clubLauncher.style.display='none'});
 function optionSelect(el,items,label){
@@ -146,7 +211,7 @@ function setupTeamSelector(side){
  optionSelect(country,[...new Set(clubCatalog.map(c=>c.country))].map(s=>({value:s,text:s})),'Sem países');
  function refreshLeagues(){const matches=[...new Map(clubCatalog.filter(c=>c.country===country.value).map(c=>[c.leagueId,c.league])).entries()];optionSelect(league,matches.map(([value,text])=>({value,text})),'Sem ligas');refreshClubs()}
  function refreshClubs(){optionSelect(club,clubCatalog.filter(c=>c.leagueId===league.value).map(c=>({value:c.id,text:c.name})),'Sem clubes');refreshStatus()}
- function refreshStatus(){const c=clubCatalog.find(c=>c.id===club.value)||null;if(side==='home')selectedHome=c;else selectedAway=c;status.textContent=clubStatus(c);const ready=x=>x&&x.playable&&x.rosterVerified&&x.roster.length>=11&&x.kits&&x.formation;document.getElementById('launchVerifiedMatch').disabled=!(ready(selectedHome)&&ready(selectedAway))}
+ function refreshStatus(){const c=clubCatalog.find(c=>c.id===club.value)||null;if(side==='home')selectedHome=c;else selectedAway=c;status.textContent=clubStatus(c);document.getElementById('openKitScreen').disabled=!(selectedHome&&selectedAway);document.getElementById('launchVerifiedMatch').disabled=!(playableClub(selectedHome)&&playableClub(selectedAway))}
  country.addEventListener('change',refreshLeagues);league.addEventListener('change',refreshClubs);club.addEventListener('change',refreshStatus);refreshLeagues();
 }
 async function loadClubCatalog(){
@@ -284,11 +349,18 @@ function person(x,z,color){
    const arm=new THREE.Group();arm.position.set(s*.59,2.01,0);g.add(arm);shape(arm,new THREE.CylinderGeometry(.16,.13,.74,8),kit,0,-.35,0);const hand=shape(arm,new THREE.SphereGeometry(.13,8,8),skin,0,-.76,0);for(let finger=0;finger<4;finger++)shape(hand,new THREE.CapsuleGeometry(.018,.075,2,4),skin,(finger-1.5)*.044,-.13,-.01);limbs.push(arm);
    const leg=new THREE.Group();leg.position.set(s*.24,.82,0);g.add(leg);shape(leg,new THREE.CylinderGeometry(.19,.14,.78,8),skin,0,-.35,0);shape(leg,new THREE.CylinderGeometry(.145,.13,.36,8),sock,0,-.82,0);shape(leg,new THREE.BoxGeometry(.29,.18,.48),boots,0,-1.06,-.12);limbs.push(leg);
  }
- g.position.set(x,.35,z);scene.add(g);g.userData={limbs,headPivot,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0};animatedPlayers.push(g);return g
+ g.position.set(x,.35,z);scene.add(g);g.userData={kitMats:{shirt:kit,shorts,socks},limbs,headPivot,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0};animatedPlayers.push(g);return g
 }
 function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}}
 const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const extraBlue=[[-23,19],[23,19],[-19,-6],[19,-6],[-8,-17],[8,-17]].map(p=>person(...p,0x2072ff));
 const blueRoster=[player,...teammates,...extraBlue];
+function applyTeamKit(roster,keeper,kit){
+ if(!kit)return;
+ for(const p of roster){const m=p.userData.kitMats;if(m){m.shirt.color.set(kit.shirt);m.shorts.color.set(kit.shorts);m.socks.color.set(kit.socks)}}
+ // Goleiros exigem um registro próprio confirmado; sem ele, manter o kit de teste.
+ if(keeper&&kit.goalkeeperVerified&&kit.goalkeeper)keeper.userData.kitMats.shirt.color.set(kit.goalkeeper);
+}
+
 const foes=[[-12,-13],[12,-13],[0,-28],[0,-40],[-23,-4],[23,-4],[-20,16],[20,16],[-8,29],[8,29]].map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
 const keepers=[person(0,-45.5,0xffd23f),person(0,45.5,0x4be0b6)];
 for(const k of keepers){
@@ -998,7 +1070,7 @@ function updateControlMode(){
  for(const id of ['tackle','switchPlayer'])document.getElementById(id).hidden=hasBlueBall;
  document.getElementById('sprint').textContent=hasBlueBall?'CORRER':'CORRER';
 }
-function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderer.render(scene,camera);return}if(cinema){animateMascots(dt);advanceCinema(dt);return}animateMascots(dt);elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderKitPreview();renderer.render(scene,camera);return}if(cinema){renderKitPreview();animateMascots(dt);advanceCinema(dt);return}renderKitPreview();animateMascots(dt);elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
 const m=camera.matrixWorld.elements;
 let rx=m[0],rz=m[2],ux=m[4],uz=m[6];
 const rl=Math.hypot(rx,rz),ul=Math.hypot(ux,uz);
