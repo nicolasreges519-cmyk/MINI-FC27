@@ -340,18 +340,52 @@ const animatedPlayers=[];
 function person(x,z,color){
  const g=new THREE.Group();const kit=new THREE.MeshLambertMaterial({color});const skin=new THREE.MeshLambertMaterial({color:0xc98c67});const shorts=new THREE.MeshLambertMaterial({color:0x17233b});const sock=new THREE.MeshLambertMaterial({color:color});const boots=new THREE.MeshLambertMaterial({color:0x141414});const hair=new THREE.MeshLambertMaterial({color:0x1b1716});
  function shape(parent,geo,mat,x,y,z){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);parent.add(m);return m}
- const torso=shape(g,new THREE.BoxGeometry(.92,1.02,.48),kit,0,1.62,0);shape(g,new THREE.BoxGeometry(.85,.4,.5),shorts,0,.95,0);
+ const torso=shape(g,new THREE.CylinderGeometry(.43,.35,1.02,12),kit,0,1.62,0);
+ shape(g,new THREE.CylinderGeometry(.35,.34,.38,10),shorts,0,.95,0);
+ const collar=shape(g,new THREE.TorusGeometry(.165,.045,5,12),kit,0,2.17,0);collar.rotation.x=Math.PI/2;
+ const playerSeed=animatedPlayers.length,variant=playerSeed%8;
+ const skinTones=[0xc98c67,0x9f6749,0xe3ad87,0x6c4835,0xb87856,0xe4bd9e,0x8e5840,0xd39b72];
+ skin.color.setHex(skinTones[variant]);
+ g.scale.set(1+(variant%3-1)*.045,.96+(variant%5)*.024,1+(variant%3-1)*.035);
+
  const neck=shape(g,new THREE.CylinderGeometry(.15,.17,.18,8),skin,0,2.25,0);
- const headPivot=new THREE.Group();headPivot.position.set(0,2.55,0);g.add(headPivot);shape(headPivot,new THREE.SphereGeometry(.34,12,10),skin,0,0,0);shape(headPivot,new THREE.SphereGeometry(.34,12,8,0,Math.PI*2,0,Math.PI*.48),hair,0,.11,0);
- for(const s of [-1,1]){shape(headPivot,new THREE.SphereGeometry(.065,8,6),new THREE.MeshLambertMaterial({color:0x151515}),s*.13,.01,-.29)}
+ const headPivot=new THREE.Group();headPivot.position.set(0,2.55,0);g.add(headPivot);const face=shape(headPivot,new THREE.SphereGeometry(.33,16,12),skin,0,0,0);face.scale.set(.95,1.14,.91);
+ const jaw=shape(headPivot,new THREE.SphereGeometry(.235,12,8),skin,0,-.15,-.045);jaw.scale.set(1,.75,.95);
+ const nose=shape(headPivot,new THREE.SphereGeometry(.075,8,6),skin,0,-.045,-.325);nose.scale.set(.8,1.4,1.25);
+ const lip=new THREE.MeshLambertMaterial({color:0x874f49});
+ shape(headPivot,new THREE.SphereGeometry(.105,10,6),lip,0,-.19,-.305).scale.set(1,.27,.35);
+ const whites=new THREE.MeshLambertMaterial({color:0xf0e8d9}),iris=new THREE.MeshLambertMaterial({color:0x4b3828}),pupil=new THREE.MeshLambertMaterial({color:0x11151b});
+ for(const s of [-1,1]){
+  const eye=shape(headPivot,new THREE.SphereGeometry(.072,10,8),whites,s*.14,.055,-.292);eye.scale.set(1,.7,.45);
+  shape(headPivot,new THREE.SphereGeometry(.038,8,6),iris,s*.14,.055,-.323);
+  shape(headPivot,new THREE.SphereGeometry(.021,8,6),pupil,s*.14,.055,-.353);
+  const ear=shape(headPivot,new THREE.SphereGeometry(.09,8,6),skin,s*.33,-.065,0);ear.scale.set(.55,1.25,.65);
+  const brow=shape(headPivot,new THREE.BoxGeometry(.15,.032,.038),hair,s*.14,.145,-.316);brow.rotation.z=s*.1;
+ }
+ const hairStyle=variant%7;
+ if(hairStyle!==0){
+  const cap=shape(headPivot,new THREE.SphereGeometry(.343,12,9,0,Math.PI*2,0,Math.PI*.49),hair,0,.115,0);
+  cap.scale.y=hairStyle===1?1.15:.65;
+  if(hairStyle===2||hairStyle===3)for(let i=0;i<12;i++){const a=i*Math.PI*2/12;shape(headPivot,new THREE.SphereGeometry(.09,6,5),hair,Math.sin(a)*.25,.31+Math.cos(a)*.055,Math.cos(a)*.24)}
+  if(hairStyle===4)shape(headPivot,new THREE.SphereGeometry(.16,9,7),hair,0,.36,.2);
+  if(hairStyle===5)for(let i=0;i<6;i++)shape(headPivot,new THREE.CapsuleGeometry(.035,.35,2,5),hair,(i-2.5)*.09,.26,.13);
+ }
+ if(variant===3||variant===6){const beard=shape(headPivot,new THREE.SphereGeometry(.23,10,8),hair,0,-.21,-.08);beard.scale.set(1,.6,1)}
+
+ 
  const limbs=[];
  for(const s of [-1,1]){
-   const arm=new THREE.Group();arm.position.set(s*.59,2.01,0);g.add(arm);shape(arm,new THREE.CylinderGeometry(.16,.13,.74,8),kit,0,-.35,0);const hand=shape(arm,new THREE.SphereGeometry(.13,8,8),skin,0,-.76,0);for(let finger=0;finger<4;finger++)shape(hand,new THREE.CapsuleGeometry(.018,.075,2,4),skin,(finger-1.5)*.044,-.13,-.01);limbs.push(arm);
-   const leg=new THREE.Group();leg.position.set(s*.24,.82,0);g.add(leg);shape(leg,new THREE.CylinderGeometry(.19,.14,.78,8),skin,0,-.35,0);shape(leg,new THREE.CylinderGeometry(.145,.13,.36,8),sock,0,-.82,0);shape(leg,new THREE.BoxGeometry(.29,.18,.48),boots,0,-1.06,-.12);limbs.push(leg);
+   const arm=new THREE.Group();arm.position.set(s*.59,2.01,0);g.add(arm);shape(arm,new THREE.CylinderGeometry(.155,.12,.38,10),kit,0,-.19,0);
+   const elbow=new THREE.Group();elbow.position.y=-.39;arm.add(elbow);
+   shape(elbow,new THREE.CylinderGeometry(.12,.095,.35,10),skin,0,-.17,0);
+   const hand=shape(arm,new THREE.SphereGeometry(.13,8,8),skin,0,-.76,0);for(let finger=0;finger<4;finger++)shape(hand,new THREE.CapsuleGeometry(.018,.075,2,4),skin,(finger-1.5)*.044,-.13,-.01);limbs.push(arm);
+   const leg=new THREE.Group();leg.position.set(s*.24,.82,0);g.add(leg);shape(leg,new THREE.CylinderGeometry(.18,.14,.48,10),skin,0,-.23,0);
+   shape(leg,new THREE.SphereGeometry(.14,10,8),skin,0,-.53,0);
+   shape(leg,new THREE.CylinderGeometry(.14,.11,.36,10),sock,0,-.74,0);shape(leg,new THREE.BoxGeometry(.29,.18,.48),boots,0,-1.06,-.12);limbs.push(leg);
  }
- g.position.set(x,.35,z);scene.add(g);g.userData={kitMats:{shirt:kit,shorts,socks},limbs,headPivot,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0};animatedPlayers.push(g);return g
+ g.position.set(x,.35,z);scene.add(g);g.userData={kitMats:{shirt:kit,shorts,socks},limbs,headPivot,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0,expression:0,variant,detailLevel:'near'};animatedPlayers.push(g);return g
 }
-function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}}
+function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);d.headPivot.rotation.x=THREE.MathUtils.lerp(d.headPivot.rotation.x,-.05-speed*.09,Math.min(1,dt*5));const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}}
 const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const extraBlue=[[-23,19],[23,19],[-19,-6],[19,-6],[-8,-17],[8,-17]].map(p=>person(...p,0x2072ff));
 const blueRoster=[player,...teammates,...extraBlue];
 function applyTeamKit(roster,keeper,kit){
