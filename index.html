@@ -430,7 +430,7 @@ function animatePhysicalDetails(dt,actors){
   const quality=adaptiveQuality===0?'low':close?'high':dist<38?'medium':'low';
   e.quality=quality;
   // Materiais PBR: suor sutil proporcional à duração e esforço, sem partículas pesadas.
-  const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);
+  const speed=d.movementSpeed||0;
   const target=Math.min(.55,gameMinute*.007+speed*.11+(cinema?.stage==='celebrate'&&cinema.scorer===g?.16:0));
   e.sweat=THREE.MathUtils.lerp(e.sweat,target,Math.min(1,dt*.65));
   e.skin.roughness=quality==='low'?.82:Math.max(.43,.84-e.sweat*.65);
@@ -450,7 +450,7 @@ function updateAdaptiveQuality(dt){
  adaptiveQuality=avg>.031?0:avg>.021?1:2;
  qualityFrameCounter=0;qualityAccum=0;
 }
-function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);d.headPivot.rotation.x=THREE.MathUtils.lerp(d.headPivot.rotation.x,-.05-speed*.09,Math.min(1,dt*5));const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}animatePhysicalDetails(dt,animatedPlayers);animateFaces(dt,animatedPlayers,cinema?.stage==='celebrate'?'celebrate':cinema?.stage==='replay'?'replay':'game')}
+function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.movementSpeed=speed;d.phase+=dt*(2.5+speed*11);d.headPivot.rotation.x=THREE.MathUtils.lerp(d.headPivot.rotation.x,-.05-speed*.09,Math.min(1,dt*5));const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}animatePhysicalDetails(dt,animatedPlayers);animateFaces(dt,animatedPlayers,cinema?.stage==='celebrate'?'celebrate':cinema?.stage==='replay'?'replay':'game')}
 const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const extraBlue=[[-23,19],[23,19],[-19,-6],[19,-6],[-8,-17],[8,-17]].map(p=>person(...p,0x2072ff));
 const blueRoster=[player,...teammates,...extraBlue];
 function applyTeamKit(roster,keeper,kit){
