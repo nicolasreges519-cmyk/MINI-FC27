@@ -127,13 +127,36 @@
 #kitPanel .kitPicker strong{font-size:11px;text-align:center}
 #kitPanel .kitStatus{color:#ffdf9b;font-size:11px;min-height:30px}
 @media(max-height:420px){#kitPreview{height:105px}#kitPanel{padding:7px}#kitPanel h2{font-size:14px}}
+#squadManager{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;padding:9px;box-sizing:border-box;color:#fff;background:linear-gradient(125deg,#100b31,#302056 53%,#110d2e);font:12px Arial}
+#squadManager button,#squadManager select{background:#4b367e;color:#fff;border:1px solid #a694c0;border-radius:7px;padding:7px;min-height:34px}
+#squadManager button.active{background:#9068c8}
+#squadManager .squadTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#squadManager .squadTabs{display:flex;gap:5px}
+#squadManager .squadMain{display:grid;grid-template-columns:1.5fr 1fr;gap:9px;min-height:0;flex:1}
+#squadManager .squadLeft{display:flex;flex-direction:column;min-height:0}
+#squadPitch{position:relative;flex:1;min-height:120px;border:2px solid #a3d5b2;border-radius:9px;background:repeating-linear-gradient(90deg,#23644c 0 14%,#2b7558 14% 28%);overflow:hidden}
+#squadPitch:before{content:'';position:absolute;inset:7%;border:1px solid #d9ffdf80;border-radius:3px;pointer-events:none}
+#squadPitch:after{content:'';position:absolute;top:50%;left:50%;width:25%;aspect-ratio:1;border:1px solid #d9ffdf80;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+#squadManager .squadCard{position:absolute;transform:translate(-50%,-50%);min-width:62px;padding:3px 5px;background:#16102eea;border:1px solid #c7a8ef77;display:flex;align-items:center;gap:4px;text-align:left;min-height:35px}
+#squadManager .squadCard.active{border:2px solid #ffdc68;background:#61408c}
+#squadManager .avatar{display:inline-grid;place-items:center;border-radius:50%;width:25px;height:25px;background:#a48cb9;color:#231638;font-weight:bold;flex-shrink:0}
+#squadManager .squadCard small{display:block;color:#cfc4e2}
+#squadBench{display:flex;gap:6px;overflow-x:auto;min-height:67px;padding:5px;background:#ffffff12;border-radius:7px}
+#squadBench button{flex:0 0 auto;text-align:left;min-width:88px}
+#squadManager .squadRight{background:#ffffff12;border:1px solid #ffffff20;border-radius:10px;padding:10px;overflow:auto}
+#squadManager .squadBottom{display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:6px}
+#squadManager .squadPane{display:none;overflow:auto;flex:1}
+#squadManager .squadPane.active{display:block}
+#squadManager .squadStats{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+#squadManager .squadStats span{padding:5px;background:#ffffff12;border-radius:5px}
+@media(max-height:440px){#squadManager{padding:5px}#squadManager .squadTop h2{font-size:14px;margin:0}#squadManager .squadCard{min-width:49px;font-size:10px;padding:2px}#squadBench{min-height:54px}#squadManager .avatar{width:19px;height:19px}}
 </style></head><body><div id="kitScreen"><div id="kitPanel"><h2>ESCOLHER UNIFORMES</h2><p>Prévia 3D de teste. Sem uniforme oficial verificado, o modelo usa roupa neutra — não representa a camisa do clube.</p><canvas id="kitPreview" width="560" height="160"></canvas><div class="kitRows"><section><strong id="kitHomeName">CASA</strong><div class="kitPicker"><button id="kitHomePrev" aria-label="Uniforme anterior casa">◀</button><strong id="kitHomeLabel">Principal</strong><button id="kitHomeNext" aria-label="Próximo uniforme casa">▶</button></div><div id="kitHomeStatus" class="kitStatus"></div></section><section><strong id="kitAwayName">FORA</strong><div class="kitPicker"><button id="kitAwayPrev" aria-label="Uniforme anterior fora">◀</button><strong id="kitAwayLabel">Principal</strong><button id="kitAwayNext" aria-label="Próximo uniforme fora">▶</button></div><div id="kitAwayStatus" class="kitStatus"></div></section></div><div id="kitConflict" class="kitStatus"></div><button id="kitBack">VOLTAR</button> <button id="kitPlay" disabled>INICIAR PARTIDA</button></div></div><div id="clubLauncher"><div id="clubPanel"><h2>MINI FC27 · Seleção de clubes</h2><p id="catalogSummary">Carregando catálogo oficial 2026/27...</p><div class="teamCols"><section><strong>🏠 CASA</strong><label>País<select id="homeCountry"></select></label><label>Liga<select id="homeLeague"></select></label><label>Clube<select id="homeClub"></select></label><div id="homeStatus" class="status"></div></section><section><strong>✈️ FORA</strong><label>País<select id="awayCountry"></select></label><label>Liga<select id="awayLeague"></select></label><label>Clube<select id="awayClub"></select></label><div id="awayStatus" class="status"></div></section></div><button id="openKitScreen" disabled>ESCOLHER UNIFORMES</button><button id="launchVerifiedMatch" disabled hidden>JOGAR COM ELENCOS VERIFICADOS</button><button id="continuePrototype">CONTINUAR PARTIDA DE TESTE (AZU × VER)</button><p>Clubes sem escalação verificada aparecem para consulta, mas não podem iniciar partidas. A partida de teste mantém os jogadores genéricos existentes.</p></div></div><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="ownId" class="player-id"><small>🔵 AZU</small><strong id="ownName">—</strong><div class="stamina"><span id="ownStamina"></span></div></div><div id="enemyId" class="player-id"><small>🔴 VER</small><strong id="enemyName">—</strong><div class="stamina"><span id="enemyStamina"></span></div></div><div id="overheadName"></div><div id="goalOverlay"></div><div id="celebrationMenu" role="group" aria-label="Comemorações" hidden><header><span>COMEMORAÇÃO</span><span id="celebrationTimer">5s</span></header>
 <button data-category="individual">⭐ Individual</button><div class="variants" data-group="individual"><button data-clip="1">Mãos no rosto</button><button data-clip="2">Mãos no peito</button><button data-clip="3">Gesto para câmera</button><button data-clip="4">Braços abertos</button></div>
 <button data-category="danca">🎵 Dança em grupo</button><div class="variants" data-group="danca"><button data-clip="6">Dança sincronizada</button><button data-clip="0">Festa coletiva</button></div>
 <button data-category="companheiros">🙌 Companheiros</button><div class="variants" data-group="companheiros"><button data-clip="8">Abraço em grupo</button><button data-clip="0">Corrida coletiva</button></div>
 <button data-category="acrobacia">⚡ Acrobática</button><div class="variants" data-group="acrobacia"><button data-clip="7">Salto e giro</button><button data-clip="10">Deslize comemorativo</button></div>
 <button data-category="torcida">🏟️ Torcida</button><div class="variants" data-group="torcida"><button data-clip="9">Correr para arquibancada</button><button data-clip="11">Comemorar junto ao painel</button></div>
-<button data-category="especial">✨ Especial</button><div class="variants" data-group="especial"><button data-clip="5">Dança individual</button><button data-clip="12">Gestos com as mãos</button></div></div><button id="skipReplay" type="button">PULAR REPLAY ⏭</button><div id="cinemaCountdown"></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><script type="module">
+<button data-category="especial">✨ Especial</button><div class="variants" data-group="especial"><button data-clip="5">Dança individual</button><button data-clip="12">Gestos com as mãos</button></div></div><button id="skipReplay" type="button">PULAR REPLAY ⏭</button><div id="cinemaCountdown"></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><button id="openSquadManager">Trocar Jogadores</button><button id="resumeGame">Continuar partida</button></div></div><div id="squadManager"><div class="squadTop"><h2>GERENCIAMENTO DO TIME</h2><div class="squadTabs"><button data-squad-tab="elenco" class="active">ELENCO</button><button data-squad-tab="taticas">TÁTICAS</button><button data-squad-tab="atribuicoes">ATRIBUIÇÕES</button></div></div><div class="squadMain"><div class="squadLeft"><div id="squadPitch"></div><strong>Reservas</strong><div id="squadBench"></div></div><aside class="squadRight"><section class="squadPane active" data-squad-pane="elenco"><h3 id="squadPlayerTitle">Jogador</h3><div id="squadStats" class="squadStats"></div><p id="squadSelectionText"></p><button id="squadConfirm" disabled>CONFIRMAR SUBSTITUIÇÃO</button></section><section class="squadPane" data-squad-pane="taticas"><label>Formação <select id="squadFormation"><option>4-3-3</option><option>4-4-2</option><option>4-2-3-1</option><option>3-5-2</option><option>4-1-2-1-2</option></select></label><p>Pressão defensiva</p><select id="squadPressure"><option value="balanced">Equilibrada</option><option value="high">Alta</option><option value="low">Baixa</option></select><p>Estilo de ataque</p><select id="squadAttack"><option value="balanced">Equilibrado</option><option value="direct">Direto</option><option value="possession">Posse de bola</option></select></section><section class="squadPane" data-squad-pane="atribuicoes"><div id="squadRoles"></div></section></aside></div><div class="squadBottom"><span id="squadCounter">0/5 substituições</span><button id="squadBack">VOLTAR À PAUSA</button><button id="squadResume">CONTINUAR PARTIDA</button></div></div><div id="error"></div><script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 let gamePaused=false,sprintHeld=false;
 let clubCatalog=[],selectedHome=null,selectedAway=null;
@@ -1119,6 +1142,91 @@ lobButton.addEventListener('pointerdown',e=>{e.preventDefault();kick(28,false)})
 const sprintButton=document.getElementById('sprint');
 sprintButton.addEventListener('pointerdown',e=>{e.preventDefault();if(cinema)return;sprintHeld=true;sprintButton.setPointerCapture(e.pointerId)});
 for(const ev of ['pointerup','pointercancel','lostpointercapture'])sprintButton.addEventListener(ev,()=>{sprintHeld=false});
+
+const squadManager=document.getElementById('squadManager');
+const squadState={formation:'4-3-3',pressure:'balanced',attack:'balanced',used:0,max:5,selectedStarter:null,selectedBench:null,selectedPlayer:null,roles:{captain:0,penalty:0,freeKick:0,corner:0}};
+const squadProfiles=new Map(),benchProfiles=[];
+function squadProfile(p,i,bench=false){
+ if(squadProfiles.has(p))return squadProfiles.get(p);
+ const v=i%8,profile={id:(bench?'R':'T')+(i+1),name:(bench?'Reserva ':'Jogador ')+(i+1),position:i===0&&!bench?'GOL':(['ATA','MEI','DEF'][i%3]),overall:65+(i*3)%17,fitness:100,age:null,height:null,foot:null,attributes:null,styles:null,realData:false};
+ squadProfiles.set(p,profile);return profile;
+}
+function createBenchProfiles(){
+ if(benchProfiles.length)return;
+ for(let i=0;i<7;i++){
+  const p=person(0,0,0x2072ff);p.visible=false;
+  const profile=squadProfile(p,i,true);profile.position=['GOL','DEF','DEF','MEI','MEI','ATA','ATA'][i];
+  benchProfiles.push(p);
+ }
+}
+function squadSlots(formation){
+ const layouts={
+ '4-3-3':[[50,92],[14,72],[38,74],[62,74],[86,72],[26,51],[50,51],[74,51],[18,25],[50,20],[82,25]],
+ '4-4-2':[[50,92],[14,73],[38,74],[62,74],[86,73],[14,48],[38,49],[62,49],[86,48],[37,22],[63,22]],
+ '4-2-3-1':[[50,92],[14,75],[38,75],[62,75],[86,75],[38,57],[62,57],[18,37],[50,36],[82,37],[50,17]],
+ '3-5-2':[[50,92],[24,72],[50,75],[76,72],[12,47],[33,51],[50,55],[67,51],[88,47],[37,20],[63,20]],
+ '4-1-2-1-2':[[50,92],[14,75],[38,75],[62,75],[86,75],[50,61],[25,45],[75,45],[50,32],[35,17],[65,17]]
+ };return layouts[formation]||layouts['4-3-3'];
+}
+function squadChooseStarter(index){const p=index===0?keepers[1]:blueRoster[index-1];if(!p||expelledPlayers.has(p))return;squadState.selectedStarter=index;squadState.selectedPlayer=p;renderSquad()}
+function squadChooseBench(index){squadState.selectedBench=index;squadState.selectedPlayer=benchProfiles[index];renderSquad()}
+function squadFieldPlayer(index){return index===0?keepers[1]:blueRoster[index-1]}
+function renderSquad(){
+ const pitch=document.getElementById('squadPitch'),bench=document.getElementById('squadBench');pitch.replaceChildren();bench.replaceChildren();
+ const positions=squadSlots(squadState.formation);
+ for(let i=0;i<11;i++){
+  const p=squadFieldPlayer(i),profile=squadProfile(p,i),pos=positions[i];if(!p)continue;
+  const button=document.createElement('button');button.className='squadCard'+(squadState.selectedStarter===i?' active':'');
+  button.style.left=pos[0]+'%';button.style.top=pos[1]+'%';button.disabled=expelledPlayers.has(p);
+  const av=document.createElement('span');av.className='avatar';av.textContent=profile.position.slice(0,1);
+  const info=document.createElement('span');info.textContent=profile.name;
+  const small=document.createElement('small');small.textContent=profile.position+' · '+profile.overall+' · '+profile.fitness+'%';info.appendChild(small);
+  button.append(av,info);button.addEventListener('click',()=>squadChooseStarter(i));
+  button.draggable=true;button.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',String(i)));
+  button.addEventListener('dragover',e=>e.preventDefault());
+  button.addEventListener('drop',e=>{e.preventDefault();const from=Number(e.dataTransfer.getData('text/plain'));if(from>0&&i>0&&from!==i){[blueRoster[from-1],blueRoster[i-1]]=[blueRoster[i-1],blueRoster[from-1]];renderSquad()}});
+  pitch.appendChild(button);
+ }
+ benchProfiles.forEach((p,i)=>{if(p.userData.squadUsed)return;const profile=squadProfile(p,i,true);const button=document.createElement('button');button.className=squadState.selectedBench===i?'active':'';button.textContent=profile.name+' · '+profile.position+' · '+profile.overall;button.addEventListener('click',()=>squadChooseBench(i));bench.appendChild(button)});
+ const selected=squadState.selectedPlayer,profile=selected?squadProfiles.get(selected):null;
+ document.getElementById('squadPlayerTitle').textContent=profile?.name||'Selecione um jogador';
+ const stats=document.getElementById('squadStats');stats.replaceChildren();
+ const rows=profile?[['Posição',profile.position],['GER',profile.overall],['Condição',profile.fitness+'%'],['Idade','Não verificada'],['Altura','Não verificada'],['Pé','Não verificado'],['Ritmo','Não verificado'],['Finalização','Não verificada'],['Passe','Não verificado'],['Condução','Não verificada'],['Defesa','Não verificada'],['Físico','Não verificado'],['Moral','Não verificada'],['Estilos','Não verificados']]:[];
+ for(const [k,v] of rows){const el=document.createElement('span');el.textContent=k+': '+v;stats.appendChild(el)}
+ const starter=squadState.selectedStarter,benchIdx=squadState.selectedBench;
+ document.getElementById('squadSelectionText').textContent=starter!==null&&benchIdx!==null?'Trocar '+squadProfile(squadFieldPlayer(starter),starter).name+' por '+squadProfile(benchProfiles[benchIdx],benchIdx,true).name:'Selecione um titular e um reserva. Dados de teste, sem fotos ou avaliações oficiais.';
+ document.getElementById('squadConfirm').disabled=starter===null||benchIdx===null||squadState.used>=squadState.max||!!benchProfiles[benchIdx]?.userData.squadUsed||!!expelledPlayers.has(squadFieldPlayer(starter));
+ document.getElementById('squadCounter').textContent=squadState.used+'/'+squadState.max+' substituições (regra de teste)';
+}
+function confirmSquadSub(){
+ const i=squadState.selectedStarter,j=squadState.selectedBench;
+ if(i===null||j===null||squadState.used>=squadState.max)return;
+ const outgoing=squadFieldPlayer(i),incoming=benchProfiles[j];
+ if(!outgoing||!incoming||incoming.userData.squadUsed||expelledPlayers.has(outgoing))return;
+ incoming.position.copy(outgoing.position);incoming.rotation.copy(outgoing.rotation);incoming.visible=true;outgoing.visible=false;
+ incoming.userData.squadUsed=true;
+ if(i===0){keepers[1]=incoming;incoming.userData.isKeeper=true}else{blueRoster[i-1]=incoming;if(controlledPlayer===outgoing){controlledPlayer=incoming;selectedIndex=i-1}if(attached&&lastBallTouch===outgoing)lastBallTouch=incoming}
+ squadState.used++;squadState.selectedStarter=null;squadState.selectedBench=null;squadState.selectedPlayer=incoming;renderSquad();
+}
+function renderSquadRoles(){
+ const root=document.getElementById('squadRoles');root.replaceChildren();
+ for(const [role,title] of [['captain','Capitão'],['penalty','Pênaltis'],['freeKick','Faltas'],['corner','Escanteios']]){
+  const label=document.createElement('label');label.textContent=title+' ';
+  const select=document.createElement('select');for(let i=0;i<11;i++){const o=document.createElement('option');o.value=String(i);o.textContent=squadProfile(squadFieldPlayer(i),i).name;select.appendChild(o)}
+  select.value=String(squadState.roles[role]);select.addEventListener('change',()=>squadState.roles[role]=Number(select.value));label.appendChild(select);root.appendChild(label);root.appendChild(document.createElement('br'));
+ }
+}
+function openSquad(){if(cinema)return;createBenchProfiles();setPaused(true);pauseOverlay.style.display='none';squadManager.style.display='flex';renderSquad();renderSquadRoles()}
+function closeSquad(resume){squadManager.style.display='none';if(resume)setPaused(false);else{setPaused(true);pauseOverlay.style.display='flex'}}
+document.getElementById('openSquadManager').addEventListener('click',openSquad);
+document.getElementById('squadConfirm').addEventListener('click',confirmSquadSub);
+document.getElementById('squadBack').addEventListener('click',()=>closeSquad(false));
+document.getElementById('squadResume').addEventListener('click',()=>closeSquad(true));
+document.getElementById('squadFormation').addEventListener('change',e=>{squadState.formation=e.target.value;renderSquad()});
+document.getElementById('squadPressure').addEventListener('change',e=>squadState.pressure=e.target.value);
+document.getElementById('squadAttack').addEventListener('change',e=>squadState.attack=e.target.value);
+document.querySelectorAll('[data-squad-tab]').forEach(button=>button.addEventListener('click',()=>{const tab=button.dataset.squadTab;document.querySelectorAll('[data-squad-tab]').forEach(b=>b.classList.toggle('active',b===button));document.querySelectorAll('[data-squad-pane]').forEach(p=>p.classList.toggle('active',p.dataset.squadPane===tab))}));
+
 const pauseButton=document.getElementById('pauseGame'),pauseOverlay=document.getElementById('pauseOverlay');
 function setPaused(value){gamePaused=value;pauseOverlay.style.display=value?'flex':'none';pauseButton.textContent=value?'▶':'Ⅱ';if(value){sprintHeld=false;chargingShot=false;chargePointer=null;powerFill.style.height='0%'}}
 pauseButton.addEventListener('pointerdown',e=>{e.preventDefault();setPaused(!gamePaused)});
