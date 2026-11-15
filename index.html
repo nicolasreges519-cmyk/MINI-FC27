@@ -343,9 +343,9 @@ stadiumBox(9,.6,2,-40,.3,6,0x425466);stadiumBox(9,.6,2,-40,.3,-6,0x425466);
 stadiumBox(8,3,2,0,1.5,72,0x273542);
 const animatedPlayers=[];
 function person(x,z,color){
- const g=new THREE.Group();const kit=new THREE.MeshLambertMaterial({color});const skin=new THREE.MeshLambertMaterial({color:0xc98c67});const shorts=new THREE.MeshLambertMaterial({color:0x17233b});const sock=new THREE.MeshLambertMaterial({color:color});const boots=new THREE.MeshLambertMaterial({color:0x141414});const hair=new THREE.MeshLambertMaterial({color:0x1b1716});
+ const g=new THREE.Group();const kit=new THREE.MeshStandardMaterial({color,roughness:.89,metalness:0});const skin=new THREE.MeshStandardMaterial({color:0xc98c67,roughness:.84,metalness:0});const shorts=new THREE.MeshStandardMaterial({color:0x17233b,roughness:.92});const sock=new THREE.MeshLambertMaterial({color:color});const boots=new THREE.MeshStandardMaterial({color:0x141414,roughness:.48});const hair=new THREE.MeshStandardMaterial({color:0x1b1716,roughness:.9});
  function shape(parent,geo,mat,x,y,z){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);parent.add(m);return m}
- const torso=shape(g,new THREE.CylinderGeometry(.43,.35,1.02,12),kit,0,1.62,0);
+ const torso=shape(g,new THREE.CylinderGeometry(.43,.35,1.02,12),kit,0,1.62,0);const clothFold=shape(g,new THREE.TorusGeometry(.375,.014,3,14,Math.PI*1.4),kit,0,1.16,.012);clothFold.rotation.x=Math.PI/2;
  shape(g,new THREE.CylinderGeometry(.35,.34,.38,10),shorts,0,.95,0);
  const collar=shape(g,new THREE.TorusGeometry(.165,.045,5,12),kit,0,2.17,0);collar.rotation.x=Math.PI/2;
  const playerSeed=animatedPlayers.length,variant=playerSeed%8;
@@ -367,13 +367,13 @@ function person(x,z,color){
   const ear=shape(headPivot,new THREE.SphereGeometry(.09,8,6),skin,s*.33,-.065,0);ear.scale.set(.55,1.25,.65);
   const brow=shape(headPivot,new THREE.BoxGeometry(.15,.032,.038),hair,s*.14,.145,-.316);brow.rotation.z=s*.1;eyebrows.push(brow);const lid=shape(headPivot,new THREE.SphereGeometry(.075,8,6),skin,s*.14,.092,-.301);lid.scale.set(1,.001,.48);eyelids.push(lid);
  }
- const hairStyle=variant%7;
+ const hairStrands=[];const hairStyle=variant%7;
  if(hairStyle!==0){
   const cap=shape(headPivot,new THREE.SphereGeometry(.343,12,9,0,Math.PI*2,0,Math.PI*.49),hair,0,.115,0);
   cap.scale.y=hairStyle===1?1.15:.65;
   if(hairStyle===2||hairStyle===3)for(let i=0;i<12;i++){const a=i*Math.PI*2/12;shape(headPivot,new THREE.SphereGeometry(.09,6,5),hair,Math.sin(a)*.25,.31+Math.cos(a)*.055,Math.cos(a)*.24)}
-  if(hairStyle===4)shape(headPivot,new THREE.SphereGeometry(.16,9,7),hair,0,.36,.2);
-  if(hairStyle===5)for(let i=0;i<6;i++)shape(headPivot,new THREE.CapsuleGeometry(.035,.35,2,5),hair,(i-2.5)*.09,.26,.13);
+  if(hairStyle===4){const bun=shape(headPivot,new THREE.SphereGeometry(.16,9,7),hair,0,.36,.2);hairStrands.push(bun)}
+  if(hairStyle===5)for(let i=0;i<6;i++){const strand=shape(headPivot,new THREE.CapsuleGeometry(.035,.35,2,5),hair,(i-2.5)*.09,.26,.13);hairStrands.push(strand)}
  }
  if(variant===3||variant===6){const beard=shape(headPivot,new THREE.SphereGeometry(.23,10,8),hair,0,-.21,-.08);beard.scale.set(1,.6,1)}
 
@@ -388,7 +388,7 @@ function person(x,z,color){
    shape(leg,new THREE.SphereGeometry(.14,10,8),skin,0,-.53,0);
    shape(leg,new THREE.CylinderGeometry(.14,.11,.36,10),sock,0,-.74,0);shape(leg,new THREE.BoxGeometry(.29,.18,.48),boots,0,-1.06,-.12);limbs.push(leg);
  }
- g.position.set(x,.35,z);scene.add(g);g.userData={kitMats:{shirt:kit,shorts,socks},limbs,headPivot,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0,expression:0,variant,detailLevel:'near',faceRig:{mouth,smile,eyelids,eyebrows,irises,blink:0,blinkClock:1.4+variant*.31,emotion:0,targetEmotion:0,shout:0,seed:variant*.71}};animatedPlayers.push(g);return g
+ g.position.set(x,.35,z);scene.add(g);g.userData={kitMats:{shirt:kit,shorts,socks},limbs,headPivot,phase:Math.random()*6.28,lastX:x,lastZ:z,kickTime:0,expression:0,variant,detailLevel:'near',effects:{skin,kit,shorts,clothFold,torso,hairStrands,sweat:0,quality:'medium'},faceRig:{mouth,smile,eyelids,eyebrows,irises,blink:0,blinkClock:1.4+variant*.31,emotion:0,targetEmotion:0,shout:0,seed:variant*.71}};animatedPlayers.push(g);return g
 }
 
 // Expressões por transformações dos componentes faciais. Não são morph targets de uma malha escaneada.
@@ -419,7 +419,38 @@ function animateFaces(dt,actors,context='game'){
   d.headPivot.rotation.y=THREE.MathUtils.lerp(d.headPivot.rotation.y,lx*.09,Math.min(1,dt*3));
  }
 }
-function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);d.headPivot.rotation.x=THREE.MathUtils.lerp(d.headPivot.rotation.x,-.05-speed*.09,Math.min(1,dt*5));const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}animateFaces(dt,animatedPlayers,cinema?.stage==='celebrate'?'celebrate':cinema?.stage==='replay'?'replay':'game')}
+
+let adaptiveQuality=2,qualityFrameCounter=0,qualityAccum=0;
+function animatePhysicalDetails(dt,actors){
+ const gameMinute=Math.max(0,typeof elapsed==='number'?elapsed:0)/60;
+ for(const g of actors){
+  const d=g.userData,e=d?.effects;if(!e)continue;
+  const dist=g.position.distanceTo(camera.position);
+  const close=!!cinema&&cinema.scorer===g||dist<15;
+  const quality=adaptiveQuality===0?'low':close?'high':dist<38?'medium':'low';
+  e.quality=quality;
+  // Materiais PBR: suor sutil proporcional à duração e esforço, sem partículas pesadas.
+  const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);
+  const target=Math.min(.55,gameMinute*.007+speed*.11+(cinema?.stage==='celebrate'&&cinema.scorer===g?.16:0));
+  e.sweat=THREE.MathUtils.lerp(e.sweat,target,Math.min(1,dt*.65));
+  e.skin.roughness=quality==='low'?.82:Math.max(.43,.84-e.sweat*.65);
+  e.kit.roughness=quality==='high'?.86:.91;
+  e.clothFold.visible=quality!=='low';
+  e.clothFold.rotation.z=Math.sin(d.phase)*Math.min(.06,speed*.06);
+  e.torso.rotation.z=Math.sin(d.phase)*speed*.024;
+  e.hairStrands.forEach((strand,i)=>{strand.rotation.x=quality==='low'?0:Math.sin(d.phase*.7+i)*speed*.10;strand.rotation.z=quality==='high'?Math.sin(d.phase*.5+i)*.06:0});
+  // O corpo acompanha a mudança de direção sem alterar a posição usada pela física.
+  d.headPivot.rotation.z=THREE.MathUtils.lerp(d.headPivot.rotation.z,Math.sin(d.phase*.35)*speed*.04,Math.min(1,dt*4));
+ }
+}
+function updateAdaptiveQuality(dt){
+ qualityFrameCounter++;qualityAccum+=dt;
+ if(qualityFrameCounter<90)return;
+ const avg=qualityAccum/qualityFrameCounter;
+ adaptiveQuality=avg>.031?0:avg>.021?1:2;
+ qualityFrameCounter=0;qualityAccum=0;
+}
+function animatePlayers(dt){for(const g of animatedPlayers){const d=g.userData;const speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);d.phase+=dt*(2.5+speed*11);d.headPivot.rotation.x=THREE.MathUtils.lerp(d.headPivot.rotation.x,-.05-speed*.09,Math.min(1,dt*5));const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;d.kickTime=Math.max(0,d.kickTime-dt);if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k;}g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z}animatePhysicalDetails(dt,animatedPlayers);animateFaces(dt,animatedPlayers,cinema?.stage==='celebrate'?'celebrate':cinema?.stage==='replay'?'replay':'game')}
 const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const extraBlue=[[-23,19],[23,19],[-19,-6],[19,-6],[-8,-17],[8,-17]].map(p=>person(...p,0x2072ff));
 const blueRoster=[player,...teammates,...extraBlue];
 function applyTeamKit(roster,keeper,kit){
@@ -1138,7 +1169,7 @@ function updateControlMode(){
  for(const id of ['tackle','switchPlayer'])document.getElementById(id).hidden=hasBlueBall;
  document.getElementById('sprint').textContent=hasBlueBall?'CORRER':'CORRER';
 }
-function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(gamePaused){renderKitPreview();renderer.render(scene,camera);return}if(cinema){renderKitPreview();animateMascots(dt);animateFaces(dt,animatedPlayers,cinema.stage==='celebrate'?'celebrate':cinema.stage==='replay'?'replay':'game');advanceCinema(dt);return}renderKitPreview();animateMascots(dt);elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;updateAdaptiveQuality(dt);if(gamePaused){renderKitPreview();renderer.render(scene,camera);return}if(cinema){renderKitPreview();animateMascots(dt);animatePhysicalDetails(dt,animatedPlayers);animateFaces(dt,animatedPlayers,cinema.stage==='celebrate'?'celebrate':cinema.stage==='replay'?'replay':'game');advanceCinema(dt);return}renderKitPreview();animateMascots(dt);elapsed+=dt;if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
 const m=camera.matrixWorld.elements;
 let rx=m[0],rz=m[2],ux=m[4],uz=m[6];
 const rl=Math.hypot(rx,rz),ul=Math.hypot(ux,uz);
