@@ -1395,6 +1395,39 @@ for(const [id,key,off,on] of [['miniAdvantage','advantage','DESATIVADA','ATIVADA
 }
 document.getElementById('miniRandom').onclick=()=>{miniSelection.Home=Math.floor(Math.random()*fcClubs.length);miniSelection.Away=Math.floor(Math.random()*fcClubs.length);miniDraw('Home');miniDraw('Away')};
 document.getElementById('miniFooterBack').onclick=()=>fcScreen('');
+/* Integração inicial de elencos: escalação reduzida compatível com a gameplay atual (4 jogadores de linha + goleiro por lado). */
+function miniPickLineup(club){
+ const pool=Array.isArray(club.roster)?club.roster.filter(p=>p&&p.name):[];
+ const chosen=new Set();
+ function take(test){const p=pool.find((p,i)=>!chosen.has(i)&&test(p));if(!p)return null;chosen.add(pool.indexOf(p));return p}
+ const keeper=take(p=>p.position==='GOL');
+ const roles=[p=>['ZAG','LD','LE'].includes(p.position),p=>['VOL','MC'].includes(p.position),p=>['MEI','PE','PD'].includes(p.position),p=>['ATA','PE','PD'].includes(p.position)];
+ const field=roles.map(fn=>take(p=>p.position!=='GOL'&&fn(p))||take(p=>p.position!=='GOL'));
+ return {keeper,field};
+}
+function miniPlayerLabel(athlete,entry){
+ if(athlete.userData.miniNameTag){athlete.remove(athlete.userData.miniNameTag);athlete.userData.miniNameTag.material.map.dispose();athlete.userData.miniNameTag.material.dispose();}
+ athlete.userData.miniPlayer=entry||null;
+ if(!entry)return;
+ const canvas=document.createElement('canvas');canvas.width=256;canvas.height=64;
+ const ctx=canvas.getContext('2d');ctx.fillStyle='rgba(7,18,30,.8)';ctx.fillRect(0,0,256,64);
+ ctx.fillStyle='#fff';ctx.font='bold 23px Arial';ctx.textAlign='center';
+ const surname=entry.name.trim().split(/\s+/).slice(-2).join(' ');
+ ctx.fillText((entry.number==null?'':entry.number+'  ')+surname,128,41,246);
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ const tag=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,depthTest:false,transparent:true}));
+ tag.position.set(0,3.15,0);tag.scale.set(3.5,.87,1);tag.renderOrder=100;
+ athlete.add(tag);athlete.userData.miniNameTag=tag;
+}
+function miniBindMatchRoster(home,away){
+ const h=miniPickLineup(home),a=miniPickLineup(away);
+ blueRoster.forEach((athlete,i)=>{miniPlayerLabel(athlete,h.field[i]);const m=medical.get(athlete);if(m)m.number=h.field[i]?.number??(i+1)});
+ foes.forEach((athlete,i)=>miniPlayerLabel(athlete,a.field[i]));
+ // Índice 0 do vetor keepers defende o gol adversário (-Z), índice 1 o gol mandante (+Z).
+ miniPlayerLabel(keepers[0],a.keeper);miniPlayerLabel(keepers[1],h.keeper);
+ window.miniActiveLineups={home:{club:home.name,...h},away:{club:away.name,...a},format:'4 jogadores de linha + 1 goleiro por lado'};
+ medicalUpdateHud();
+}
 function miniApplyKit(athletes,club){
  const tint=new THREE.Color(club.color);
  for(const athlete of athletes){
@@ -1410,6 +1443,7 @@ document.getElementById('fcPlay').onclick=()=>{
  fcHome=miniSelection.Home;fcAway=miniSelection.Away;
  const home=fcClubs[fcHome],away=fcClubs[fcAway];
  miniApplyKit(blueRoster,home);miniApplyKit(foes,away);
+ miniBindMatchRoster(home,away);
  const hud=document.getElementById('hud');hud.dataset.home=home.short;hud.dataset.away=away.short;
  const score=document.getElementById('score');if(score){hud.childNodes.forEach(n=>{if(n.nodeType===3&&n.textContent.trim())n.textContent=' '});hud.insertBefore(document.createTextNode(home.short+' '),score);hud.insertBefore(document.createTextNode(' '+away.short+' '),document.getElementById('clock'))}
  window.miniMatchSelection={home:home.name,away:away.name,advantage:miniSelection.advantage,form:miniSelection.form};
