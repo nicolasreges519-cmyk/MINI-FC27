@@ -113,10 +113,14 @@ D('dealSubmit').onclick=()=>{
   state.transferBudget-=n.accepted+n.bonus+signing;state.wageBudget-=salary;
   state.contracts[state.club+'|'+signed.name]={salary,years,signing,goalBonus,installments:n.installments,sellOn:n.sellOn};
   state.history.push(state.club+' contratou '+signed.name+' de '+n.club+' por '+money(n.accepted)+' + bônus de '+money(n.bonus));
-  save();deal.hidden=true;root.hidden=false;selected=null;render();alert('ACORDO CONCLUÍDO — '+signed.name+' contratado!');
+  const presentation={player:{...signed},from:n.club,to:state.club,amount:n.accepted,years,color:fcClubs.find(c=>c.name===state.club)?.color||'#5a62a8'};
+  state.presentations=state.presentations||[];state.presentations.push(presentation);
+  save();deal.hidden=true;root.hidden=false;selected=null;render();
+  window.miniShowSigningPresentation?.(presentation);
  }
 };
 D('dealClose').onclick=()=>{deal.hidden=true;root.hidden=false;negotiation=null;render()};
+const replay=document.createElement('button');replay.textContent='REVER ÚLTIMA APRESENTAÇÃO';replay.style.cssText='padding:10px;background:#61479e;color:white;border:0;border-radius:8px';replay.onclick=()=>{const last=state?.presentations?.at(-1);if(last)window.miniShowSigningPresentation?.(last);else alert('Nenhuma contratação apresentada ainda.')};root.querySelector('footer').append(replay);
 $('careerSearch').addEventListener('input',render);
 $('careerExit').onclick=()=>{root.hidden=true;fcScreen('')};
 $('careerExport').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='mini-fc27-carreira.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
