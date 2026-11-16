@@ -757,6 +757,15 @@ function animatePlayers(dt){
  d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;
  d.kickTime=Math.max(0,d.kickTime-dt);
  if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k}
+ if(d.miniContactTime>0){
+  d.miniContactTime=Math.max(0,d.miniContactTime-dt);
+  const progress=1-d.miniContactTime/(d.miniContactDuration||.48);
+  const wave=Math.sin(Math.PI*progress);
+  if(d.miniContactType==='shield'){d.limbs[0].rotation.z=.55*wave;d.limbs[2].rotation.z=-.35*wave;g.rotation.z=.12*wave}
+  if(d.miniContactType==='standing'){d.limbs[1].rotation.x=-.95*wave;d.limbs[0].rotation.x=.35*wave}
+  if(d.miniContactType==='slide'){g.rotation.z=.5*wave;d.limbs[1].rotation.x=-1.2*wave;d.limbs[3].rotation.x=.65*wave}
+  if(d.miniContactType==='stumble'){g.rotation.z=.25*wave;d.limbs[0].rotation.x=.6*wave;d.limbs[2].rotation.x=-.6*wave}
+ }
  if(d.miniSkillTime>0){
   d.miniSkillTime=Math.max(0,d.miniSkillTime-dt);
   const p=1-d.miniSkillTime/(d.miniSkillDuration||.5);
@@ -846,6 +855,12 @@ function aiLaneRisk(a,b,defenders){
 function miniAthleteAttribute(athlete,key){const entry=athlete?.userData?.miniPlayer;const stats=entry?miniPlayerStats(entry):null;return stats?.[key]??70}
 function miniStatFactor(athlete,key){return THREE.MathUtils.clamp(0.78+(miniAthleteAttribute(athlete,key)-50)*.006,0.78,1.08)}
 /* Disputas simplificadas: atributos de drible, defesa e físico influenciam a posse. */
+function miniContactAnimation(p,type,duration=.48){
+ if(!p?.userData)return;
+ p.userData.miniContactType=type;
+ p.userData.miniContactDuration=duration;
+ p.userData.miniContactTime=duration;
+}
 function miniContest(attacker,defender){
  const skill=miniAthleteAttribute(attacker,'dribbling')*.62+miniAthleteAttribute(attacker,'physical')*.38;
  const pressure=miniAthleteAttribute(defender,'defending')*.7+miniAthleteAttribute(defender,'physical')*.3;
@@ -958,9 +973,11 @@ function aiPlay(dt){
  }
  // Pressão e interceptação: o rival pode tomar a bola, sem teletransporte.
  if(attached&&redChaser&&aiDist(redChaser,controlledPlayer)<1.15&&cooldown<=0&&miniContest(controlledPlayer,redChaser)){
+  miniContactAnimation(redChaser,'standing');miniContactAnimation(controlledPlayer,'stumble');
   attached=false;aiPossessor=redChaser;lastTouch='red';velocity.set(0,0,0);cooldown=.9;aiDecisionClock=.5;
  }
  if(aiPossessor&&foes.includes(aiPossessor)&&aiDist(aiPossessor,controlledPlayer)<1.05&&cooldown<=0&&miniContest(aiPossessor,controlledPlayer)){
+  miniContactAnimation(controlledPlayer,'standing');miniContactAnimation(aiPossessor,'stumble');
   aiPossessor=null;attached=true;lastTouch='blue';cooldown=.8;
  }
 }
@@ -1215,11 +1232,13 @@ function checkRulesOut(){
 function refereeTackle(){
  if(restartState)return;
  const target=foes.find(f=>Math.hypot(f.position.x-controlledPlayer.position.x,f.position.z-controlledPlayer.position.z)<2.5);
- if(!target){showRule('CARRINHO SEM CONTATO',.9);return}
+ if(!target){miniContactAnimation(controlledPlayer,'slide',.6);showRule('CARRINHO SEM CONTATO',.9);return}
+ miniContactAnimation(controlledPlayer,'slide',.6);
+ miniContactAnimation(target,'stumble',.5);
  const ballDist=Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z);
  // Uma entrada próxima à bola pode ser limpa; longe da bola é falta.
  if(medicalInjury(controlledPlayer,true)){awardRestart('FALTA! ATENDIMENTO MÉDICO',controlledPlayer.position.x,controlledPlayer.position.z,'red');return}
- if(ballDist<1.4&&!attached){lastTouch='blue';velocity.set(0,0,-7);showRule('DESARME LIMPO!',1);return}
+ if(ballDist<1.4&&!attached&&miniContest(target,controlledPlayer)){lastTouch='blue';aiPossessor=null;velocity.set(0,0,-7);showRule('DESARME LIMPO!',1);return}
  yellowCards++;
  if(yellowCards>=2){redCards++;redSuspension=false;const sentOff=controlledPlayer;expelledPlayers.add(sentOff);sentOff.visible=false;const replacement=blueRoster.find(p=>!expelledPlayers.has(p));if(replacement){controlledPlayer=replacement;selectedIndex=blueRoster.indexOf(replacement)}attached=false;aiPossessor=null;cooldown=.7;}
  updateRuleHud();
@@ -1246,6 +1265,7 @@ function miniDoSkill(kind){
  const chance=THREE.MathUtils.clamp(.48+(ability-65)*.009,.25,.87);
  const success=distance>3.5||Math.random()<chance;
  miniSkillCooldown=.85;
+ if(nearest&&distance<2.8&&success){miniContactAnimation(athlete,'shield',.45);miniContactAnimation(nearest,'stumble',.38)}
  const d=athlete.userData;d.miniSkillType=kind;d.miniSkillDuration=kind==='giro'?.7:.55;d.miniSkillTime=d.miniSkillDuration;
  d.miniSkillStartYaw=athlete.rotation.y;d.miniSkillStartX=athlete.position.x;d.miniSkillStartZ=athlete.position.z;
  d.miniSkillSuccess=success;
