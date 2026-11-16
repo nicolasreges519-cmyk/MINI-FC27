@@ -519,6 +519,49 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
 #fcQuick .miniStats b{font-size:1.4em!important;font-weight:700!important}
 #fcQuick .miniLeague{border-radius:9px!important}
 @media(orientation:landscape) and (max-height:470px){#fcQuick .miniEmblem{width:clamp(56px,10vw,110px)!important;height:clamp(55px,15vh,95px)!important}#fcQuick .miniMissingCrest{width:65px!important;height:75px!important}#fcQuick .miniStats{font-size:10px!important}#fcQuick .miniStars{font-size:13px!important}#fcQuick .miniTeamMain{padding:4px!important}}
+
+/* MENU CLÁSSICO 2026: layout completo com cards de país, gênero, clube e competição. */
+#fcMenu #fcQuick.fcScreen{overflow:hidden!important}
+#fcQuick .miniQuickHead{height:clamp(38px,9vh,76px)!important;min-height:0!important;flex:0 0 auto!important;padding:.5vh 2.4vw!important;background:#071014db!important;border-bottom:1px solid #4a7a7260!important}
+#fcQuick .miniBrand{font-size:clamp(12px,1.9vw,27px)!important;color:#fff!important;font-weight:1000!important;letter-spacing:-.06em!important;opacity:1!important;white-space:nowrap}
+#fcQuick .miniBrand em{font-style:normal;color:#a9ff5e}
+#fcQuick .miniQuickHead strong{font-size:clamp(13px,1.8vw,26px)!important}
+#fcQuick .miniQuickHead>span:not(.miniBrand){font-size:clamp(11px,1.5vw,20px)!important}
+#fcQuick .miniQuickArena{display:grid!important;grid-template-columns:clamp(25px,5.5vw,85px) minmax(0,1fr) minmax(85px,16vw,220px) minmax(0,1fr) clamp(25px,5.5vw,85px)!important;gap:clamp(4px,.8vw,14px)!important;width:100%!important;max-width:1440px!important;flex:1 1 auto!important;min-height:0!important;align-items:stretch!important;padding:clamp(3px,1vh,10px) 0!important}
+#fcQuick .miniSideName{display:flex!important;align-items:center!important;justify-content:center!important;writing-mode:vertical-rl!important;transform:rotate(180deg)!important;font-weight:1000!important;letter-spacing:.08em!important;color:#d3dedc!important;font-size:clamp(19px,3.3vw,48px)!important;text-shadow:0 3px 9px #000!important}
+#fcQuick .miniAwayWord{transform:none!important}
+#fcQuick .miniTeamCard{height:100%!important;max-height:none!important;min-height:0!important;align-self:stretch!important;display:flex!important;flex-direction:column!important;gap:clamp(3px,.7vh,9px)!important}
+#fcQuick .miniTeamCard::before{display:none!important}
+#fcQuick .miniGender{display:grid!important;grid-template-columns:1fr 1fr!important;gap:clamp(3px,.5vw,8px)!important;padding:0!important;flex:0 0 auto!important}
+#fcQuick .miniGender button{display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-width:0!important;min-height:clamp(22px,4.8vh,38px)!important;padding:3px!important;border:1px solid #8fc3b83d!important;border-radius:6px!important;background:#122b38cc!important;color:#e3f1ef!important;font-size:clamp(8px,1.04vw,14px)!important;white-space:nowrap}
+#fcQuick .miniGenderDot{display:inline-grid!important;place-items:center!important;flex:0 0 auto!important;width:clamp(10px,1.4vw,18px)!important;height:clamp(10px,1.4vw,18px)!important;border-radius:50%!important;border:1px solid #5a7776!important;background:#081923!important;font-size:10px!important}
+#fcQuick .miniGender button[aria-pressed="true"] .miniGenderDot{background:#37e88c!important;border-color:#39f3a0!important;color:#05231c!important}
+#fcQuick .miniCountryBar{display:flex!important;justify-content:center!important;align-items:center!important;gap:clamp(9px,2vw,25px)!important;flex:0 0 auto!important;min-height:clamp(27px,6vh,52px)!important;background:#1a3948c9!important;border:1px solid #8ab4aa30!important;border-radius:6px!important;font-size:clamp(12px,1.55vw,21px)!important;font-weight:700!important}
+#fcQuick .miniCountryBar span:last-child{font-size:clamp(17px,2vw,28px)!important}
+#fcQuick .miniTeamMain{flex:1 1 auto!important;min-height:0!important;gap:0!important;padding:clamp(3px,.7vh,10px)!important;background:linear-gradient(145deg,#547c81a3,#173649c7 76%)!important;border-radius:5px!important}
+#fcQuick .miniTeamMain h3{font-size:clamp(14px,2vw,29px)!important;line-height:1.1!important}
+#fcQuick .miniEmblemRow{flex:1 1 auto!important;min-height:0!important}
+#fcQuick .miniEmblem{height:clamp(45px,20vh,170px)!important;width:clamp(50px,12vw,160px)!important}
+#fcQuick .miniStars{font-size:clamp(11px,1.5vw,21px)!important}
+#fcQuick .miniStats{font-size:clamp(9px,1.1vw,15px)!important}
+#fcQuick .miniLeague{flex:0 0 auto!important;min-height:clamp(42px,10vh,85px)!important;justify-content:center!important;padding:clamp(3px,.8vh,9px)!important;background:#112d3bdc!important}
+#fcQuick .miniLeagueCaption{font-size:clamp(9px,1vw,13px)!important}
+#fcQuick .miniLeagueInput{min-height:clamp(24px,4.7vh,41px)!important}
+#fcQuick .miniLeagueFooter{display:none!important}
+#fcQuick .miniCenterOptions{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:clamp(8px,4vh,45px)!important;height:100%!important;min-width:0!important}
+#fcQuick .miniCenterOptions>b{display:none!important}
+#fcQuick .miniCenterOptions button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;background:transparent!important;border:0!important;color:#fff!important;font-size:clamp(10px,1.25vw,17px)!important;padding:5px!important;text-align:center!important;white-space:normal!important}
+#fcQuick .miniCenterOptions strong{font-size:clamp(11px,1.4vw,18px)!important;color:#e6f5ef!important}
+#fcQuick .miniCenterOptions button[aria-pressed="true"] .miniOptionIcon{color:#39ef93!important}
+#fcQuick .miniCenterOptions small{font-size:clamp(9px,1.1vw,15px)!important;font-weight:400!important}
+#fcQuick .miniQuickFooter{flex:0 0 auto!important;min-height:clamp(37px,9vh,75px)!important;justify-content:space-between!important;padding:.5vh 2vw!important;background:#051117ad!important;gap:5px!important}
+#fcQuick .miniFooterNav{display:flex!important;align-items:center!important;gap:clamp(4px,1vw,14px)!important}
+#fcQuick .miniFooterNav button{background:transparent!important;border:0!important;color:#f1fffa!important;font-size:clamp(9px,1.1vw,15px)!important;padding:4px!important;font-weight:600!important}
+#fcQuick #fcPlay{background:#82f1b8!important;border-radius:8px!important;padding:clamp(7px,1.4vh,15px) clamp(12px,2vw,26px)!important;font-size:clamp(12px,1.5vw,19px)!important;white-space:nowrap!important}
+#fcQuick .miniStageFloorLogo{font-size:clamp(65px,15vw,230px)!important;color:#b7ffe51e!important}
+#fcQuick .miniStageWall{top:11%!important;height:63%!important}
+#fcQuick .miniStageFloor{top:74%!important}
+@media(orientation:landscape) and (max-height:450px){#fcQuick .miniQuickArena{padding:2px 0!important}#fcQuick .miniGender button{min-height:21px!important}#fcQuick .miniCountryBar{min-height:23px!important}#fcQuick .miniLeague{min-height:37px!important}#fcQuick .miniEmblem{height:clamp(40px,16vh,76px)!important}#fcQuick .miniStats{font-size:9px!important}#fcQuick .miniQuickFooter{min-height:35px!important}}
 </style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><div style="font-size:13px;margin-top:14px;text-align:left"><label for="weatherChoice">CLIMA</label><select id="weatherChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="auto">Automático</option><option value="sun">Ensolarado</option><option value="cloud">Nublado</option><option value="rain">Chuvoso</option><option value="snow">Neve</option><option value="random">Aleatório</option></select><label for="timeChoice">HORÁRIO</label><select id="timeChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="day">Tarde</option><option value="morning">Manhã</option><option value="dusk">Entardecer</option><option value="night">Noite</option></select><div id="weatherStatus" style="margin-top:5px;color:#c8dbea">Ensolarado · gramado seco</div></div><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><div id="arrivalHud" style="display:none;position:fixed;inset:0;z-index:11;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99);color:white"><div style="position:absolute;left:5%;bottom:8%;font-size:clamp(17px,3vw,30px);font-weight:bold">MINI FC27 · CHEGADA AO ESTÁDIO<div id="arrivalCaption" style="font-size:14px;font-weight:normal;margin-top:8px">O ônibus da equipe se aproxima do estádio</div></div><button id="arrivalSkip" style="position:absolute;right:3%;top:5%;pointer-events:auto;width:auto;height:auto;padding:10px 16px;border-radius:8px">Pular ▶</button></div>
 <div id="walkoutHud" style="display:none;position:fixed;inset:0;z-index:12;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99)"><div id="walkoutCaption" style="position:absolute;bottom:8%;left:5%;font-weight:bold">Entrada dos jogadores</div><button id="walkoutSkip" style="position:absolute;top:5%;right:3%;pointer-events:auto;padding:10px;border-radius:8px">Pular ▶</button></div>
 <div id="medicalStatus" style="display:none" aria-live="polite"></div><button id="medicalRecover" type="button" hidden>Recuperar elenco</button>
@@ -543,22 +586,22 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
  <div class="miniStageCeiling"></div><div class="miniStageSeam"></div><div class="miniStageSideGlow miniStageSideGlowL"></div><div class="miniStageSideGlow miniStageSideGlowR"></div>
  <div class="miniStageEdge miniStageEdgeLeft"></div><div class="miniStageEdge miniStageEdgeRight"></div>
 </div>
-<header class="miniQuickHead"><strong>Partida Clássica</strong><i></i><span>Selecionar times</span><button class="fcBack" type="button">← Voltar</button></header>
+<header class="miniQuickHead"><span class="miniBrand">MINI <em>FC27</em></span><strong>Partida Clássica</strong><i></i><span>Selecionar times</span><button class="fcBack" type="button">← Voltar</button></header>
 <main class="miniQuickArena">
 <div class="miniSideName">CASA</div>
 <article class="miniTeamCard" id="miniHomePanel" tabindex="0" aria-label="Equipe da casa">
-<div class="miniGender"><button type="button" id="miniHomeGender">Masculino</button></div>
+<div class="miniGender"><button type="button" id="miniHomeGender" aria-pressed="true"><span class="miniGenderDot">✓</span> Times masculinos</button><button type="button" class="miniFemaleOption" id="miniHomeFemale" aria-pressed="false"><span class="miniGenderDot"></span> Times femininos</button></div><div class="miniCountryBar"><span id="miniHomeCountry">Brasil</span><span id="miniHomeCountryFlag">🇧🇷</span></div>
 <div class="miniTeamMain"><h3 id="miniHomeName">Flamengo</h3><div class="miniEmblemRow"><button type="button" id="miniHomePrev" aria-label="Clube anterior casa">‹</button><div class="miniEmblem" id="miniHomeEmblem">F</div><button type="button" id="miniHomeNext" aria-label="Próximo clube casa">›</button></div><div class="miniStars" id="miniHomeStars">★★★★☆</div><div class="miniStats" id="miniHomeStats"><span>ATA<br><b>75</b></span><span>MEI<br><b>75</b></span><span>DEF<br><b>75</b></span></div></div>
 <label class="miniLeague"><span class="miniLeagueCaption">LIGA SELECIONADA</span><span class="miniLeagueInput"><span id="miniHomeFlag">🇧🇷</span><select id="miniHomeLeague" aria-label="Liga casa"></select></span></label><div class="miniLeagueFooter" id="miniHomeFooter" hidden>BRASILEIRÃO SÉRIE A</div>
 </article>
-<div class="miniCenterOptions"><b>×</b><button id="miniAdvantage" type="button" aria-pressed="false" hidden>VANTAGEM<br><strong>DESATIVADA</strong></button><button id="miniForm" type="button" aria-pressed="true" hidden>FORMA ATUAL<br><strong>ATIVADA</strong></button></div>
+<div class="miniCenterOptions"><button id="miniAdvantage" type="button" aria-pressed="false"><span class="miniOptionIcon">◇</span><strong>Não</strong><small>Opções de vantagem</small></button><button id="miniForm" type="button" aria-pressed="true"><span class="miniOptionIcon">◉</span><strong>Sim</strong><small>Fase ao vivo</small></button></div>
 <article class="miniTeamCard" id="miniAwayPanel" tabindex="0" aria-label="Equipe visitante">
-<div class="miniGender"><button type="button" id="miniAwayGender">Masculino</button></div>
+<div class="miniGender"><button type="button" id="miniAwayGender" aria-pressed="true"><span class="miniGenderDot">✓</span> Times masculinos</button><button type="button" class="miniFemaleOption" id="miniAwayFemale" aria-pressed="false"><span class="miniGenderDot"></span> Times femininos</button></div><div class="miniCountryBar"><span id="miniAwayCountry">Brasil</span><span id="miniAwayCountryFlag">🇧🇷</span></div>
 <div class="miniTeamMain"><h3 id="miniAwayName">Palmeiras</h3><div class="miniEmblemRow"><button type="button" id="miniAwayPrev" aria-label="Clube anterior visitante">‹</button><div class="miniEmblem" id="miniAwayEmblem">P</div><button type="button" id="miniAwayNext" aria-label="Próximo clube visitante">›</button></div><div class="miniStars" id="miniAwayStars">★★★★☆</div><div class="miniStats" id="miniAwayStats"><span>ATA<br><b>75</b></span><span>MEI<br><b>75</b></span><span>DEF<br><b>75</b></span></div></div>
 <label class="miniLeague"><span class="miniLeagueCaption">LIGA SELECIONADA</span><span class="miniLeagueInput"><span id="miniAwayFlag">🇧🇷</span><select id="miniAwayLeague" aria-label="Liga visitante"></select></span></label><div class="miniLeagueFooter" id="miniAwayFooter" hidden>BRASILEIRÃO SÉRIE A</div>
 </article><div class="miniSideName miniAwayWord">FORA</div>
 </main>
-<footer class="miniQuickFooter"><div class="miniFooterNav"><button type="button" id="miniRandom">Aleatorizar</button><button type="button" id="miniFooterBack" hidden>← Voltar</button></div><button id="fcPlay" type="button">Começar partida</button><small id="miniQuickNotice" role="status" aria-live="polite"></small></footer>
+<footer class="miniQuickFooter"><div class="miniFooterNav"><button type="button" id="miniSelectHint">◉ Selecionar</button><button type="button" id="miniFooterBack">◯ Voltar</button><button type="button" id="miniRandom">◇ Aleatório</button></div><button id="fcPlay" type="button">Começar partida</button><small id="miniQuickNotice" role="status" aria-live="polite"></small></footer>
 </section><section class="fcScreen" id="fcInfo"><div class="fcScreenHead"><h2 id="fcInfoTitle">MODO</h2><button class="fcBack">← VOLTAR</button></div><p class="fcNote" id="fcInfoText"></p><div id="fcInfoActions"></div></section>
   <section class="fcScreen" id="fcSettings"><div class="fcScreenHead"><h2>CONFIGURAÇÕES</h2><button class="fcBack">← VOLTAR</button></div><label class="fcSwitch">Câmera <select id="fcCamera"><option value="tv">TV</option><option value="other">Alternar câmera</option></select></label><label class="fcSwitch">VAR <input id="fcVar" type="checkbox" checked></label><p class="fcNote">Configurações ligadas aos controles existentes no jogo.</p></section>
 </div>
@@ -1719,6 +1762,8 @@ const miniSelection={Home:fcHome,Away:fcAway,active:'Home',advantage:false,form:
 function miniChoose(side){miniSelection.active=side;for(const name of ['Home','Away'])document.getElementById('mini'+name+'Panel').classList.toggle('miniActive',name===side)}
 function miniDraw(side){
  const c=fcClubs[miniSelection[side]],prefix='mini'+side;
+ document.getElementById(prefix+'Country').textContent=c.league==='Brasil'?'Brasil':c.league;
+ document.getElementById(prefix+'CountryFlag').textContent=miniFlags[c.league]||'⚽';
  document.getElementById(prefix+'Name').textContent=c.name;
  document.getElementById(prefix+'Flag').textContent=miniFlags[c.league]||'⚽';
  document.getElementById(prefix+'League').value=c.league;
@@ -1739,13 +1784,16 @@ for(const side of ['Home','Away']){
  document.getElementById('mini'+side+'Panel').addEventListener('click',()=>miniChoose(side));
  document.getElementById('mini'+side+'Panel').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){miniChoose(side);e.preventDefault()}});
  document.getElementById('mini'+side+'Gender').onclick=()=>{document.getElementById('miniQuickNotice').textContent='Equipes femininas não cadastradas.'};
+ document.getElementById('mini'+side+'Female').onclick=()=>{document.getElementById('miniQuickNotice').textContent='Times femininos ainda não estão cadastrados nesta versão.'};
  miniDraw(side);
 }
+document.getElementById('miniSelectHint').onclick=()=>miniChoose(miniSelection.active==='Home'?'Away':'Home');
+document.getElementById('miniFooterBack').onclick=()=>fcScreen('');
 miniChoose('Home');
 window.miniFullGameReady=true;window.miniEngineStatus='Motor 3D pronto';
 for(const [id,key,off,on] of [['miniAdvantage','advantage','DESATIVADA','ATIVADA'],['miniForm','form','DESATIVADA','ATIVADA']]){
  const el=document.getElementById(id);
- el.onclick=()=>{miniSelection[key]=!miniSelection[key];el.setAttribute('aria-pressed',String(miniSelection[key]));el.querySelector('strong').textContent=miniSelection[key]?on:off};
+ el.onclick=()=>{miniSelection[key]=!miniSelection[key];el.setAttribute('aria-pressed',String(miniSelection[key]));el.querySelector('strong').textContent=miniSelection[key]?'Sim':'Não'};
 }
 document.getElementById('miniRandom').onclick=()=>{miniSelection.Home=Math.floor(Math.random()*fcClubs.length);miniSelection.Away=Math.floor(Math.random()*fcClubs.length);miniDraw('Home');miniDraw('Away')};
 document.getElementById('miniFooterBack').onclick=()=>fcScreen('');
@@ -1933,4 +1981,4 @@ controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=fa
  const sway=sd.miniSkillTime>0?Math.sin(skillP*Math.PI*2)*.45:0;
  ball.position.set(controlledPlayer.position.x+sway,.37,controlledPlayer.position.z-touch+(sd.miniSkillTime>0?Math.sin(skillP*Math.PI)*.22:0));
 }else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}velocity.x+=weather.wind*dt*.012;ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*(1-weather.wetness*.3+weather.snow*.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<(8+miniAthleteAttribute(controlledPlayer,'dribbling')*.065)&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();arrivalCamera.aspect=innerWidth/innerHeight;arrivalCamera.updateProjectionMatrix();walkoutCamera.aspect=innerWidth/innerHeight;walkoutCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);fcCam.aspect=innerWidth/innerHeight;fcCam.updateProjectionMatrix();fcRenderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
-</script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=29").catch(console.warn))}</script></body></html>
+</script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=30").catch(console.warn))}</script></body></html>
