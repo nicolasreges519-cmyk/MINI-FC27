@@ -2244,13 +2244,22 @@ fcChangeVariant();
 // Carrega o GLB fornecido pelo usuário quando o arquivo estiver publicado em assets/.
 // O boneco anterior é mantido como fallback para evitar uma tela vazia.
 let fcImportedPlayer=null,fcImportedMixer=null;
+const fcModelStatus=document.createElement('div');
+fcModelStatus.id='fcModelStatus';
+fcModelStatus.style.cssText='position:fixed;right:12px;top:65px;z-index:110;color:#fff;background:#101820c9;border-radius:6px;padding:5px 9px;font:11px Arial;pointer-events:none';
+fcModelStatus.textContent='Carregando jogador 3D…';
+document.body.appendChild(fcModelStatus);
 (async()=>{
  try{
-  const asset='./professional-soccer-standing.glb';
-  const response=await fetch(asset,{method:'HEAD'});
-  if(!response.ok) return;
+  const asset=new URL('./professional-soccer-standing.glb',location.href).href;
+  // O GET é feito diretamente: servidores estáticos nem sempre aceitam HEAD.
+  const response=await fetch(asset,{cache:'no-store'});
+  if(!response.ok)throw new Error('Arquivo GLB indisponível (HTTP '+response.status+')');
+  const buffer=await response.arrayBuffer();
+  if(buffer.byteLength<20)throw new Error('Arquivo GLB vazio');
   const {GLTFLoader}=await import('https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/GLTFLoader.js');
-  const gltf=await new GLTFLoader().loadAsync(asset);
+  const loader=new GLTFLoader();
+  const gltf=await new Promise((resolve,reject)=>loader.parse(buffer,asset.slice(0,asset.lastIndexOf('/')+1),resolve,reject));
   const model=gltf.scene;
   const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
   if(!Number.isFinite(size.y)||size.y<=0)throw new Error('Dimensões inválidas');
@@ -2258,14 +2267,18 @@ let fcImportedPlayer=null,fcImportedMixer=null;
   bounds.setFromObject(model);
   const center=bounds.getCenter(new THREE.Vector3());
   model.position.set(-center.x,-bounds.min.y,-center.z);
-  model.traverse(obj=>{if(obj.isMesh){obj.frustumCulled=true;obj.castShadow=false;obj.receiveShadow=false}});
+  model.traverse(obj=>{if(obj.isMesh){obj.castShadow=false;obj.receiveShadow=false}});
   fcActor.add(model);fcImportedPlayer=model;
-  for(const part of [...fcActor.children])if(part!==model&&part!==fcBall&&part!==fcFaceGroup&&part!==fcLimbJoints.hipL&&part!==fcLimbJoints.hipR&&part!==fcLimbJoints.shoulderL&&part!==fcLimbJoints.shoulderR)part.visible=false;
-  fcFaceGroup.visible=false;
-  for(const key of Object.keys(fcLimbJoints))fcLimbJoints[key].visible=false;
+  // O modelo substitui o boneco procedural inteiro; bola e cenário continuam.
+  for(const part of [...fcActor.children])if(part!==model)part.visible=false;
   if(gltf.animations.length){fcImportedMixer=new THREE.AnimationMixer(model);fcImportedMixer.clipAction(gltf.animations[0]).play()}
-  console.info('MINI FC27: jogador GLB carregado no menu');
- }catch(error){console.warn('MINI FC27: mantendo jogador anterior',error)}
+  fcModelStatus.textContent='Jogador 3D carregado';
+  setTimeout(()=>fcModelStatus.remove(),4000);
+  console.info('MINI FC27: GLB carregado',buffer.byteLength);
+ }catch(error){
+  fcModelStatus.textContent='Modelo 3D não carregou: '+String(error.message||error).slice(0,90);
+  console.warn('MINI FC27: mantendo jogador anterior',error);
+ }
 })();
 function fcAnimate(dt){
 if(fcImportedMixer)fcImportedMixer.update(dt);fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}
