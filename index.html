@@ -310,7 +310,7 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
 #fcQuick .miniCenterOptions>b{font-size:clamp(22px,3.8vw,48px)}
 #fcQuick .miniCenterOptions strong{color:#b6ffcb}
 #fcQuick .miniQuickFooter{position:relative;z-index:1;background:#041014c7;min-height:clamp(35px,8vh,62px);display:flex;align-items:center;justify-content:space-between;padding:3px 3vw;gap:10px;font-size:clamp(9px,1.1vw,13px)}
-#fcQuick #fcPlay{background:#b5ff36;color:#07160e;border:0;border-radius:6px;padding:clamp(7px,1.3vh,13px) clamp(12px,2vw,27px);font-weight:1000;font-size:clamp(11px,1.6vw,18px);white-space:nowrap}
+#miniFormations select{max-width:120px}#fcQuick #fcPlay{background:#b5ff36;color:#07160e;border:0;border-radius:6px;padding:clamp(7px,1.3vh,13px) clamp(12px,2vw,27px);font-weight:1000;font-size:clamp(11px,1.6vw,18px);white-space:nowrap}
 @media(max-height:440px) and (orientation:landscape){#fcQuick .miniQuickHead{height:35px}#fcQuick .miniQuickArena{padding:3px 1vw;gap:5px}#fcQuick .miniGender{padding:2px 5px}#fcQuick .miniLeague{padding:2px 5px}#fcQuick .miniTeamMain{padding:2px}#fcQuick .miniEmblem{width:clamp(50px,15vh,76px);height:clamp(50px,15vh,76px)}#fcQuick .miniQuickFooter{min-height:34px}#fcQuick .miniLeagueFooter{padding:2px}#fcQuick .miniStats{font-size:10px}}
 
 /* Selecao compacta: paineis menores e centralizados como referencia */
@@ -1393,13 +1393,26 @@ for(const [id,key,off,on] of [['miniAdvantage','advantage','DESATIVADA','ATIVADA
 }
 document.getElementById('miniRandom').onclick=()=>{miniSelection.Home=Math.floor(Math.random()*fcClubs.length);miniSelection.Away=Math.floor(Math.random()*fcClubs.length);miniDraw('Home');miniDraw('Away')};
 document.getElementById('miniFooterBack').onclick=()=>fcScreen('');
-/* Escalações 11x11: dez jogadores de linha, goleiro e reservas em dados. Substituições interativas pendentes. */
-function miniPickLineup(club){
+const miniFormationTemplates={"4-3-3":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["MC",-14,11],["VOL",0,16],["MC",14,11],["PE",-23,-12],["PD",23,-12],["ATA",0,-23]],"4-4-2":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["PE",-23,7],["MC",-8,12],["MC",8,12],["PD",23,7],["ATA",-9,-18],["ATA",9,-18]],"4-2-3-1":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["VOL",-10,16],["VOL",10,16],["PE",-23,-4],["MEI",0,-3],["PD",23,-4],["ATA",0,-24]],"4-1-2-1-2":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["VOL",0,20],["MC",-15,7],["MC",15,7],["MEI",0,-6],["ATA",-10,-23],["ATA",10,-23]],"4-3-2-1":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["MC",-15,10],["VOL",0,17],["MC",15,10],["MEI",-10,-8],["MEI",10,-8],["ATA",0,-25]],"4-5-1":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["PE",-25,0],["MC",-12,12],["VOL",0,16],["MC",12,12],["PD",25,0],["ATA",0,-23]],"3-5-2":[["ZAG",-17,30],["ZAG",0,34],["ZAG",17,30],["LE",-27,5],["MC",-12,12],["VOL",0,17],["MC",12,12],["LD",27,5],["ATA",-10,-21],["ATA",10,-21]],"3-4-3":[["ZAG",-17,30],["ZAG",0,34],["ZAG",17,30],["PE",-25,8],["MC",-9,14],["MC",9,14],["PD",25,8],["PE",-22,-18],["ATA",0,-25],["PD",22,-18]],"5-3-2":[["LE",-27,25],["ZAG",-15,32],["ZAG",0,35],["ZAG",15,32],["LD",27,25],["MC",-14,7],["VOL",0,14],["MC",14,7],["ATA",-10,-20],["ATA",10,-20]],"5-2-3":[["LE",-27,25],["ZAG",-15,32],["ZAG",0,35],["ZAG",15,32],["LD",27,25],["VOL",-10,10],["MC",10,10],["PE",-22,-15],["ATA",0,-23],["PD",22,-15]]};
+let miniFormationHome='4-3-3',miniFormationAway='4-3-3';
+function miniSetFormation(side,name){
+ const rows=miniFormationTemplates[name]||miniFormationTemplates['4-3-3'];
+ const positions=side==='Home'?miniHomePositions:miniAwayPositions;
+ for(let i=0;i<10;i++){const r=rows[i];positions[i][0]=r[1];positions[i][1]=side==='Home'?r[2]:-r[2]}
+ if(side==='Home'){miniFormationHome=name;const chosen=blueRoster.find(p=>p===controlledPlayer);if(chosen&&blueRoster.indexOf(chosen)>0)controlledPlayer=blueRoster[0]}
+ else miniFormationAway=name;
+ const team=side==='Home'?blueRoster:foes;
+ team.forEach((p,i)=>{p.position.set(positions[i][0],.35,positions[i][1])});
+ return rows.map(r=>r[0]);
+}
+
+/* Escalações 11x11 com posições por formação e banco de reservas. */
+function miniPickLineup(club,formation='4-3-3'){
  const pool=Array.isArray(club.roster)?club.roster.filter(p=>p&&p.name):[];
  const used=new Set();
  function take(test){const index=pool.findIndex((p,i)=>!used.has(i)&&test(p));if(index<0)return null;used.add(index);return pool[index]}
  const keeper=take(p=>p.position==='GOL');
- const roles=['ZAG','ZAG','LD','LE','VOL','MC','MEI','PE','PD','ATA'];
+ const roles=(miniFormationTemplates[formation]||miniFormationTemplates['4-3-3']).map(r=>r[0]);
  const field=roles.map(role=>take(p=>p.position===role)||take(p=>p.position!=='GOL'));
  const bench=pool.filter((_,i)=>!used.has(i));
  return {keeper,field,bench};
@@ -1419,12 +1432,12 @@ function miniPlayerLabel(athlete,entry){
  athlete.add(tag);athlete.userData.miniNameTag=tag;
 }
 function miniBindMatchRoster(home,away){
- const h=miniPickLineup(home),a=miniPickLineup(away);
+ const h=miniPickLineup(home,miniFormationHome),a=miniPickLineup(away,miniFormationAway);
  blueRoster.forEach((athlete,i)=>{miniPlayerLabel(athlete,h.field[i]);const m=medical.get(athlete);if(m)m.number=h.field[i]?.number??(i+1)});
  foes.forEach((athlete,i)=>miniPlayerLabel(athlete,a.field[i]));
  // Índice 0 do vetor keepers defende o gol adversário (-Z), índice 1 o gol mandante (+Z).
  miniPlayerLabel(keepers[0],a.keeper);miniPlayerLabel(keepers[1],h.keeper);
- window.miniActiveLineups={home:{club:home.name,...h},away:{club:away.name,...a},format:'10 jogadores de linha + 1 goleiro por lado'};
+ window.miniActiveLineups={home:{club:home.name,...h},away:{club:away.name,...a},format:'11x11',formations:{home:miniFormationHome,away:miniFormationAway}};
  medicalUpdateHud();
 }
 function miniApplyKit(athletes,club){
@@ -1438,14 +1451,17 @@ function miniApplyKit(athletes,club){
   for(const mat of athlete.userData.miniKitMaterials)mat.color.copy(tint);
  }
 }
+(function(){const quick=document.getElementById('fcQuick');const footer=quick&&quick.querySelector('.miniQuickFooter');if(footer)footer.insertAdjacentHTML('beforebegin',"<div id=\"miniFormations\" style=\"display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:6px 8px;background:#071b20;color:white;font-size:12px\"><label>Formação mandante <select id=\"miniFormationHome\" style=\"background:#193b43;color:white;border:1px solid #78939a;border-radius:6px;padding:5px\"><option value=\"4-3-3\">4-3-3</option><option value=\"4-4-2\">4-4-2</option><option value=\"4-2-3-1\">4-2-3-1</option><option value=\"4-1-2-1-2\">4-1-2-1-2</option><option value=\"4-3-2-1\">4-3-2-1</option><option value=\"4-5-1\">4-5-1</option><option value=\"3-5-2\">3-5-2</option><option value=\"3-4-3\">3-4-3</option><option value=\"5-3-2\">5-3-2</option><option value=\"5-2-3\">5-2-3</option></select></label><label>Formação visitante <select id=\"miniFormationAway\" style=\"background:#193b43;color:white;border:1px solid #78939a;border-radius:6px;padding:5px\"><option value=\"4-3-3\">4-3-3</option><option value=\"4-4-2\">4-4-2</option><option value=\"4-2-3-1\">4-2-3-1</option><option value=\"4-1-2-1-2\">4-1-2-1-2</option><option value=\"4-3-2-1\">4-3-2-1</option><option value=\"4-5-1\">4-5-1</option><option value=\"3-5-2\">3-5-2</option><option value=\"3-4-3\">3-4-3</option><option value=\"5-3-2\">5-3-2</option><option value=\"5-2-3\">5-2-3</option></select></label></div>");})();
 document.getElementById('fcPlay').onclick=()=>{
  fcHome=miniSelection.Home;fcAway=miniSelection.Away;
  const home=fcClubs[fcHome],away=fcClubs[fcAway];
+ miniSetFormation('Home',document.getElementById('miniFormationHome')?.value||'4-3-3');
+ miniSetFormation('Away',document.getElementById('miniFormationAway')?.value||'4-3-3');
  miniApplyKit(blueRoster,home);miniApplyKit(foes,away);
  miniBindMatchRoster(home,away);
  const hud=document.getElementById('hud');hud.dataset.home=home.short;hud.dataset.away=away.short;
  const score=document.getElementById('score');if(score){hud.childNodes.forEach(n=>{if(n.nodeType===3&&n.textContent.trim())n.textContent=' '});hud.insertBefore(document.createTextNode(home.short+' '),score);hud.insertBefore(document.createTextNode(' '+away.short+' '),document.getElementById('clock'))}
- window.miniMatchSelection={home:home.name,away:away.name,advantage:miniSelection.advantage,form:miniSelection.form};
+ window.miniMatchSelection={home:home.name,away:away.name,advantage:miniSelection.advantage,form:miniSelection.form,formations:{home:miniFormationHome,away:miniFormationAway}};
  fcClose();
 };
 
