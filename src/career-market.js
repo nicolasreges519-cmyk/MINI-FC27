@@ -116,7 +116,19 @@ D('dealSubmit').onclick=()=>{
   const presentation={player:{...signed},from:n.club,to:state.club,amount:n.accepted,years,color:fcClubs.find(c=>c.name===state.club)?.color||'#5a62a8'};
   state.presentations=state.presentations||[];state.presentations.push(presentation);
   save();deal.hidden=true;root.hidden=false;selected=null;render();
-  window.miniShowSigningPresentation?.(presentation);
+  const startPress=()=>{
+   if(n.accepted<15000000)return;
+   state.pressReputation=state.pressReputation||{morale:{},board:50,fans:50};
+   window.miniStartPressConference?.(presentation,(delta,answer)=>{
+    const reputation=state.pressReputation;
+    reputation.morale[signed.name]=Math.max(0,Math.min(100,(reputation.morale[signed.name]??50)+delta.morale));
+    reputation.board=Math.max(0,Math.min(100,reputation.board+delta.board));
+    reputation.fans=Math.max(0,Math.min(100,reputation.fans+delta.fans));
+    state.history.push('Coletiva: '+answer.question+' — '+answer.answer);
+    save();
+   });
+  };
+  window.miniShowSigningPresentation?.({...presentation,onFinish:startPress});
  }
 };
 D('dealClose').onclick=()=>{deal.hidden=true;root.hidden=false;negotiation=null;render()};
