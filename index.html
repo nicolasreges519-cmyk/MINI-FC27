@@ -2204,6 +2204,27 @@ fcRenderer.domElement.addEventListener('pointerdown',e=>{if(!fcMenuActive)return
 fcRenderer.domElement.addEventListener('pointermove',e=>{if(!fcDragging)return;fcPreviewRotation+=(e.clientX-fcPointerX)*.009;fcPointerX=e.clientX});
 fcRenderer.domElement.addEventListener('pointerup',()=>{fcDragging=false});
 fcRenderer.domElement.addEventListener('pointercancel',()=>{fcDragging=false});
+
+// Articulações hierárquicas do personagem do menu (protótipo leve para Android).
+fcLegL.visible=false;fcLegR.visible=false;fcArmL.visible=false;fcArmR.visible=false;
+const fcLimbJoints={};
+function fcJoint(name,x,y,z){const g=new THREE.Group();g.position.set(x,y,z);fcActor.add(g);fcLimbJoints[name]=g;return g}
+function fcLimb(parent,radius,length,material,offsetY){const mesh=new THREE.Mesh(new THREE.CapsuleGeometry(radius,length,5,10),material);mesh.position.y=offsetY;parent.add(mesh);return mesh}
+const fcShorts=fcMat(0x202c39),fcSocks=fcMat(0xe6e7ea,.8);
+for(const [side,x] of [['L',-.25],['R',.25]]){
+ const hip=fcJoint('hip'+side,x,1.48,0);
+ fcLimb(hip,.19,.42,fcShorts,-.27);
+ const knee=new THREE.Group();knee.position.y=-.66;hip.add(knee);fcLimbJoints['knee'+side]=knee;
+ fcLimb(knee,.135,.44,fcSocks,-.34);
+ const foot=new THREE.Mesh(new THREE.BoxGeometry(.27,.16,.48),fcBoot);foot.position.set(0,-.77,.16);knee.add(foot);
+ const shoulder=fcJoint('shoulder'+side,x<0?-.52:.52,2.43,0);
+ fcLimb(shoulder,.145,.31,fcBody.material,-.25);
+ const elbow=new THREE.Group();elbow.position.y=-.49;shoulder.add(elbow);fcLimbJoints['elbow'+side]=elbow;
+ fcLimb(elbow,.095,.3,fcSkinPBR,-.23);
+ const hand=new THREE.Mesh(new THREE.SphereGeometry(.115,10,8),fcSkinPBR);hand.position.y=-.48;elbow.add(hand);
+}
+const fcClothPanel=fcPart(new THREE.SphereGeometry(.35,14,10),fcBody.material,0,1.85,.015);
+fcClothPanel.scale.set(1.02,.88,.85);
 const fcVariants=[{name:'AZUL FC',kit:0x245bca,locker:0x344159},{name:'VERMELHO FC',kit:0xd83f4d,locker:0x4c2936},{name:'VERDE FC',kit:0x19a17a,locker:0x284b46},{name:'OURO FC',kit:0xd7b647,locker:0x4c4530}];
 function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcBody.material.color.setHex(v.kit);fcShoulderL.material.color.setHex(v.kit);fcShoulderR.material.color.setHex(v.kit);fcWaist.material.color.setHex(v.kit);fcKitSleeveL.material.color.setHex(v.kit);fcKitSleeveR.material.color.setHex(v.kit);fcFill.color.setHex(v.kit);fcLockers.forEach(l=>{l.children[0].material.color.setHex(v.locker)});document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
 fcChangeVariant();
@@ -2212,7 +2233,7 @@ fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}
 const t=performance.now()*.001,beat=t*2.4,phase=t*3.6;
 fcActor.position.y=Math.sin(beat)*.035;fcPreviewHold=Math.max(0,fcPreviewHold-dt);if(!fcPreviewHold)fcPreviewRotation+=dt*.16;fcActor.rotation.y=fcPreviewRotation+Math.sin(t*.6)*.08;fcHeadPivot.rotation.y=Math.sin(t*.75)*.08;const blink=Math.pow(Math.max(0,Math.sin(t*1.7)),30);fcLids.forEach(l=>l.scale.y=.03+blink*.7);fcMouth.scale.y=.16+Math.max(0,Math.sin(t*2.2))*.08;
 fcArmL.rotation.x=Math.sin(beat)*.22;fcArmR.rotation.x=-Math.sin(beat)*.22;
-fcLegR.rotation.x=Math.sin(beat*1.2)*.19;fcLegL.rotation.x=-Math.sin(beat*1.2)*.15;
+const gait=Math.sin(beat*1.2);fcLimbJoints.hipL.rotation.x=gait*.24;fcLimbJoints.hipR.rotation.x=-gait*.24;fcLimbJoints.kneeL.rotation.x=Math.max(0,-gait)*.35;fcLimbJoints.kneeR.rotation.x=Math.max(0,gait)*.35;fcLimbJoints.shoulderL.rotation.x=-gait*.18;fcLimbJoints.shoulderR.rotation.x=gait*.18;fcLimbJoints.elbowL.rotation.x=-.18+Math.sin(t*1.7)*.06;fcLimbJoints.elbowR.rotation.x=-.18-Math.sin(t*1.7)*.06;fcClothPanel.scale.x=1.02+Math.sin(beat)*.012;
 fcBall.position.set(2.45+.55+Math.sin(t*.85)*.12,.33+Math.abs(Math.sin(phase))*.7,.65);
 fcBall.rotation.x+=dt*2.2;fcBall.rotation.z+=dt*.8;
 fcFill.intensity=fcBaseFill+Math.sin(t*1.5)*.15;
