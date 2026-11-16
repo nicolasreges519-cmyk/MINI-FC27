@@ -2277,17 +2277,35 @@ function miniApplyKit(athletes,club){
  document.getElementById('miniSquadHome').onclick=()=>{miniEditorSide='Home';miniEditorRender()};
  document.getElementById('miniSquadAway').onclick=()=>{miniEditorSide='Away';miniEditorRender()};
 })();
-document.getElementById('fcPlay').onclick=()=>{
+/* MINI FC27 — seleção de kits, cores provisórias explicitamente não oficiais */
+const miniKitState={Home:0,Away:1};
+function miniKitOptions(club){return [0,1,2].map((index)=>{const kit=club.kits?.[index];return kit&&kit.verified===true?kit:null});}
+function miniKitFallback(club,index){const primary=new THREE.Color(club.color||'#666666');const colors=[primary,new THREE.Color('#eeeeee'),new THREE.Color('#343b49')];return {label:['Principal','Reserva','Alternativo'][index],shirt:'#'+colors[index].getHexString(),shorts:index===1?'#dddddd':'#20242c',socks:index===1?'#dddddd':'#20242c',verified:false,placeholder:true};}
+function miniGetKit(club,index){return miniKitOptions(club)[index]||miniKitFallback(club,index);}
+function miniKitDistance(a,b){return new THREE.Color(a.shirt).distanceTo(new THREE.Color(b.shirt));}
+const miniKitOverlay=document.createElement('div');miniKitOverlay.id='miniKitOverlay';miniKitOverlay.style.cssText='position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;background:#02070beF;color:white;font:14px Arial';
+miniKitOverlay.innerHTML='<div style="width:min(720px,95vw);max-height:90dvh;overflow:auto;background:#10212d;border:1px solid #ffffff33;border-radius:15px;padding:16px"><h2 style="margin:0 0 6px">ESCOLHER UNIFORMES</h2><p style="font-size:12px;color:#d6dbe0">Cores de prévia provisórias — não representam uniformes oficiais de 2026/27.</p><div id="miniKitColumns" style="display:flex;gap:12px;justify-content:space-around"></div><p id="miniKitConflict" style="font-size:12px"></p><div style="display:flex;gap:12px;justify-content:flex-end"><button id="miniKitBack" type="button">Voltar</button><button id="miniKitConfirm" type="button">Iniciar partida</button></div></div>';
+document.body.appendChild(miniKitOverlay);
+const miniKitColumns=miniKitOverlay.querySelector('#miniKitColumns');
+function miniRenderKitPicker(){miniKitColumns.replaceChildren();for(const side of ['Home','Away']){const club=fcClubs[miniSelection[side]],index=miniKitState[side],kit=miniGetKit(club,index);const col=document.createElement('div');col.style.cssText='flex:1;text-align:center;min-width:0';const heading=document.createElement('strong');heading.textContent=(side==='Home'?'CASA — ':'FORA — ')+club.name;col.appendChild(heading);
+const canvas=document.createElement('canvas');canvas.width=150;canvas.height=180;canvas.style.cssText='width:min(100%,150px);height:150px;display:block;margin:5px auto';col.appendChild(canvas);
+const sceneKit=new THREE.Scene(),camKit=new THREE.PerspectiveCamera(42,150/180,.1,30);camKit.position.set(0,1.6,6);camKit.lookAt(0,1.3,0);sceneKit.add(new THREE.AmbientLight(0xffffff,2));const shirt=new THREE.Mesh(new THREE.CapsuleGeometry(.55,.7,4,10),new THREE.MeshLambertMaterial({color:kit.shirt}));shirt.position.y=1.7;sceneKit.add(shirt);const shorts=new THREE.Mesh(new THREE.BoxGeometry(.8,.4,.45),new THREE.MeshLambertMaterial({color:kit.shorts}));shorts.position.y=.9;sceneKit.add(shorts);for(const x of [-.25,.25]){const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.15,.65,3,6),new THREE.MeshLambertMaterial({color:kit.socks}));leg.position.set(x,.32,0);sceneKit.add(leg)}const rendererKit=new THREE.WebGLRenderer({canvas,alpha:true,antialias:false});rendererKit.setPixelRatio(1);rendererKit.setSize(150,180,false);rendererKit.render(sceneKit,camKit);rendererKit.dispose();
+const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;justify-content:center;gap:8px';const left=document.createElement('button');left.textContent='◀';const right=document.createElement('button');right.textContent='▶';const label=document.createElement('span');label.textContent=kit.label+' '+(kit.verified?'✓':'(prévia)');left.onclick=()=>{miniKitState[side]=(index+2)%3;miniRenderKitPicker()};right.onclick=()=>{miniKitState[side]=(index+1)%3;miniRenderKitPicker()};row.append(left,label,right);col.appendChild(row);miniKitColumns.appendChild(col);}
+const home=miniGetKit(fcClubs[miniSelection.Home],miniKitState.Home),away=miniGetKit(fcClubs[miniSelection.Away],miniKitState.Away);const clash=miniKitDistance(home,away)<.32;miniKitOverlay.querySelector('#miniKitConflict').textContent=clash?'⚠ Cores semelhantes. Considere trocar um uniforme.':'Cores suficientemente diferentes na comparação básica.';}
+function miniApplyDetailedKit(athletes,kit){for(const p of athletes){if(!p.userData.miniKitParts){const meshes=[];p.traverse(m=>{if(m.isMesh&&m.material?.color)meshes.push(m)});p.userData.miniKitParts=meshes.filter(m=>m.parent===p||m.parent?.parent===p).map(m=>{m.material=m.material.clone();return m});}for(const m of p.userData.miniKitParts){const y=m.position.y,arm=m.parent!==p;if(y>1.25&&!arm)m.material.color.set(kit.shirt);else if(y>.82&&y<1.25&&!arm)m.material.color.set(kit.shorts);else if(arm&&m.position.y<-.7)m.material.color.set(kit.socks);else if(arm)m.material.color.set(kit.shirt);}}}
+miniKitOverlay.querySelector('#miniKitBack').onclick=()=>miniKitOverlay.style.display='none';
+document.getElementById('fcPlay').onclick=()=>{miniKitOverlay.style.display='flex';miniRenderKitPicker();};
+miniKitOverlay.querySelector('#miniKitConfirm').onclick=()=>{
  fcHome=miniSelection.Home;fcAway=miniSelection.Away;
  const home=fcClubs[fcHome],away=fcClubs[fcAway];
  miniSetFormation('Home',document.getElementById('miniFormationHome')?.value||'4-3-3');
  miniSetFormation('Away',document.getElementById('miniFormationAway')?.value||'4-3-3');
- miniApplyKit(blueRoster,home);miniApplyKit(foes,away);
+ miniApplyKit(blueRoster,home);miniApplyKit(foes,away);miniApplyDetailedKit(blueRoster,miniGetKit(home,miniKitState.Home));miniApplyDetailedKit(foes,miniGetKit(away,miniKitState.Away));
  miniBindMatchRoster(home,away);
  const hud=document.getElementById('hud');hud.dataset.home=home.short;hud.dataset.away=away.short;
  const score=document.getElementById('score');if(score){hud.childNodes.forEach(n=>{if(n.nodeType===3&&n.textContent.trim())n.textContent=' '});hud.insertBefore(document.createTextNode(home.short+' '),score);hud.insertBefore(document.createTextNode(' '+away.short+' '),document.getElementById('clock'))}
  window.miniMatchSelection={home:home.name,away:away.name,advantage:miniSelection.advantage,form:miniSelection.form,formations:{home:miniFormationHome,away:miniFormationAway}};
- fcClose();
+ miniKitOverlay.style.display='none';fcClose();
 };
 
 document.getElementById('fcCamera').onchange=()=>document.getElementById('cameraMode').click();
