@@ -271,13 +271,10 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
 }
 #fcMenu #fcQuick::before,#fcMenu #fcQuick::after{display:none!important;content:none!important}
 
-/* Imagem de referencia para a tela de selecao (arquivo a adicionar ao repositorio). */
+/* Seleção de times totalmente interativa: sem imagem de fundo substituindo os controles. */
 #fcMenu #fcQuick.fcScreen.fcOpen{
- background-color:#000!important;
- background-image:url("./assets/selecao-times.jpg")!important;
- background-position:center center!important;
- background-size:contain!important;
- background-repeat:no-repeat!important;
+ background-color:#090d1a!important;
+ background-image:none!important;
 }
 
 /* MINI FC27 - Selecao de times baseada na composicao enviada, visual proprio */
@@ -2090,7 +2087,7 @@ fcPart(new THREE.BoxGeometry(.3,.16,.53),fcBoot,-.23,.2,.16);fcPart(new THREE.Bo
 const fcArmL=fcPart(new THREE.CapsuleGeometry(.12,.66,4,8),fcSkin,-.56,2.04,0),fcArmR=fcPart(new THREE.CapsuleGeometry(.12,.66,4,8),fcSkin,.56,2.04,0);
 const fcBall=new THREE.Mesh(new THREE.SphereGeometry(.27,16,12),fcMat(0xe8edf1,.4));fcScene.add(fcBall);
 const fcVariants=[{name:'AZUL FC',kit:0x245bca,locker:0x344159},{name:'VERMELHO FC',kit:0xd83f4d,locker:0x4c2936},{name:'VERDE FC',kit:0x19a17a,locker:0x284b46},{name:'OURO FC',kit:0xd7b647,locker:0x4c4530}];
-function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcBody.material.color.setHex(v.kit);fcLockers.forEach(l=>l.children[0].material=fcMat(v.locker));document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
+function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcBody.material.color.setHex(v.kit);fcLockers.forEach(l=>{l.children[0].material.color.setHex(v.locker)});document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
 fcChangeVariant();
 function fcAnimate(dt){fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}const t=performance.now()*.001;fcActor.position.y=Math.sin(t*2.2)*.035;fcArmL.rotation.x=Math.sin(t*2.2)*.18;fcArmR.rotation.x=-Math.sin(t*2.2)*.18;fcLegR.rotation.x=Math.sin(t*3)*.16;fcLegL.rotation.x=-Math.sin(t*3)*.12;fcBall.position.set(3.0,.42+Math.abs(Math.sin(t*3.6))*.68,.65);fcBall.rotation.x+=dt*2.2;fcRenderer.render(fcScene,fcCam)}
 function fcScreen(id){fcScreens.forEach(e=>e.classList.toggle('fcOpen',e.id===id))}
