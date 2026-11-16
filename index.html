@@ -1843,6 +1843,36 @@ fcRoot.querySelectorAll('.fcBack').forEach(b=>b.onclick=()=>fcScreen(''));
 /* Clubes existentes do prototipo; a tela compartilha fcClubs e nao duplica o cadastro. */
 const miniFlags={'Brasil':'🇧🇷','Inglaterra':'🇬🇧','Espanha':'🇪🇸','Alemanha':'🇩🇪','Itália':'🇮🇹','França':'🇫🇷'};
 const miniLeagueLabels={'Brasil':'BRASILEIRÃO SÉRIE A','Inglaterra':'PREMIER LEAGUE','Espanha':'LA LIGA','Alemanha':'BUNDESLIGA','Itália':'SERIE A','França':'LIGUE 1'};
+/* Escudos: consulta imagens públicas apenas quando o cadastro não possui arquivo.
+   Sem imagem confirmada, mantém identificação textual e nunca mostra um escudo de outro time. */
+const miniWikiTitles={
+'Flamengo':'Clube de Regatas do Flamengo','Palmeiras':'Sociedade Esportiva Palmeiras',
+'Santos':'Santos Futebol Clube','Corinthians':'Sport Club Corinthians Paulista',
+'São Paulo':'São Paulo Futebol Clube','Bahia':'Esporte Clube Bahia',
+'Botafogo':'Botafogo de Futebol e Regatas','Fluminense':'Fluminense Football Club',
+'Grêmio':'Grêmio Foot-Ball Porto Alegrense','Internacional':'Sport Club Internacional',
+'Cruzeiro':'Cruzeiro Esporte Clube','Atlético Mineiro':'Clube Atlético Mineiro',
+'Vasco da Gama':'Club de Regatas Vasco da Gama',
+'Real Madrid':'Real Madrid CF','Barcelona':'FC Barcelona',
+'Manchester City':'Manchester City F.C.','Liverpool':'Liverpool F.C.',
+'Arsenal':'Arsenal F.C.','Chelsea':'Chelsea F.C.',
+'Bayern de Munique':'FC Bayern Munich','Borussia Dortmund':'Borussia Dortmund',
+'Juventus':'Juventus FC','Milan':'AC Milan','Inter de Milão':'Inter Milan',
+'Paris Saint-Germain':'Paris Saint-Germain FC'
+};
+const miniCrestCache=new Map();
+function miniTryPublicCrest(club,container){
+ const title=miniWikiTitles[club.name];if(!title)return;
+ const request=miniCrestCache.has(title)?Promise.resolve(miniCrestCache.get(title)):
+ fetch('https://pt.wikipedia.org/w/api.php?'+new URLSearchParams({action:'query',format:'json',origin:'*',prop:'pageimages',pithumbsize:'400',titles:title}))
+ .then(r=>r.ok?r.json():null).then(data=>{const pages=Object.values(data?.query?.pages||{});const url=pages[0]?.thumbnail?.source||null;miniCrestCache.set(title,url);return url}).catch(()=>null);
+ request.then(url=>{
+ if(!url||container.dataset.miniClub!==club.name)return;
+ const img=document.createElement('img');img.src=url;img.alt='Escudo de '+club.name;img.loading='lazy';img.decoding='async';
+ img.onerror=()=>{if(container.dataset.miniClub===club.name)img.remove()};
+ img.onload=()=>{if(container.dataset.miniClub===club.name)container.replaceChildren(img)};
+ });
+}
 const miniSelection={Home:fcHome,Away:fcAway,active:'Home',advantage:false,form:true};
 function miniChoose(side){miniSelection.active=side;for(const name of ['Home','Away'])document.getElementById('mini'+name+'Panel').classList.toggle('miniActive',name===side)}
 function miniDraw(side){
@@ -1853,7 +1883,8 @@ function miniDraw(side){
  document.getElementById(prefix+'Flag').textContent=miniFlags[c.league]||'⚽';
  document.getElementById(prefix+'League').value=c.league;
  document.getElementById(prefix+'Footer').textContent=miniLeagueLabels[c.league]||c.league;
- const crest=document.getElementById(prefix+'Emblem');crest.classList.add('miniSwap');crest.replaceChildren();crest.style.background='transparent';crest.style.color='#fff';const asset=c.crest||c.crestUrl||null;if(asset){const img=document.createElement('img');img.alt='Escudo '+c.name;img.src=asset;img.loading='eager';img.onerror=()=>{crest.replaceChildren();const missing=document.createElement('span');missing.className='miniMissingCrest';missing.textContent=c.name.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();missing.setAttribute('aria-label','Emblema provisório de '+c.name);missing.style.setProperty('--mini-crest-color',c.color||'#1a716c');crest.append(missing)};crest.append(img)}else{const missing=document.createElement('span');missing.className='miniMissingCrest';missing.textContent=c.name.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();missing.setAttribute('aria-label','Emblema provisório de '+c.name);missing.style.setProperty('--mini-crest-color',c.color||'#1a716c');crest.append(missing)}
+ const crest=document.getElementById(prefix+'Emblem');crest.classList.add('miniSwap');crest.replaceChildren();crest.dataset.miniClub=c.name;crest.style.background='transparent';crest.style.color='#fff';const asset=c.crest||c.crestUrl||null;if(asset){const img=document.createElement('img');img.alt='Escudo '+c.name;img.src=asset;img.loading='eager';img.onerror=()=>{crest.replaceChildren();const missing=document.createElement('span');missing.className='miniMissingCrest';missing.textContent=c.name.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();missing.setAttribute('aria-label','Emblema provisório de '+c.name);missing.style.setProperty('--mini-crest-color',c.color||'#1a716c');crest.append(missing)};crest.append(img)}else{const missing=document.createElement('span');missing.className='miniMissingCrest';missing.textContent=c.name.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();missing.setAttribute('aria-label','Emblema provisório de '+c.name);missing.style.setProperty('--mini-crest-color',c.color||'#1a716c');crest.append(missing)}
+ if(!asset)miniTryPublicCrest(c,crest);
  requestAnimationFrame(()=>crest.classList.remove('miniSwap'));
  const rating=Math.max(1,Math.min(5,Math.round(c.stats.reduce((a,b)=>a+b,0)/60)));
  const stars=document.getElementById(prefix+'Stars');stars.replaceChildren();stars.setAttribute('aria-label',rating+' de 5 estrelas');for(let k=0;k<5;k++){const star=document.createElement('span');star.textContent='★';star.className=k<rating?'miniStarOn':'miniStarOff';stars.append(star)}
