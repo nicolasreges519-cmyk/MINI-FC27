@@ -923,7 +923,7 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
    }
  });
 })();
-</script><script type="module">
+</script><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js"}}</script><script type="module">
 let THREE;
 try{
  window.miniEngineStatus='Carregando Three.js pelo CDN principal';THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js');
@@ -2241,8 +2241,34 @@ const fcBreathBase=fcBody.scale.y;
 const fcVariants=[{name:'AZUL FC',kit:0x245bca,locker:0x344159},{name:'VERMELHO FC',kit:0xd83f4d,locker:0x4c2936},{name:'VERDE FC',kit:0x19a17a,locker:0x284b46},{name:'OURO FC',kit:0xd7b647,locker:0x4c4530}];
 function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcHairStyle(next%4);fcSkinPBR.color.setHex([0xc99167,0xa86f4f,0xe1b38d,0x865c43][next%4]);fcBody.material.color.setHex(v.kit);fcShoulderL.material.color.setHex(v.kit);fcShoulderR.material.color.setHex(v.kit);fcWaist.material.color.setHex(v.kit);fcKitSleeveL.material.color.setHex(v.kit);fcKitSleeveR.material.color.setHex(v.kit);fcFill.color.setHex(v.kit);fcLockers.forEach(l=>{l.children[0].material.color.setHex(v.locker)});document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
 fcChangeVariant();
+// Carrega o GLB fornecido pelo usuário quando o arquivo estiver publicado em assets/.
+// O boneco anterior é mantido como fallback para evitar uma tela vazia.
+let fcImportedPlayer=null,fcImportedMixer=null;
+(async()=>{
+ try{
+  const asset='./assets/professional-soccer-standing.glb';
+  const response=await fetch(asset,{method:'HEAD'});
+  if(!response.ok) return;
+  const {GLTFLoader}=await import('https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/GLTFLoader.js');
+  const gltf=await new GLTFLoader().loadAsync(asset);
+  const model=gltf.scene;
+  const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
+  if(!Number.isFinite(size.y)||size.y<=0)throw new Error('Dimensões inválidas');
+  model.scale.setScalar(3.15/size.y);
+  bounds.setFromObject(model);
+  const center=bounds.getCenter(new THREE.Vector3());
+  model.position.set(-center.x,-bounds.min.y,-center.z);
+  model.traverse(obj=>{if(obj.isMesh){obj.frustumCulled=true;obj.castShadow=false;obj.receiveShadow=false}});
+  fcActor.add(model);fcImportedPlayer=model;
+  for(const part of [...fcActor.children])if(part!==model&&part!==fcBall&&part!==fcFaceGroup&&part!==fcLimbJoints.hipL&&part!==fcLimbJoints.hipR&&part!==fcLimbJoints.shoulderL&&part!==fcLimbJoints.shoulderR)part.visible=false;
+  fcFaceGroup.visible=false;
+  for(const key of Object.keys(fcLimbJoints))fcLimbJoints[key].visible=false;
+  if(gltf.animations.length){fcImportedMixer=new THREE.AnimationMixer(model);fcImportedMixer.clipAction(gltf.animations[0]).play()}
+  console.info('MINI FC27: jogador GLB carregado no menu');
+ }catch(error){console.warn('MINI FC27: mantendo jogador anterior',error)}
+})();
 function fcAnimate(dt){
-fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}
+if(fcImportedMixer)fcImportedMixer.update(dt);fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}
 const t=performance.now()*.001,beat=t*2.4,phase=t*3.6;
 fcActor.position.y=Math.sin(beat)*.035;fcPreviewHold=Math.max(0,fcPreviewHold-dt);if(!fcPreviewHold)fcPreviewRotation+=dt*.16;fcActor.rotation.y=fcPreviewRotation+Math.sin(t*.6)*.08;fcHeadPivot.rotation.y=Math.sin(t*.75)*.08;const blink=Math.pow(Math.max(0,Math.sin(t*1.7)),30);fcLids.forEach(l=>l.scale.y=.03+blink*.7);fcMouth.scale.y=.16+Math.max(0,Math.sin(t*2.2))*.08;
 fcArmL.rotation.x=Math.sin(beat)*.22;fcArmR.rotation.x=-Math.sin(beat)*.22;
