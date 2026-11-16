@@ -1121,6 +1121,19 @@ function person(x,z,color){
    if(hairStyle===3)shape(headPivot,new THREE.SphereGeometry(.16,8,7),hair,0,.30,.18);
  }
  if(id%5===0){shape(headPivot,new THREE.SphereGeometry(.19,10,8),hair,0,-.20,.11,1,.32,1.2)}
+ // Anatomia facial adicional em malhas leves: mandíbula, bochechas e volume de cabelo.
+ const jaw=shape(headPivot,new THREE.SphereGeometry(.235,12,10),skin,0,-.145,.025,1,.66,.92);
+ for(const side of [-1,1]){
+   shape(headPivot,new THREE.SphereGeometry(.125,9,7),skin,side*.18,-.105,-.105,.95,.75,.8);
+ }
+ const hairVariants=id%7;
+ if(hairVariants===1||hairVariants===4){
+   for(let n=0;n<8;n++){const a=n*Math.PI*2/8;shape(headPivot,new THREE.SphereGeometry(.09,6,5),hair,Math.cos(a)*.19,.29,Math.sin(a)*.17);}
+ }else if(hairVariants===2){
+   for(let n=0;n<5;n++)shape(headPivot,new THREE.CapsuleGeometry(.055,.18,3,5),hair,(n-2)*.095,.27,.03);
+ }else if(hairVariants===3){
+   shape(headPivot,new THREE.SphereGeometry(.17,9,7),hair,0,.34,.20);
+ }
  const limbs=[];
  for(const side of [-1,1]){
    const arm=new THREE.Group();arm.position.set(side*.52,2.04,0);g.add(arm);
@@ -1142,13 +1155,18 @@ function person(x,z,color){
  const badgeMesh=new THREE.Mesh(new THREE.PlaneGeometry(.33,.34),new THREE.MeshBasicMaterial({map:badgeTex,transparent:true,depthWrite:false,side:THREE.DoubleSide}));
  badgeMesh.position.set(0,1.78,.46);badgeMesh.rotation.y=Math.PI;g.add(badgeMesh);
  g.position.set(x,.35,z);scene.add(g);
+ // Dedos simples anexados às mãos, acompanhando os braços em todas as animações.
+ for(const arm of [limbs[0],limbs[2]]){for(let finger=0;finger<4;finger++){const mesh=new THREE.Mesh(new THREE.CapsuleGeometry(.018,.085,2,4),skin);mesh.position.set((finger-1.5)*.046,-1.20,-.02);arm.add(mesh);}}
  g.userData={limbs,headPivot,phase:(id*2.399)%6.28,lastX:x,lastZ:z,kickTime:0,expression:0};
  animatedPlayers.push(g);return g;
 }
 function animatePlayers(dt){
  for(const g of animatedPlayers){
  const d=g.userData,speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);
- d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;
+ // Respiração, balanço da cabeça e redução de movimentos bruscos.
+ d.headPivot.rotation.z=THREE.MathUtils.lerp(d.headPivot.rotation.z,Math.sin(d.phase*.6)*.025*(.4+speed),Math.min(1,dt*5));
+ d.headPivot.rotation.x=THREE.MathUtils.lerp(d.headPivot.rotation.x,speed*.035,Math.min(1,dt*5));
+  d.phase+=dt*(2.5+speed*11);const stride=Math.sin(d.phase)*(.18+speed*.50)*speed;
  d.limbs[0].rotation.x=-stride*.8;d.limbs[1].rotation.x=stride;
  d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;
  d.kickTime=Math.max(0,d.kickTime-dt);
