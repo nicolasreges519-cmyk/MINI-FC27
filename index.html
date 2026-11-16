@@ -2249,22 +2249,22 @@ function miniEditorRender(){
  const data=miniCurrentLineup(miniEditorSide),root=document.getElementById('miniSquadContent');root.replaceChildren();
  document.getElementById('miniSquadTitle').textContent=fcClubs[miniSelection[miniEditorSide]].name+' — '+data.formation;
  const roles=miniFormationTemplates[data.formation]||miniFormationTemplates['4-3-3'];
- const wrap=document.createElement('div');wrap.style.cssText='display:grid;grid-template-columns:minmax(210px,1fr) minmax(150px,.75fr);gap:12px;align-items:start';
- const pitch=document.createElement('div');pitch.style.cssText='position:relative;width:100%;aspect-ratio:68/105;max-height:65vh;border:2px solid #e5f5eb;border-radius:8px;background:repeating-linear-gradient(to bottom,#237649 0%,#237649 12.5%,#2c8053 12.5%,#2c8053 25%);overflow:hidden';
+ const wrap=document.createElement('div');wrap.style.cssText='display:grid;grid-template-columns:minmax(260px,1.25fr) minmax(210px,.8fr);gap:12px;align-items:start';
+ const pitch=document.createElement('div');pitch.style.cssText='position:relative;width:100%;aspect-ratio:68/85;max-height:62vh;border:2px solid #e5f5eb;border-radius:8px;background:repeating-linear-gradient(to bottom,#237649 0%,#237649 12.5%,#2c8053 12.5%,#2c8053 25%);overflow:hidden';
  pitch.innerHTML='<div style="position:absolute;inset:0;border:1px solid #d9f4e0;pointer-events:none"><div style="position:absolute;top:50%;width:100%;border-top:1px solid white"></div><div style="position:absolute;top:50%;left:50%;width:23%;aspect-ratio:1;border:1px solid white;border-radius:50%;transform:translate(-50%,-50%)"></div><div style="position:absolute;top:0;left:22%;width:56%;height:16%;border:1px solid white;border-top:0"></div><div style="position:absolute;bottom:0;left:22%;width:56%;height:16%;border:1px solid white;border-bottom:0"></div></div>';
  const slots=[{role:'GOL',player:data.keeper,index:-1,x:0,z:48},...data.field.map((p,i)=>({role:roles[i][0],player:p,index:i,x:roles[i][1],z:roles[i][2]}))];
  function selectSlot(i){miniEditorSlot=i;miniEditorRender()}
  for(const slot of slots){
   const button=document.createElement('button');button.type='button';
   const active=miniEditorSlot===slot.index;
-  button.style.cssText='position:absolute;transform:translate(-50%,-50%);left:'+((slot.x+34)/68*100)+'%;top:'+((slot.z+52.5)/105*100)+'%;width:clamp(36px,7vw,56px);height:clamp(36px,7vw,56px);border-radius:50%;border:2px solid '+(active?'#b5ff36':'white')+';background:'+(slot.index===-1?'#f4cb3c':'#2074dc')+';color:'+(slot.index===-1?'#12232c':'white')+';font-size:10px;font-weight:bold;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px #0007';
+  button.style.cssText='position:absolute;transform:translate(-50%,-50%);left:'+((slot.x+34)/68*100)+'%;top:'+((slot.z+52.5)/105*100)+'%;width:clamp(46px,8vw,80px);height:clamp(48px,9vw,78px);border-radius:10px;border:2px solid '+(active?'#b5ff36':'white')+';background:'+(slot.index===-1?'#f4cb3c':'#2074dc')+';color:'+(slot.index===-1?'#12232c':'white')+';font-size:10px;font-weight:bold;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px #0007';
   const num=document.createElement('span');num.textContent=String(slot.player?.number??(slot.index+2));button.append(num);
   const ovr=document.createElement('span');ovr.style.cssText='font-size:8px';ovr.textContent=miniPlayerStats(slot.player)?.overall??'--';button.append(ovr);
   const pos=document.createElement('span');pos.style.fontSize='8px';pos.textContent=slot.role;button.append(pos);
   button.title=(slot.player?.name||'Sem atleta')+' — '+slot.role;
-  button.onclick=()=>selectSlot(slot.index);pitch.append(button);
+  const name=document.createElement('span');name.style.cssText='font-size:9px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';name.textContent=(slot.player?.name||'Jogador').split(' ').slice(-1)[0];button.prepend(name);button.onclick=()=>selectSlot(slot.index);pitch.append(button);
  }
- const side=document.createElement('div');side.style.cssText='background:#102b34;border-radius:9px;padding:10px;max-height:65vh;overflow:auto';
+ const side=document.createElement('div');side.style.cssText='background:#221d48b8;border:1px solid #9280e455;border-radius:12px;padding:12px;max-height:65vh;overflow:auto';
  const activeSlot=slots.find(x=>x.index===miniEditorSlot)||slots[0];
  const title=document.createElement('strong');title.textContent='TITULAR: '+(activeSlot.player?.name||'Vaga livre');side.append(title);
  const stats=miniPlayerStats(activeSlot.player);
@@ -2282,7 +2282,7 @@ function miniEditorRender(){
   const btn=document.createElement('button');btn.type='button';btn.textContent=(p.number??'--')+' · '+p.name+' · OVR '+(miniPlayerStats(p)?.overall??'--')+' ('+p.position+')';
   const eligible=activeSlot.index===-1?p.position==='GOL':p.position!=='GOL';
   btn.disabled=!eligible;btn.style.cssText='text-align:left;padding:8px;border:1px solid #52727b;border-radius:6px;background:#193d48;color:white;font-size:12px;opacity:'+(eligible?'1':'.4');
-  btn.onclick=()=>{if(!eligible)return;const selected=miniEditorSlot;if(selected===-1){data.bench[i]=data.keeper;data.keeper=p}else{data.bench[i]=data.field[selected];data.field[selected]=p}data.bench=data.bench.filter(Boolean);miniEditorRender()};
+  btn.onclick=()=>{if(!eligible)return;if(!confirm('Confirmar substituição de '+(activeSlot.player?.name||'jogador')+' por '+p.name+'?'))return;const selected=miniEditorSlot;if(selected===-1){data.bench[i]=data.keeper;data.keeper=p}else{data.bench[i]=data.field[selected];data.field[selected]=p}data.bench=data.bench.filter(Boolean);if(window.miniActiveLineups){miniBindMatchRoster(fcClubs[miniSelection.Home],fcClubs[miniSelection.Away]);}miniEditorRender()};
   bench.append(btn);
  });
  if(!data.bench.length){const empty=document.createElement('p');empty.textContent='Sem reservas cadastrados';bench.append(empty)}
