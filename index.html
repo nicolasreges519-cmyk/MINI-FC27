@@ -760,11 +760,19 @@ function animatePlayers(dt){
  if(d.miniSkillTime>0){
   d.miniSkillTime=Math.max(0,d.miniSkillTime-dt);
   const p=1-d.miniSkillTime/(d.miniSkillDuration||.5);
+  const eased=p*p*(3-2*p);
   const wave=Math.sin(Math.PI*p);
+  if(g===controlledPlayer&&attached){
+   g.position.x=THREE.MathUtils.lerp(d.miniSkillStartX??g.position.x,d.miniSkillEndX??g.position.x,eased);
+   g.position.z=THREE.MathUtils.lerp(d.miniSkillStartZ??g.position.z,d.miniSkillEndZ??g.position.z,eased);
+  }
   if(d.miniSkillType==='pedalada'){d.limbs[1].rotation.x+=Math.sin(p*Math.PI*4)*.65*wave;d.limbs[3].rotation.x-=Math.sin(p*Math.PI*4)*.65*wave}
   if(d.miniSkillType==='corte'){d.limbs[0].rotation.z=.35*wave;d.limbs[2].rotation.z=-.35*wave}
   if(d.miniSkillType==='finta'){d.headPivot.rotation.z=.23*Math.sin(p*Math.PI*2)*wave}
-  if(d.miniSkillType==='giro'){g.rotation.y+=dt*Math.PI*2/(d.miniSkillDuration||.65)}
+  if(d.miniSkillType==='giro'){g.rotation.y=(d.miniSkillStartYaw||0)+eased*Math.PI*2}
+  if(d.miniSkillType==='pedalada'){d.limbs[1].rotation.z=Math.sin(p*Math.PI*4)*.24*wave;d.limbs[3].rotation.z=-Math.sin(p*Math.PI*4)*.24*wave}
+  if(d.miniSkillType==='corte'){g.rotation.z=Math.sin(Math.PI*p)*.16;d.limbs[1].rotation.x-=.42*wave}
+  if(d.miniSkillType==='finta'){g.rotation.z=Math.sin(p*Math.PI*2)*.13*wave;d.limbs[2].rotation.x+=.22*wave}
  }else{d.limbs[0].rotation.z*=Math.max(0,1-dt*10);d.limbs[2].rotation.z*=Math.max(0,1-dt*10);d.headPivot.rotation.z*=Math.max(0,1-dt*10)}
  d.headPivot.rotation.y=Math.sin(d.phase*.28)*.045;
  g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z;
@@ -846,6 +854,7 @@ function miniContest(attacker,defender){
 }
 function aiDist(a,b){return Math.hypot(a.position.x-b.position.x,a.position.z-b.position.z)}
 function aiMove(p,x,z,speed,dt){
+ if(p.userData.miniReactTime>0){p.userData.miniReactTime=Math.max(0,p.userData.miniReactTime-dt);speed*=.48}
  const dx=x-p.position.x,dz=z-p.position.z,d=Math.hypot(dx,dz);
  if(d<.16)return;
  const step=Math.min(d,speed*dt),vx=dx/d,vz=dz/d;
@@ -1237,28 +1246,34 @@ function miniDoSkill(kind){
  const chance=THREE.MathUtils.clamp(.48+(ability-65)*.009,.25,.87);
  const success=distance>3.5||Math.random()<chance;
  miniSkillCooldown=.85;
- const d=athlete.userData;d.miniSkillType=kind;d.miniSkillDuration=kind==='giro'?.65:.48;d.miniSkillTime=d.miniSkillDuration;
+ const d=athlete.userData;d.miniSkillType=kind;d.miniSkillDuration=kind==='giro'?.7:.55;d.miniSkillTime=d.miniSkillDuration;
+ d.miniSkillStartYaw=athlete.rotation.y;d.miniSkillStartX=athlete.position.x;d.miniSkillStartZ=athlete.position.z;
+ d.miniSkillSuccess=success;
  const analog=analogDirection(),dirX=analog?.x??Math.sin(athlete.rotation.y),dirZ=analog?.z??-Math.cos(athlete.rotation.y);
  const lateral=kind==='corte'?-1:kind==='finta'?1:0;
  const step=success?(kind==='giro'?1.65:kind==='corte'?2.1:1.15):.35;
- athlete.position.x=THREE.MathUtils.clamp(athlete.position.x+(dirX+lateral*.7)*step,-32,32);
- athlete.position.z=THREE.MathUtils.clamp(athlete.position.z+dirZ*step,-50,50);
+ d.miniSkillEndX=THREE.MathUtils.clamp(athlete.position.x+(dirX+lateral*.7)*step,-32,32);
+ d.miniSkillEndZ=THREE.MathUtils.clamp(athlete.position.z+dirZ*step,-50,50);
+ if(success&&nearest&&distance<3.6){nearest.userData.miniReactTime=.22+(ability/99)*.18;
+  nearest.userData.miniReactSide=lateral||((nearest.position.x<athlete.position.x)?-1:1);
+ }
  if(!success&&nearest&&distance<2.2){attached=false;aiPossessor=nearest;lastTouch='red';velocity.set(0,0,0);cooldown=.75;aiDecisionClock=.5}
  else{ball.position.set(athlete.position.x,.37,athlete.position.z-1.05)}
  banner.textContent=success?({pedalada:'PEDALADA!',corte:'CORTE RÁPIDO!',finta:'FINTA DE CORPO!',giro:'GIRO 360°!'})[kind]:'DRIBLE INTERCEPTADO!';
  bannerTime=.8;
 }
 (function miniInstallSkillButtons(){
- const holder=document.createElement('div');holder.id='miniSkillHolder';holder.style.cssText='position:fixed;right:12px;bottom:clamp(115px,24vh,190px);z-index:9;display:flex;flex-direction:column;align-items:flex-end;gap:5px';
+ const holder=document.createElement('div');holder.id='miniSkillHolder';holder.style.cssText='position:fixed;right:max(8px,env(safe-area-inset-right));bottom:clamp(105px,22vh,165px);z-index:9;display:flex;flex-direction:column;align-items:flex-end;gap:5px;max-height:65vh';
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent='DRIBLES';toggle.style.cssText='border:1px solid #b5ff36;border-radius:20px;background:#0b2838;color:#b5ff36;padding:8px 12px;font-weight:bold;font-size:11px;touch-action:manipulation';
- const panel=document.createElement('div');panel.style.cssText='display:none;grid-template-columns:repeat(2,minmax(75px,1fr));gap:5px;background:#071b20dc;padding:6px;border-radius:10px';
+ const panel=document.createElement('div');panel.style.cssText='display:none;grid-template-columns:repeat(2,minmax(66px,1fr));gap:5px;background:#071b20ed;padding:6px;border-radius:10px;max-width:min(200px,36vw);max-height:45vh;overflow:auto';
  for(const [kind,label] of [['pedalada','PEDALADA'],['corte','CORTE'],['finta','FINTA'],['giro','GIRO 360°']]){
-  const btn=document.createElement('button');btn.type='button';btn.textContent=label;btn.style.cssText='padding:9px 6px;background:#24475b;color:#fff;border:1px solid #7093a6;border-radius:7px;font-size:10px;touch-action:manipulation';
+  const btn=document.createElement('button');btn.type='button';btn.textContent=label;btn.style.cssText='min-height:38px;padding:7px 5px;background:#24475b;color:#fff;border:1px solid #7093a6;border-radius:7px;font-size:clamp(9px,1.4vw,11px);touch-action:manipulation';
   btn.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();miniDoSkill(kind)});
   panel.append(btn);
  }
  toggle.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();miniSkillPanelOpen=!miniSkillPanelOpen;panel.style.display=miniSkillPanelOpen?'grid':'none'});
  holder.append(panel,toggle);document.body.append(holder);
+ const responsive=document.createElement('style');responsive.textContent='@media (orientation:landscape) and (max-height:540px){#miniSkillHolder{bottom:12px!important;right:clamp(100px,17vw,220px)!important}#miniSkillHolder>div{max-height:45vh!important}#miniSkillHolder button{min-height:32px}}@media (orientation:portrait){#miniSkillHolder{bottom:24vh!important}}';document.head.append(responsive);
  window.miniSkillHolder=holder;
 })();
 function kick(power,isShot=false){
@@ -1614,7 +1629,7 @@ document.getElementById('fcPlay').onclick=()=>{
 document.getElementById('fcCamera').onchange=()=>document.getElementById('cameraMode').click();
 document.getElementById('fcVar').onchange=e=>document.getElementById('varEnabled').checked=e.target.checked;
 
-function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(fcMenuActive){fcAnimate(dt);return}if(arrival.active){updateArrival(dt);return}if(walkout.active){updateWalkout(dt);return}if(gamePaused){renderer.render(scene,camera);return}if(advanceGoalReview(dt)){renderer.render(scene,camera);return}elapsed+=dt;miniSkillCooldown=Math.max(0,miniSkillCooldown-dt);medicalTick(dt);trainingStep(dt);weatherUpdate(dt,elapsed);if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(fcMenuActive){fcAnimate(dt);return}if(arrival.active){updateArrival(dt);return}if(walkout.active){updateWalkout(dt);return}if(gamePaused){renderer.render(scene,camera);return}if(advanceGoalReview(dt)){renderer.render(scene,camera);return}elapsed+=dt;miniSkillCooldown=Math.max(0,miniSkillCooldown-dt);medicalTick(dt);trainingStep(dt);weatherUpdate(dt,elapsed);if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState&&!(attached&&controlledPlayer.userData.miniSkillTime>0)){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
 const m=camera.matrixWorld.elements;
 let rx=m[0],rz=m[2],ux=m[4],uz=m[6];
 const rl=Math.hypot(rx,rz),ul=Math.hypot(ux,uz);
@@ -1628,6 +1643,8 @@ controlledPlayer.position.z=THREE.MathUtils.clamp(controlledPlayer.position.z+mo
 controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ballSpin=0;ballBounce=0;
  const control=miniAthleteAttribute(controlledPlayer,'dribbling');
  const touch=1.05+(99-control)*.004;
- ball.position.set(controlledPlayer.position.x,.37,controlledPlayer.position.z-touch);
+ const sd=controlledPlayer.userData,skillP=sd.miniSkillTime>0?1-sd.miniSkillTime/(sd.miniSkillDuration||.55):0;
+ const sway=sd.miniSkillTime>0?Math.sin(skillP*Math.PI*2)*.45:0;
+ ball.position.set(controlledPlayer.position.x+sway,.37,controlledPlayer.position.z-touch+(sd.miniSkillTime>0?Math.sin(skillP*Math.PI)*.22:0));
 }else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}velocity.x+=weather.wind*dt*.012;ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*(1-weather.wetness*.3+weather.snow*.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<(8+miniAthleteAttribute(controlledPlayer,'dribbling')*.065)&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();arrivalCamera.aspect=innerWidth/innerHeight;arrivalCamera.updateProjectionMatrix();walkoutCamera.aspect=innerWidth/innerHeight;walkoutCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);fcCam.aspect=innerWidth/innerHeight;fcCam.updateProjectionMatrix();fcRenderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=20").catch(console.warn))}</script></body></html>
