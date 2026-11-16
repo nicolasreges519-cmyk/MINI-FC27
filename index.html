@@ -2225,15 +2225,28 @@ for(const [side,x] of [['L',-.25],['R',.25]]){
 }
 const fcClothPanel=fcPart(new THREE.SphereGeometry(.35,14,10),fcBody.material,0,1.85,.015);
 fcClothPanel.scale.set(1.02,.88,.85);
+
+// Variações de aparência do atleta do menu; não afetam os 22 jogadores da partida.
+const fcHairStyles=[];
+function fcHairStyle(kind){
+ fcHairCap.visible=kind!==3;
+ fcHairTufts.forEach((m,i)=>{m.visible=kind===0||(kind===1&&i%2===0)||(kind===2&&i>4)});
+ fcHairCap.scale.y=kind===2?.75:.55;
+}
+const fcHairTufts=fcFaceGroup.children.filter(o=>o.geometry?.type==='SphereGeometry'&&o.material===fcDark&&o!==fcHairCap);
+const fcShirtTrim=fcPart(new THREE.TorusGeometry(.19,.026,6,16),fcMat(0xececec),0,2.56,.22);fcShirtTrim.rotation.x=Math.PI/2;
+const fcCheekL=fcDetail(new THREE.SphereGeometry(.11,10,8),fcSkinPBR,-.18,-.1,.17),fcCheekR=fcDetail(new THREE.SphereGeometry(.11,10,8),fcSkinPBR,.18,-.1,.17);
+fcCheekL.scale.set(.9,.65,.4);fcCheekR.scale.copy(fcCheekL.scale);
+const fcBreathBase=fcBody.scale.y;
 const fcVariants=[{name:'AZUL FC',kit:0x245bca,locker:0x344159},{name:'VERMELHO FC',kit:0xd83f4d,locker:0x4c2936},{name:'VERDE FC',kit:0x19a17a,locker:0x284b46},{name:'OURO FC',kit:0xd7b647,locker:0x4c4530}];
-function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcBody.material.color.setHex(v.kit);fcShoulderL.material.color.setHex(v.kit);fcShoulderR.material.color.setHex(v.kit);fcWaist.material.color.setHex(v.kit);fcKitSleeveL.material.color.setHex(v.kit);fcKitSleeveR.material.color.setHex(v.kit);fcFill.color.setHex(v.kit);fcLockers.forEach(l=>{l.children[0].material.color.setHex(v.locker)});document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
+function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcHairStyle(next%4);fcSkinPBR.color.setHex([0xc99167,0xa86f4f,0xe1b38d,0x865c43][next%4]);fcBody.material.color.setHex(v.kit);fcShoulderL.material.color.setHex(v.kit);fcShoulderR.material.color.setHex(v.kit);fcWaist.material.color.setHex(v.kit);fcKitSleeveL.material.color.setHex(v.kit);fcKitSleeveR.material.color.setHex(v.kit);fcFill.color.setHex(v.kit);fcLockers.forEach(l=>{l.children[0].material.color.setHex(v.locker)});document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
 fcChangeVariant();
 function fcAnimate(dt){
 fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}
 const t=performance.now()*.001,beat=t*2.4,phase=t*3.6;
 fcActor.position.y=Math.sin(beat)*.035;fcPreviewHold=Math.max(0,fcPreviewHold-dt);if(!fcPreviewHold)fcPreviewRotation+=dt*.16;fcActor.rotation.y=fcPreviewRotation+Math.sin(t*.6)*.08;fcHeadPivot.rotation.y=Math.sin(t*.75)*.08;const blink=Math.pow(Math.max(0,Math.sin(t*1.7)),30);fcLids.forEach(l=>l.scale.y=.03+blink*.7);fcMouth.scale.y=.16+Math.max(0,Math.sin(t*2.2))*.08;
 fcArmL.rotation.x=Math.sin(beat)*.22;fcArmR.rotation.x=-Math.sin(beat)*.22;
-const gait=Math.sin(beat*1.2);fcLimbJoints.hipL.rotation.x=gait*.24;fcLimbJoints.hipR.rotation.x=-gait*.24;fcLimbJoints.kneeL.rotation.x=Math.max(0,-gait)*.35;fcLimbJoints.kneeR.rotation.x=Math.max(0,gait)*.35;fcLimbJoints.shoulderL.rotation.x=-gait*.18;fcLimbJoints.shoulderR.rotation.x=gait*.18;fcLimbJoints.elbowL.rotation.x=-.18+Math.sin(t*1.7)*.06;fcLimbJoints.elbowR.rotation.x=-.18-Math.sin(t*1.7)*.06;fcClothPanel.scale.x=1.02+Math.sin(beat)*.012;
+const gait=Math.sin(beat*1.2);fcLimbJoints.hipL.rotation.x=gait*.24;fcLimbJoints.hipR.rotation.x=-gait*.24;fcLimbJoints.kneeL.rotation.x=Math.max(0,-gait)*.35;fcLimbJoints.kneeR.rotation.x=Math.max(0,gait)*.35;fcLimbJoints.shoulderL.rotation.x=-gait*.18;fcLimbJoints.shoulderR.rotation.x=gait*.18;fcLimbJoints.elbowL.rotation.x=-.18+Math.sin(t*1.7)*.06;fcLimbJoints.elbowR.rotation.x=-.18-Math.sin(t*1.7)*.06;fcClothPanel.scale.x=1.02+Math.sin(beat)*.012;fcBody.scale.y=fcBreathBase+Math.sin(t*1.5)*.008;
 fcBall.position.set(2.45+.55+Math.sin(t*.85)*.12,.33+Math.abs(Math.sin(phase))*.7,.65);
 fcBall.rotation.x+=dt*2.2;fcBall.rotation.z+=dt*.8;
 fcFill.intensity=fcBaseFill+Math.sin(t*1.5)*.15;
