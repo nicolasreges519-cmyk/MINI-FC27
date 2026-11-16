@@ -716,6 +716,34 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
  #fcQuick .miniLeague{flex-basis:29px!important}
  #fcQuick .miniEmblem{height:clamp(50px,21vh,95px)!important}
 }
+</style><style>
+/* Ações de escalação centralizadas nos locais indicados pelo usuário */
+#fcQuick .miniQuickArena{position:relative!important}
+#fcQuick .miniLineupActions{
+ position:absolute!important;z-index:12!important;
+ top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important;
+ display:flex!important;flex-direction:column!important;
+ justify-content:space-between!important;align-items:center!important;
+ height:clamp(130px,33vh,240px)!important;
+ width:clamp(112px,11vw,165px)!important;
+ pointer-events:none!important;
+}
+#fcQuick .miniLineupActions button{
+ pointer-events:auto!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;min-height:clamp(34px,7vh,50px)!important;
+ border:1px solid #a3fff0!important;border-radius:12px!important;
+ background:#09252cdd!important;color:#fff!important;
+ font-size:clamp(9px,1.05vw,14px)!important;
+ font-weight:800!important;line-height:1.15!important;
+ padding:6px!important;cursor:pointer!important;
+ box-shadow:0 3px 12px #0007!important;
+}
+#fcQuick .miniLineupActions button:active{background:#1b7369!important}
+@media(orientation:landscape) and (max-height:440px){
+ #fcQuick .miniLineupActions{width:clamp(90px,10vw,145px)!important;height:clamp(100px,31vh,170px)!important}
+ #fcQuick .miniLineupActions button{min-height:32px!important;font-size:clamp(8px,.9vw,12px)!important}
+}
 </style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><div style="font-size:13px;margin-top:14px;text-align:left"><label for="weatherChoice">CLIMA</label><select id="weatherChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="auto">Automático</option><option value="sun">Ensolarado</option><option value="cloud">Nublado</option><option value="rain">Chuvoso</option><option value="snow">Neve</option><option value="random">Aleatório</option></select><label for="timeChoice">HORÁRIO</label><select id="timeChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="day">Tarde</option><option value="morning">Manhã</option><option value="dusk">Entardecer</option><option value="night">Noite</option></select><div id="weatherStatus" style="margin-top:5px;color:#c8dbea">Ensolarado · gramado seco</div></div><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><div id="arrivalHud" style="display:none;position:fixed;inset:0;z-index:11;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99);color:white"><div style="position:absolute;left:5%;bottom:8%;font-size:clamp(17px,3vw,30px);font-weight:bold">MINI FC27 · CHEGADA AO ESTÁDIO<div id="arrivalCaption" style="font-size:14px;font-weight:normal;margin-top:8px">O ônibus da equipe se aproxima do estádio</div></div><button id="arrivalSkip" style="position:absolute;right:3%;top:5%;pointer-events:auto;width:auto;height:auto;padding:10px 16px;border-radius:8px">Pular ▶</button></div>
 <div id="walkoutHud" style="display:none;position:fixed;inset:0;z-index:12;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99)"><div id="walkoutCaption" style="position:absolute;bottom:8%;left:5%;font-weight:bold">Entrada dos jogadores</div><button id="walkoutSkip" style="position:absolute;top:5%;right:3%;pointer-events:auto;padding:10px;border-radius:8px">Pular ▶</button></div>
 <div id="medicalStatus" style="display:none" aria-live="polite"></div><button id="medicalRecover" type="button" hidden>Recuperar elenco</button>
@@ -748,6 +776,7 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
 <div class="miniTeamMain"><h3 id="miniHomeName">Flamengo</h3><div class="miniEmblemRow"><button type="button" id="miniHomePrev" aria-label="Clube anterior casa">‹</button><div class="miniEmblem" id="miniHomeEmblem">F</div><button type="button" id="miniHomeNext" aria-label="Próximo clube casa">›</button></div><div class="miniStars" id="miniHomeStars">★★★★☆</div><div class="miniStats" id="miniHomeStats"><span>ATA<br><b>75</b></span><span>MEI<br><b>75</b></span><span>DEF<br><b>75</b></span></div></div>
 <label class="miniLeague"><span class="miniLeagueCaption">LIGA SELECIONADA</span><span class="miniLeagueInput"><span id="miniHomeFlag">🇧🇷</span><select id="miniHomeLeague" aria-label="Liga casa"></select></span></label><div class="miniLeagueFooter" id="miniHomeFooter">BRASILEIRÃO SÉRIE A</div>
 </article>
+<div class="miniLineupActions"><button type="button" id="miniViewHomeLineup">VER ESCALAÇÃO CASA</button><button type="button" id="miniViewAwayLineup">VER ESCALAÇÃO VISITANTE</button></div>
 <div class="miniCenterOptions"><button id="miniAdvantage" type="button" aria-pressed="false"><span class="miniOptionIcon">◇</span><strong>Não</strong><small>Opções de vantagem</small></button><button id="miniForm" type="button" aria-pressed="true"><span class="miniOptionIcon">◉</span><strong>Sim</strong><small>Fase ao vivo</small></button></div>
 <article class="miniTeamCard" id="miniAwayPanel" tabindex="0" aria-label="Equipe visitante">
 <div class="miniGender"><button type="button" id="miniAwayGender" aria-pressed="true"><span class="miniGenderDot">✓</span> Times masculinos</button><button type="button" class="miniFemaleOption" id="miniAwayFemale" aria-pressed="false"><span class="miniGenderDot"></span> Times femininos</button></div><div class="miniCountryBar"><span id="miniAwayCountry">Brasil</span><span id="miniAwayCountryFlag">🇧🇷</span></div>
@@ -2087,6 +2116,17 @@ function miniEditorRender(){
 function miniEditorOpen(){
  const panel=document.getElementById('miniSquadEditor');panel.hidden=false;miniEditorRender();
 }
+/* Acesso direto às escalações a partir da seleção de times. */
+for(const [id,side] of [['miniViewHomeLineup','Home'],['miniViewAwayLineup','Away']]){
+ const button=document.getElementById(id);
+ if(button)button.addEventListener('click',event=>{
+  event.preventDefault();event.stopPropagation();
+  miniEditorSide=side;
+  miniEditorSlot=null;
+  miniEditorOpen();
+ });
+}
+
 function miniPlayerLabel(athlete,entry){
  if(athlete.userData.miniNameTag){athlete.remove(athlete.userData.miniNameTag);athlete.userData.miniNameTag.material.map.dispose();athlete.userData.miniNameTag.material.dispose();}
  athlete.userData.miniPlayer=entry||null;
