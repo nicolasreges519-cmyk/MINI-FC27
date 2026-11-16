@@ -310,7 +310,7 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
 #fcQuick .miniCenterOptions>b{font-size:clamp(22px,3.8vw,48px)}
 #fcQuick .miniCenterOptions strong{color:#b6ffcb}
 #fcQuick .miniQuickFooter{position:relative;z-index:1;background:#041014c7;min-height:clamp(35px,8vh,62px);display:flex;align-items:center;justify-content:space-between;padding:3px 3vw;gap:10px;font-size:clamp(9px,1.1vw,13px)}
-#fcQuick #fcPlay{background:#b5ff36;color:#07160e;border:0;border-radius:6px;padding:clamp(7px,1.3vh,13px) clamp(12px,2vw,27px);font-weight:1000;font-size:clamp(11px,1.6vw,18px);white-space:nowrap}
+#miniFormations select{max-width:120px}#fcQuick #fcPlay{background:#b5ff36;color:#07160e;border:0;border-radius:6px;padding:clamp(7px,1.3vh,13px) clamp(12px,2vw,27px);font-weight:1000;font-size:clamp(11px,1.6vw,18px);white-space:nowrap}
 @media(max-height:440px) and (orientation:landscape){#fcQuick .miniQuickHead{height:35px}#fcQuick .miniQuickArena{padding:3px 1vw;gap:5px}#fcQuick .miniGender{padding:2px 5px}#fcQuick .miniLeague{padding:2px 5px}#fcQuick .miniTeamMain{padding:2px}#fcQuick .miniEmblem{width:clamp(50px,15vh,76px);height:clamp(50px,15vh,76px)}#fcQuick .miniQuickFooter{min-height:34px}#fcQuick .miniLeagueFooter{padding:2px}#fcQuick .miniStats{font-size:10px}}
 
 /* Selecao compacta: paineis menores e centralizados como referencia */
@@ -609,7 +609,7 @@ function updateWalkout(dt){
  renderer.render(walkoutScene,walkoutCamera);
  if(p>=1)finishWalkout();
 }
-const pitch=new THREE.Mesh(new THREE.PlaneGeometry(64,100),new THREE.MeshLambertMaterial({color:0x258343}));pitch.rotation.x=-Math.PI/2;scene.add(pitch);const white=new THREE.LineBasicMaterial({color:0xffffff});function draw(points){scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points.map(([x,z])=>new THREE.Vector3(x,.035,z))),white))}draw([[-30,-48],[30,-48],[30,48],[-30,48],[-30,-48]]);draw([[-30,0],[30,0]]);let circle=[];for(let i=0;i<=72;i++){let a=i*2*Math.PI/72;circle.push([9.15*Math.cos(a),9.15*Math.sin(a)])}draw(circle);for(const s of [-1,1]){const z=s*48;draw([[-20,z],[-20,z-s*16],[20,z-s*16],[20,z]]);draw([[-9,z],[-9,z-s*6],[9,z-s*6],[9,z]])}function goal(z){const mat=new THREE.MeshBasicMaterial({color:0xffffff});for(const [x,y,w,h] of [[-4,1.5,.18,3],[4,1.5,.18,3],[0,3,8,.18]]){const bar=new THREE.Mesh(new THREE.BoxGeometry(w,h,.18),mat);bar.position.set(x,y,z);scene.add(bar)}}goal(-48);goal(48);
+const pitch=new THREE.Mesh(new THREE.PlaneGeometry(72,110),new THREE.MeshLambertMaterial({color:0x258343}));pitch.rotation.x=-Math.PI/2;scene.add(pitch);const white=new THREE.LineBasicMaterial({color:0xffffff});function draw(points){scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points.map(([x,z])=>new THREE.Vector3(x,.035,z))),white))}draw([[-34,-52.5],[34,-52.5],[34,52.5],[-34,52.5],[-34,-52.5]]);draw([[-34,0],[34,0]]);let circle=[];for(let i=0;i<=72;i++){let a=i*2*Math.PI/72;circle.push([9.15*Math.cos(a),9.15*Math.sin(a)])}draw(circle);for(const s of [-1,1]){const z=s*52.5;draw([[-20.16,z],[-20.16,z-s*16.5],[20.16,z-s*16.5],[20.16,z]]);draw([[-9.16,z],[-9.16,z-s*5.5],[9.16,z-s*5.5],[9.16,z]])}function goal(z){const mat=new THREE.MeshBasicMaterial({color:0xffffff});for(const [x,y,w,h] of [[-4,1.5,.18,3],[4,1.5,.18,3],[0,3,8,.18]]){const bar=new THREE.Mesh(new THREE.BoxGeometry(w,h,.18),mat);bar.position.set(x,y,z);scene.add(bar)}}goal(-52.5);goal(52.5);
 
 // MINI FC27 v6 — estádio otimizado para Android: arquibancadas, torcida, bandeiras e luzes.
 const stadium=new THREE.Group();scene.add(stadium);
@@ -617,7 +617,7 @@ function stadiumBox(w,h,d,x,y,z,color){const m=new THREE.Mesh(new THREE.BoxGeome
 const standColors=[0x243746,0x31485a,0x3c5365,0x4b6273];
 for(let tier=0;tier<7;tier++){
  const height=.8+tier*.85;
- const sideX=35+tier*2.15,endZ=53+tier*2.1;
+ const sideX=39+tier*2.15,endZ=58+tier*2.1;
  for(const sign of [-1,1]){
   stadiumBox(3.1,.85,123+tier*3.8,sign*sideX,height,0,standColors[tier%4]);
   stadiumBox(75+tier*4,.85,3.1,0,height,sign*endZ,standColors[(tier+1)%4]);
@@ -633,8 +633,8 @@ let seed=27;function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/42949
 for(let i=0;i<fanCount;i++){
  const tier=Math.floor(rand()*7),side=i%4,along=rand()*2-1;
  let x,z;
- if(side<2){x=(side===0?-1:1)*(35+tier*2.15);z=along*(60+tier*1.8)}
- else{x=along*(36+tier*2);z=(side===2?-1:1)*(53+tier*2.1)}
+ if(side<2){x=(side===0?-1:1)*(39+tier*2.15);z=along*(60+tier*1.8)}
+ else{x=along*(36+tier*2);z=(side===2?-1:1)*(58+tier*2.1)}
  const y=1.65+tier*.85+rand()*.25;
  fanData.push({x,y,z,phase:rand()*6.283,active:rand()>.45});
  dummy.position.set(x,y,z);dummy.rotation.set(0,rand()*6.283,0);dummy.scale.set(.85+rand()*.4,.8+rand()*.5,.85);dummy.updateMatrix();fans.setMatrixAt(i,dummy.matrix);
@@ -644,8 +644,8 @@ for(let i=0;i<fanCount;i++){
 stadium.add(fans);fans.instanceMatrix.needsUpdate=true;
 // Placas de LED simuladas com painéis coloridos, sem imagens externas.
 const ads=[];
-for(let z=-42;z<=42;z+=14)for(const side of [-1,1])ads.push(stadiumBox(.25,1.3,12,side*31.6,.7,z,0x142a46));
-for(let x=-25;x<=25;x+=10)for(const side of [-1,1])ads.push(stadiumBox(9,1.3,.25,x,.7,side*49.6,0x142a46));
+for(let z=-42;z<=42;z+=14)for(const side of [-1,1])ads.push(stadiumBox(.25,1.3,12,side*35.6,.7,z,0x142a46));
+for(let x=-25;x<=25;x+=10)for(const side of [-1,1])ads.push(stadiumBox(9,1.3,.25,x,.7,side*54.1,0x142a46));
 const adPalette=[0x1459a4,0x1d8667,0x8b2339,0x293e62];
 // Bandeiras triangulares com animação leve nas arquibancadas.
 const flags=[];
@@ -757,11 +757,40 @@ function animatePlayers(dt){
  d.limbs[2].rotation.x=stride*.8;d.limbs[3].rotation.x=-stride;
  d.kickTime=Math.max(0,d.kickTime-dt);
  if(d.kickTime>0){const k=Math.sin((.3-d.kickTime)/.3*Math.PI);d.limbs[1].rotation.x=-1.45*k;d.limbs[0].rotation.x=.42*k;d.limbs[2].rotation.x=-.4*k}
+ if(d.miniContactTime>0){
+  d.miniContactTime=Math.max(0,d.miniContactTime-dt);
+  const progress=1-d.miniContactTime/(d.miniContactDuration||.48);
+  const wave=Math.sin(Math.PI*progress);
+  if(d.miniContactType==='shield'){d.limbs[0].rotation.z=.55*wave;d.limbs[2].rotation.z=-.35*wave;g.rotation.z=.12*wave}
+  if(d.miniContactType==='standing'){d.limbs[1].rotation.x=-.95*wave;d.limbs[0].rotation.x=.35*wave}
+  if(d.miniContactType==='slide'){g.rotation.z=.5*wave;d.limbs[1].rotation.x=-1.2*wave;d.limbs[3].rotation.x=.65*wave}
+  if(d.miniContactType==='stumble'){g.rotation.z=.25*wave;d.limbs[0].rotation.x=.6*wave;d.limbs[2].rotation.x=-.6*wave}
+ }
+ if(d.miniSkillTime>0){
+  d.miniSkillTime=Math.max(0,d.miniSkillTime-dt);
+  const p=1-d.miniSkillTime/(d.miniSkillDuration||.5);
+  const eased=p*p*(3-2*p);
+  const wave=Math.sin(Math.PI*p);
+  if(g===controlledPlayer&&attached){
+   g.position.x=THREE.MathUtils.lerp(d.miniSkillStartX??g.position.x,d.miniSkillEndX??g.position.x,eased);
+   g.position.z=THREE.MathUtils.lerp(d.miniSkillStartZ??g.position.z,d.miniSkillEndZ??g.position.z,eased);
+  }
+  if(d.miniSkillType==='pedalada'){d.limbs[1].rotation.x+=Math.sin(p*Math.PI*4)*.65*wave;d.limbs[3].rotation.x-=Math.sin(p*Math.PI*4)*.65*wave}
+  if(d.miniSkillType==='corte'){d.limbs[0].rotation.z=.35*wave;d.limbs[2].rotation.z=-.35*wave}
+  if(d.miniSkillType==='finta'){d.headPivot.rotation.z=.23*Math.sin(p*Math.PI*2)*wave}
+  if(d.miniSkillType==='giro'){g.rotation.y=(d.miniSkillStartYaw||0)+eased*Math.PI*2}
+  if(d.miniSkillType==='pedalada'){d.limbs[1].rotation.z=Math.sin(p*Math.PI*4)*.24*wave;d.limbs[3].rotation.z=-Math.sin(p*Math.PI*4)*.24*wave}
+  if(d.miniSkillType==='corte'){g.rotation.z=Math.sin(Math.PI*p)*.16;d.limbs[1].rotation.x-=.42*wave}
+  if(d.miniSkillType==='finta'){g.rotation.z=Math.sin(p*Math.PI*2)*.13*wave;d.limbs[2].rotation.x+=.22*wave}
+ }else{d.limbs[0].rotation.z*=Math.max(0,1-dt*10);d.limbs[2].rotation.z*=Math.max(0,1-dt*10);d.headPivot.rotation.z*=Math.max(0,1-dt*10)}
  d.headPivot.rotation.y=Math.sin(d.phase*.28)*.045;
  g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z;
  }
 }
-const player=person(0,12,0x2072ff);const teammates=[[-15,5],[15,5],[0,28]].map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];
+/* 4-3-3: z positivo é o campo defensivo azul; o azul ataca para -Z. */
+const miniHomePositions=[[0,12],[-23,29],[-8,32],[8,32],[23,29],[-14,11],[0,16],[14,11],[-23,-12],[23,-12]];
+const miniAwayPositions=[[-23,-29],[-8,-32],[8,-32],[23,-29],[-14,-11],[0,-16],[14,-11],[-23,12],[23,12],[0,3]];
+const player=person(0,12,0x2072ff);const teammates=miniHomePositions.slice(1).map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];
 /* Departamento médico — etapa 1: fadiga, lesão por contato e dias de recuperação.
    Simulação simplificada; sem diagnóstico clínico real ou animação de maca. */
 const medical=new Map();
@@ -799,8 +828,8 @@ function medicalTick(dt){
 }
 document.getElementById('medicalRecover').addEventListener('click',medicalRecoverDay);
 medicalUpdateHud();
-const foes=[[-12,-13],[12,-13],[0,-28],[0,-40]].map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
-const keepers=[person(0,-45.5,0xffd23f),person(0,45.5,0x4be0b6)];
+const foes=miniAwayPositions.map(p=>person(...p,0xf04747));// Goleiros independentes: patrulham a linha do gol e reagem a chutes.
+const keepers=[person(0,-50,0xffd23f),person(0,50,0x4be0b6)];
 for(const k of keepers){
  k.userData.isKeeper=true;k.userData.saveTime=0;k.userData.diveDir=0;
  const gloveMat=new THREE.MeshLambertMaterial({color:0xf9f9f9});
@@ -809,7 +838,7 @@ for(const k of keepers){
  }
 }
 // IA v8.3: decisão de equipe, cobertura, marcação e passes sem custo alto no Android.
-const aiHomeBlue=[[-15,5],[15,5],[0,28]],aiHomeRed=[[-12,-13],[12,-13],[0,-28],[0,-40]];
+const aiHomeBlue=miniHomePositions.slice(1),aiHomeRed=miniAwayPositions;
 const aiMemory=new Map();let aiPossessor=null,aiThinkClock=0,aiDecisionClock=0;
 let aiDribbleSide=1,aiDribbleClock=0;let ballSpin=0,ballBounce=0;
 function aiStrategy(){const diff=scores[1]-scores[0];const late=elapsed>120;return diff<0&&late?'attack':diff>0?'defend':'balanced'}
@@ -823,16 +852,66 @@ function aiLaneRisk(a,b,defenders){
   if(t>.08&&t<.92&&dist<3.5)risk+=(3.5-dist)*5;
  }return risk;
 }
+function miniAthleteAttribute(athlete,key){const entry=athlete?.userData?.miniPlayer;const stats=entry?miniPlayerStats(entry):null;return stats?.[key]??70}
+function miniStatFactor(athlete,key){return THREE.MathUtils.clamp(0.78+(miniAthleteAttribute(athlete,key)-50)*.006,0.78,1.08)}
+/* Disputas simplificadas: atributos de drible, defesa e físico influenciam a posse. */
+function miniContactAnimation(p,type,duration=.48){
+ if(!p?.userData)return;
+ p.userData.miniContactType=type;
+ p.userData.miniContactDuration=duration;
+ p.userData.miniContactTime=duration;
+}
+function miniContest(attacker,defender){
+ const skill=miniAthleteAttribute(attacker,'dribbling')*.62+miniAthleteAttribute(attacker,'physical')*.38;
+ const pressure=miniAthleteAttribute(defender,'defending')*.7+miniAthleteAttribute(defender,'physical')*.3;
+ const chance=THREE.MathUtils.clamp(.48+(pressure-skill)*.008,.18,.82);
+ return Math.random()<chance;
+}
 function aiDist(a,b){return Math.hypot(a.position.x-b.position.x,a.position.z-b.position.z)}
 function aiMove(p,x,z,speed,dt){
+ if(p.userData.miniReactTime>0){p.userData.miniReactTime=Math.max(0,p.userData.miniReactTime-dt);speed*=.48}
  const dx=x-p.position.x,dz=z-p.position.z,d=Math.hypot(dx,dz);
  if(d<.16)return;
  const step=Math.min(d,speed*dt),vx=dx/d,vz=dz/d;
- p.position.x=THREE.MathUtils.clamp(p.position.x+vx*step,-28.7,28.7);
- p.position.z=THREE.MathUtils.clamp(p.position.z+vz*step,-46.5,46.5);
+ p.position.x=THREE.MathUtils.clamp(p.position.x+vx*step*miniStatFactor(p,'pace'),-32.7,32.7);
+ p.position.z=THREE.MathUtils.clamp(p.position.z+vz*step*miniStatFactor(p,'pace'),-51,51);
  p.rotation.y=Math.atan2(-vx,-vz);
 }
 function aiNearest(team,target){let best=null,dist=Infinity;for(const p of team){const d=Math.hypot(p.position.x-target.x,p.position.z-target.z);if(d<dist){dist=d;best=p}}return best}
+/* Corridas ofensivas e tabelas com espaço e risco de passe. */
+function miniAttackRun(p,team,opponents,home,carrier){
+ const forward=team===blueRoster?-1:1;
+ const distance=Math.hypot(p.position.x-carrier.position.x,p.position.z-carrier.position.z);
+ const isForward=forward*(home[1]-carrier.position.z)>-12;
+ const marker=aiNearest(opponents,p.position);
+ const pressure=marker?aiDist(marker,p):99;
+ const lane=aiLaneRisk(carrier,p,opponents);
+ let x=home[0],z=home[1];
+ if(isForward&&distance<32){
+  const advance=THREE.MathUtils.clamp(7+miniAthleteAttribute(p,'pace')*.065,8,14);
+  z=THREE.MathUtils.clamp(p.position.z+forward*advance,-43,43);
+  const side=Math.sign(home[0]||p.position.x||1);
+  x=THREE.MathUtils.clamp(p.position.x+(pressure<5?side*4:side*1.3),-28,28);
+  if(lane>9)x=THREE.MathUtils.clamp(x+side*3,-28,28);
+ }
+ return {x,z};
+}
+function miniTryOneTwo(carrier,team,goalZ){
+ if(!carrier||!team.includes(carrier)||carrier.userData.miniOneTwoUntil>0)return false;
+ const opponents=team===blueRoster?foes:blueRoster;
+ const forward=goalZ<0?-1:1;
+ const candidates=team.filter(p=>p!==carrier&&p.visible&&!expelledPlayers.has(p)&&aiDist(p,carrier)<15&&aiDist(p,carrier)>3&&forward*(p.position.z-carrier.position.z)>-5&&aiLaneRisk(carrier,p,opponents)<10);
+ if(!candidates.length)return false;
+ candidates.sort((a,b)=>aiLaneRisk(carrier,a,opponents)-aiLaneRisk(carrier,b,opponents));
+ const receiver=candidates[0];
+ const dx=receiver.position.x-carrier.position.x,dz=receiver.position.z-carrier.position.z,len=Math.hypot(dx,dz)||1;
+ velocity.set(dx/len*17*miniStatFactor(carrier,'passing'),0,dz/len*17*miniStatFactor(carrier,'passing'));
+ ball.position.set(carrier.position.x,.37,carrier.position.z);
+ attached=false;aiPossessor=null;shotActive=false;lastTouch=goalZ<0?'blue':'red';cooldown=.4;
+ carrier.userData.miniOneTwoUntil=1.4;carrier.userData.miniOneTwoTarget=receiver;
+ receiver.userData.miniReturnTarget=carrier;receiver.userData.miniReturnUntil=1.4;
+ return true;
+}
 function aiPass(carrier,receivers,goalZ){
  const candidates=receivers.filter(p=>p!==carrier).map(p=>{
   const dx=p.position.x-carrier.position.x,dz=p.position.z-carrier.position.z;
@@ -844,14 +923,75 @@ function aiPass(carrier,receivers,goalZ){
   return {p,score:forward*.5-pressure*7-lane-Math.abs(distance-14)*.3+(Math.abs(p.position.x)<23?2:0)};
  }).sort((a,b)=>b.score-a.score);
  const pick=candidates[0];if(!pick)return false;
+ if(carrier.userData.miniReturnTarget&&carrier.userData.miniReturnUntil>0){
+  const returnee=carrier.userData.miniReturnTarget;
+  if(receivers.includes(returnee)&&aiLaneRisk(carrier,returnee,goalZ<0?foes:blueRoster)<12){
+   pick.p=returnee;
+  }
+  carrier.userData.miniReturnTarget=null;carrier.userData.miniReturnUntil=0;
+ }
  const dx=pick.p.position.x-carrier.position.x,dz=pick.p.position.z-carrier.position.z;
  const d=Math.hypot(dx,dz)||1;
- velocity.set(dx/d*20,0,dz/d*20);ball.position.set(carrier.position.x,.37,carrier.position.z);
+ const accuracy=miniAthleteAttribute(carrier,'passing');const error=(Math.random()-.5)*(99-accuracy)*.0018;const cs=Math.cos(error),sn=Math.sin(error);const speed=20*miniStatFactor(carrier,'passing');
+ velocity.set((dx/d*cs-dz/d*sn)*speed,0,(dx/d*sn+dz/d*cs)*speed);ball.position.set(carrier.position.x,.37,carrier.position.z);
  attached=false;aiPossessor=null;shotActive=false;cooldown=.65;lastTouch=goalZ<0?'blue':'red';return true;
+}
+/* Cobertura e marcação: cálculo leve, sem buscas de caminho ou novos modelos. */
+function miniDefensiveTarget(p,team,opponents,home,pressing){
+ const oursBlue=team===blueRoster,goalZ=oursBlue?49:-49;
+ const carrier=attached?controlledPlayer:aiPossessor;
+ const threat=carrier&&opponents.includes(carrier)?carrier:null;
+ const boxDanger=threat&&Math.abs(threat.position.z-goalZ)<25;
+ if(p===pressing)return {x:ball.position.x,z:ball.position.z};
+ const mark=opponents.filter(q=>q.visible&&!expelledPlayers.has(q)).reduce((best,q)=>{
+  const dist=Math.hypot(q.position.x-home[0],q.position.z-home[1]);
+  const goalThreat=Math.max(0,32-Math.abs(q.position.z-goalZ))*.2;
+  const score=dist-goalThreat;
+  return !best||score<best.score?{q,score}:best;
+ },null)?.q;
+ let x=home[0],z=home[1];
+ if(mark){
+  const protect=Math.min(1,boxDanger?.8:.55);
+  x=THREE.MathUtils.lerp(x,mark.position.x,protect);
+  z=THREE.MathUtils.lerp(z,mark.position.z+(goalZ-mark.position.z)*.17,protect);
+ }
+ if(threat){
+  const dx=threat.position.x-x,dz=threat.position.z-z;
+  const d=Math.hypot(dx,dz)||1;
+  if(d<12){x+=dx/d*(boxDanger?1.7:1);z+=dz/d*(boxDanger?1.7:1)}
+ }
+ return {x:THREE.MathUtils.clamp(x,-30,30),z:THREE.MathUtils.clamp(z,-46,46)};
+}
+function miniInterceptPass(dt){
+ if(attached||aiPossessor||restartState||penaltyKick||cooldown>0||velocity.length()<3)return;
+ const team=lastTouch==='blue'?foes:blueRoster;
+ let chosen=null,score=Infinity;
+ const horizon=.18;
+ const futureX=ball.position.x+velocity.x*horizon,futureZ=ball.position.z+velocity.z*horizon;
+ for(const p of team){
+  if(!p.visible||expelledPlayers.has(p)||p===controlledPlayer)continue;
+  const dist=Math.hypot(p.position.x-futureX,p.position.z-futureZ);
+  if(dist<score){score=dist;chosen=p}
+ }
+ if(!chosen||score>3.2)return;
+ aiMove(chosen,futureX,futureZ,7.4,dt);
+ const reach=1.05+(miniAthleteAttribute(chosen,'defending')-60)*.008;
+ if(aiDist(chosen,ball)<reach&&velocity.length()<20){
+  miniContactAnimation(chosen,'standing',.3);
+  velocity.set(0,0,0);shotActive=false;
+  if(team===foes){aiPossessor=chosen;lastTouch='red';aiDecisionClock=.4}
+  else{aiPossessor=chosen;lastTouch='blue';aiDecisionClock=.4}
+  cooldown=.48;
+ }
 }
 function aiPlay(dt){
  if(restartState||penaltyKick){aiPossessor=null;return}
  aiThinkClock+=dt;aiDecisionClock=Math.max(0,aiDecisionClock-dt);
+ for(const p of [...blueRoster,...foes]){
+  if(p.userData.miniOneTwoUntil>0)p.userData.miniOneTwoUntil=Math.max(0,p.userData.miniOneTwoUntil-dt);
+  if(p.userData.miniReturnUntil>0)p.userData.miniReturnUntil=Math.max(0,p.userData.miniReturnUntil-dt);
+  else p.userData.miniReturnTarget=null;
+ }
  const target=attached?controlledPlayer.position:ball.position;
  const blueChaser=aiNearest(blueRoster.filter(p=>p!==controlledPlayer&&!expelledPlayers.has(p)),target),redChaser=aiNearest(foes,target);
  const blueHasBall=attached||(aiPossessor&&blueRoster.includes(aiPossessor));
@@ -859,44 +999,51 @@ function aiPlay(dt){
  const redHasBall=aiPossessor&&foes.includes(aiPossessor);
  const bluePress=!blueHasBall&&blueChaser;
  const redPress=!redHasBall&&redChaser;
- for(let i=0;i<blueRoster.length;i++){
-  const p=blueRoster[i],home=i===0?[0,12]:aiHomeBlue[i-1];
-  if(expelledPlayers.has(p))continue;
-  if(p===controlledPlayer)continue;
-  if(p===aiPossessor)continue;
-  let x=home[0],z=home[1];
-  if(p===bluePress){x=ball.position.x;z=ball.position.z}
-  else if(blueHasBall){
-   const laneSide=i===0?-1:i===1?1:(controlledPlayer.position.x>0?-1:1);
-   x=THREE.MathUtils.clamp(controlledPlayer.position.x+laneSide*(9+i*2),-25,25);
-   z=THREE.MathUtils.clamp(controlledPlayer.position.z-10-(i%2)*7,-42,37);
-   if(foes.some(q=>Math.hypot(q.position.x-x,q.position.z-z)<5))x=THREE.MathUtils.clamp(x+laneSide*6,-26,26);
+ // Bloco tático 4-3-3: mantém setores e desloca a equipe com a bola.
+ function tacticalMove(team,homes,attacking,pressing,opponent,speed){
+  const shiftX=THREE.MathUtils.clamp(ball.position.x*.22,-7,7);
+  const shiftZ=THREE.MathUtils.clamp(ball.position.z*.26,-12,12);
+  for(let i=0;i<team.length;i++){
+   const p=team[i];if(p===controlledPlayer||p===aiPossessor||expelledPlayers.has(p)||!p.visible)continue;
+   const home=homes[i],isDefender=i>=1&&i<=4,isMid=i>=5&&i<=7;
+   const lateral=home[0]===0?0:Math.sign(home[0]);
+   let x=home[0]+shiftX*(isDefender?.45:isMid?.7:1);
+   let z=home[1]+shiftZ*(isDefender?.35:isMid?.65:1);
+   if(p===pressing){x=ball.position.x;z=ball.position.z}
+   else if(!attacking&&isDefender){
+    const cover=miniDefensiveTarget(p,team,opponent,home,pressing);
+    x=cover.x;z=cover.z;
+   }
+   else if(attacking){
+    const carrier=team===blueRoster?(attached?controlledPlayer:aiPossessor):aiPossessor;
+    if(carrier&&team.includes(carrier)&&i>=5){
+     const run=miniAttackRun(p,team,opponent,home,carrier);
+     x=run.x;z=run.z;
+    }
+    const forward=team===blueRoster?-1:1;
+    z+=forward*(isDefender?1.5:isMid?4:7);
+    x+=lateral*(isDefender?0:isMid?1:2);
+   }else{
+    z+=(team===blueRoster?1:-1)*(isDefender?1.5:3);
+    if(!isDefender&&opponent.length){
+     const mark=opponent.reduce((best,q)=>Math.hypot(q.position.x-x,q.position.z-z)<Math.hypot(best.position.x-x,best.position.z-z)?q:best,opponent[0]);
+     if(Math.hypot(mark.position.x-x,mark.position.z-z)<9){x=x*.65+mark.position.x*.35;z=z*.7+mark.position.z*.3}
+    }
+   }
+   aiMove(p,THREE.MathUtils.clamp(x,-31,31),THREE.MathUtils.clamp(z,-47,47),p===pressing?7.5*speed:5.3*speed,dt);
   }
-  else{x=home[0]*.6+ball.position.x*.4;z=home[1]*.6+ball.position.z*.4}
-  aiMove(p,x,z,p===bluePress?7.4:5.3,dt);
  }
- for(let i=0;i<foes.length;i++){
-  const p=foes[i],home=aiHomeRed[i];if(p===aiPossessor)continue;
-  let x=home[0],z=home[1];
-  if(p===redPress){x=ball.position.x;z=ball.position.z}
-  else if(blueHasBall){
-   const mark=i%2===0?player:(teammates[(i-1)%teammates.length]||player);
-   x=home[0]*.3+mark.position.x*.7;z=THREE.MathUtils.clamp(mark.position.z-3+(i%2)*2,-44,43);
-  }else if(redHasBall){
-   const side=i%2===0?-1:1;
-   x=THREE.MathUtils.clamp(aiPossessor.position.x+side*(8+i),-25,25);
-   z=THREE.MathUtils.clamp(aiPossessor.position.z+8+(i%2)*5,-39,43);
-   if(blueRoster.some(q=>Math.hypot(q.position.x-x,q.position.z-z)<4))x=THREE.MathUtils.clamp(x+side*5,-26,26);
-  }
-  else{x=home[0]*.6+ball.position.x*.4;z=home[1]*.65+ball.position.z*.35}
-  aiMove(p,x,z,p===redPress?7.1*aggression:5.1*aggression,dt);
- }
+ tacticalMove(blueRoster,miniHomePositions,blueHasBall,bluePress,foes,1);
+ tacticalMove(foes,miniAwayPositions,redHasBall,redPress,blueRoster,aggression);
+ miniInterceptPass(dt);
  // Companheiro que ficou com a bola após troca de controle continua jogando.
  if(aiPossessor&&blueRoster.includes(aiPossessor)){
   const c=aiPossessor;
   aiMove(c,THREE.MathUtils.clamp(c.position.x,-25,25),-42,5.8,dt);
   ball.position.set(c.position.x,.37,c.position.z-1);
-  if(aiDecisionClock<=0){aiDecisionClock=.8;aiPass(c,blueRoster.filter(p=>p!==c),-48)}
+  if(aiDecisionClock<=0){aiDecisionClock=.8;
+   if(!miniTryOneTwo(c,blueRoster,-48))aiPass(c,blueRoster.filter(p=>p!==c),-48)
+  }
  }
  // O adversário com a bola progride, procura companheiros ou finaliza.
  if(redHasBall){
@@ -910,7 +1057,7 @@ function aiPlay(dt){
    if(Math.abs(c.position.x)>22)aiDribbleSide=-Math.sign(c.position.x);
    aiDribbleClock=.55+Math.random()*.45;
   }
-  const lateral=distance<6?aiDribbleSide*5:0;
+  const lateral=distance<6?aiDribbleSide*(3+miniAthleteAttribute(c,'dribbling')*.035):0;
   aiMove(c,THREE.MathUtils.clamp(c.position.x+lateral,-24,24),45,6.6*aggression,dt);
   ball.position.set(c.position.x,.37,c.position.z+1.0);
   if(aiDecisionClock<=0){
@@ -919,7 +1066,7 @@ function aiPlay(dt){
     const gx=THREE.MathUtils.clamp((Math.random()-.5)*5,-3,3)-ball.position.x,gz=48-ball.position.z;
     const d=Math.hypot(gx,gz)||1;velocity.set(gx/d*38,0,gz/d*38);aiPossessor=null;shotActive=true;cooldown=.65;lastTouch='red';
    }else if(distance<3.4||strategy==='defend'&&c.position.z<18){
-    aiPass(c,foes,48);
+    if(!miniTryOneTwo(c,foes,48))aiPass(c,foes,48);
    }
   }
  }
@@ -931,10 +1078,12 @@ function aiPlay(dt){
   else if(bd<1.25){aiPass(blue,blueRoster,-48)}
  }
  // Pressão e interceptação: o rival pode tomar a bola, sem teletransporte.
- if(attached&&redChaser&&aiDist(redChaser,controlledPlayer)<1.15&&cooldown<=0){
+ if(attached&&redChaser&&aiDist(redChaser,controlledPlayer)<1.15&&cooldown<=0&&miniContest(controlledPlayer,redChaser)){
+  miniContactAnimation(redChaser,'standing');miniContactAnimation(controlledPlayer,'stumble');
   attached=false;aiPossessor=redChaser;lastTouch='red';velocity.set(0,0,0);cooldown=.9;aiDecisionClock=.5;
  }
- if(aiPossessor&&foes.includes(aiPossessor)&&aiDist(aiPossessor,player)<1.05&&cooldown<=0){
+ if(aiPossessor&&foes.includes(aiPossessor)&&aiDist(aiPossessor,controlledPlayer)<1.05&&cooldown<=0&&miniContest(aiPossessor,controlledPlayer)){
+  miniContactAnimation(controlledPlayer,'standing');miniContactAnimation(aiPossessor,'stumble');
   aiPossessor=null;attached=true;lastTouch='blue';cooldown=.8;
  }
 }
@@ -942,10 +1091,11 @@ function aiPlay(dt){
 const keeperState=keepers.map(()=>({dive:0,side:0,recover:0,saveCooldown:0,homeX:0}));
 function animateKeepers(dt){
  for(let i=0;i<keepers.length;i++){
-  const k=keepers[i],s=keeperState[i],homeZ=i===0?-45.5:45.5;
+  const k=keepers[i],s=keeperState[i],homeZ=i===0?-50:50;
   const toward=i===0?velocity.z<0:velocity.z>0;
   const near=Math.abs(ball.position.z-homeZ)<24;
   const travelTime=Math.min(.75,Math.abs((homeZ-ball.position.z)/(velocity.z||.01)));const predictedX=ball.position.x+(toward?velocity.x*travelTime:0);
+  const keeperSkill=miniStatFactor(k,'overall');
   const targetX=near?THREE.MathUtils.clamp(predictedX,-3.65,3.65):THREE.MathUtils.clamp(ball.position.x*.10,-1.6,1.6);
   s.saveCooldown=Math.max(0,s.saveCooldown-dt);
   if(s.dive>0){
@@ -964,12 +1114,12 @@ function animateKeepers(dt){
   }else{
    k.rotation.z=0;k.position.y=.35;
    k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;
-   k.position.x+=THREE.MathUtils.clamp(targetX-k.position.x,-dt*(near?7.2:4.5),dt*(near?7.2:4.5));
+   k.position.x+=THREE.MathUtils.clamp(targetX-k.position.x,-dt*(near?7.2:4.5)*keeperSkill*keeperSkill,dt*(near?7.2:4.5));
   }
   k.position.z=homeZ;
   // Só defender chutes que realmente chegam à área do goleiro.
   const ballDistance=Math.hypot(ball.position.x-k.position.x,ball.position.z-homeZ);
-  if(!restartState&&!attached&&toward&&s.saveCooldown===0&&ballDistance<2.5&&
+  if(!restartState&&!attached&&toward&&s.saveCooldown===0&&ballDistance<2.5*keeperSkill&&
      Math.abs(ball.position.x)<4.4&&velocity.length()>5){
    const side=ball.position.x>=k.position.x?1:-1;
    s.side=side;s.dive=.65;s.recover=0;s.saveCooldown=1.25;
@@ -998,17 +1148,17 @@ function updateBroadcastCamera(dt){
  const leadX=THREE.MathUtils.clamp(focus.x+(attached?0:velocity.x*.18),-15,15);
  if(cameraMode===0){
   // Lateral elevada, enquadra o campo e preserva a direção dos ataques.
-  cameraPosition.set(61,43,leadZ*.75);
+  cameraPosition.set(78,56,leadZ*.68);
   cameraTarget.set(leadX*.45,0,leadZ);
-  camera.fov=49;
+  camera.fov=52;
  }else if(cameraMode===1){
-  cameraPosition.set(51,33,leadZ*.84);
+  cameraPosition.set(67,44,leadZ*.78);
   cameraTarget.set(leadX*.55,0,leadZ);
-  camera.fov=46;
+  camera.fov=49;
  }else{
-  cameraPosition.set(controlledPlayer.position.x*.35,38,controlledPlayer.position.z+34);
+  cameraPosition.set(controlledPlayer.position.x*.35,48,controlledPlayer.position.z+43);
   cameraTarget.set(controlledPlayer.position.x*.35,0,controlledPlayer.position.z-13);
-  camera.fov=56;
+  camera.fov=59;
  }
  camera.position.lerp(cameraPosition,t);
  smoothCameraLook.lerp(cameraTarget,t);
@@ -1067,7 +1217,7 @@ function showRule(msg,seconds=1.7){banner.textContent=msg;bannerTime=seconds}
 function awardRestart(type,x,z,team){
  if(training){if(ball.position.z<=-48){trainingRecord(Math.abs(ball.position.x)<=4);return}if(Math.abs(ball.position.x)>=30||ball.position.z>=48){trainingRecord(false);return}return}
  if(restartState)return;
- restartState={type,x:THREE.MathUtils.clamp(x,-29,29),z:THREE.MathUtils.clamp(z,-47,47),team};
+ restartState={type,x:THREE.MathUtils.clamp(x,-33,33),z:THREE.MathUtils.clamp(z,-51.5,51.5),team};
  restartTimer=1.7;attached=false;shotActive=false;velocity.set(0,0,0);
  ball.position.set(restartState.x,.37,restartState.z);
  showRule(type,1.7);
@@ -1171,7 +1321,7 @@ document.getElementById('trainingExit').addEventListener('click',()=>{trainingFi
 function checkRulesOut(){
  if(restartState)return;
  const x=ball.position.x,z=ball.position.z;
- if(Math.abs(z)>=48){
+ if(Math.abs(z)>=52.5){
   if(penaltyKick){const scored=Math.abs(x)<=4;showRule(scored?'GOL DE PÊNALTI!':'PÊNALTI PARA FORA!',2);penaltyKick=null;if(scored){scores[z<0?0:1]++;scoreEl.textContent=scores.join(' × ')}kickoff();return;}
   if(Math.abs(x)<=4){
    startGoalReview(x,z);return;
@@ -1180,19 +1330,21 @@ function checkRulesOut(){
   const blueAttacks=z<0;
   const corner=(blueAttacks&&lastTouch==='red')||(!blueAttacks&&lastTouch==='blue');
   const team=corner?(blueAttacks?'blue':'red'):(blueAttacks?'red':'blue');
-  awardRestart(corner?'ESCANTEIO!':'TIRO DE META!',corner?Math.sign(x||1)*28:0,Math.sign(z)*(corner?46:42),team);
- }else if(Math.abs(x)>=30){
-  awardRestart('LATERAL!',Math.sign(x)*28.5,THREE.MathUtils.clamp(z,-46,46),lastTouch==='blue'?'red':'blue');
+  awardRestart(corner?'ESCANTEIO!':'TIRO DE META!',corner?Math.sign(x||1)*32:0,Math.sign(z)*(corner?50.5:46),team);
+ }else if(Math.abs(x)>=34){
+  awardRestart('LATERAL!',Math.sign(x)*32.5,THREE.MathUtils.clamp(z,-50,50),lastTouch==='blue'?'red':'blue');
  }
 }
 function refereeTackle(){
  if(restartState)return;
  const target=foes.find(f=>Math.hypot(f.position.x-controlledPlayer.position.x,f.position.z-controlledPlayer.position.z)<2.5);
- if(!target){showRule('CARRINHO SEM CONTATO',.9);return}
+ if(!target){miniContactAnimation(controlledPlayer,'slide',.6);showRule('CARRINHO SEM CONTATO',.9);return}
+ miniContactAnimation(controlledPlayer,'slide',.6);
+ miniContactAnimation(target,'stumble',.5);
  const ballDist=Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z);
  // Uma entrada próxima à bola pode ser limpa; longe da bola é falta.
  if(medicalInjury(controlledPlayer,true)){awardRestart('FALTA! ATENDIMENTO MÉDICO',controlledPlayer.position.x,controlledPlayer.position.z,'red');return}
- if(ballDist<1.4&&!attached){lastTouch='blue';velocity.set(0,0,-7);showRule('DESARME LIMPO!',1);return}
+ if(ballDist<1.4&&!attached&&miniContest(target,controlledPlayer)){lastTouch='blue';aiPossessor=null;velocity.set(0,0,-7);showRule('DESARME LIMPO!',1);return}
  yellowCards++;
  if(yellowCards>=2){redCards++;redSuspension=false;const sentOff=controlledPlayer;expelledPlayers.add(sentOff);sentOff.visible=false;const replacement=blueRoster.find(p=>!expelledPlayers.has(p));if(replacement){controlledPlayer=replacement;selectedIndex=blueRoster.indexOf(replacement)}attached=false;aiPossessor=null;cooldown=.7;}
  updateRuleHud();
@@ -1202,7 +1354,7 @@ function refereeTackle(){
  awardRestart(inBlueBox?'PÊNALTI ADVERSÁRIO!':redCards?'SEGUNDO AMARELO! VERMELHO!':'FALTA! CARTÃO AMARELO!',controlledPlayer.position.x,controlledPlayer.position.z,'red');
 }
 document.getElementById('tackle').addEventListener('pointerdown',e=>{e.preventDefault();refereeTackle()});
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){controlledPlayer=blueRoster.find(p=>medicalAvailable(p))||player;selectedIndex=blueRoster.indexOf(controlledPlayer);aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;foes.forEach((p,i)=>p.position.set([-12,12,0,0][i],0,[-13,-13,-28,-40][i]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){controlledPlayer=blueRoster.find(p=>medicalAvailable(p))||player;selectedIndex=blueRoster.indexOf(controlledPlayer);aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(miniHomePositions[selectedIndex][0],.35,miniHomePositions[selectedIndex][1]);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;blueRoster.forEach((p,i)=>{if(p!==controlledPlayer)p.position.set(miniHomePositions[i][0],.35,miniHomePositions[i][1])});foes.forEach((p,i)=>p.position.set(miniAwayPositions[i][0],.35,miniAwayPositions[i][1]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-50:50);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
 // Finalização original inspirada em jogos de futebol: mira livre, assistência leve e força carregável.
 let chargingShot=false,chargeStart=0,chargePointer=null;
 const shootButton=document.getElementById('shoot');
@@ -1210,6 +1362,46 @@ shootButton.style.position='relative';shootButton.style.overflow='hidden';
 const powerFill=document.createElement('div');
 powerFill.style.cssText='position:absolute;bottom:0;left:0;width:100%;height:0%;background:rgba(255,255,255,.28);pointer-events:none;transition:height .04s linear';
 shootButton.appendChild(powerFill);
+/* Habilidades originais, leves e adaptadas ao controle por toque. */
+let miniSkillCooldown=0,miniSkillPanelOpen=false;
+function miniDoSkill(kind){
+ if(fcMenuActive||gamePaused||restartState||penaltyKick||!attached||miniSkillCooldown>0)return;
+ const athlete=controlledPlayer,ability=miniAthleteAttribute(athlete,'dribbling');
+ const nearest=aiNearest(foes,athlete.position),distance=nearest?aiDist(nearest,athlete):99;
+ const chance=THREE.MathUtils.clamp(.48+(ability-65)*.009,.25,.87);
+ const success=distance>3.5||Math.random()<chance;
+ miniSkillCooldown=.85;
+ if(nearest&&distance<2.8&&success){miniContactAnimation(athlete,'shield',.45);miniContactAnimation(nearest,'stumble',.38)}
+ const d=athlete.userData;d.miniSkillType=kind;d.miniSkillDuration=kind==='giro'?.7:.55;d.miniSkillTime=d.miniSkillDuration;
+ d.miniSkillStartYaw=athlete.rotation.y;d.miniSkillStartX=athlete.position.x;d.miniSkillStartZ=athlete.position.z;
+ d.miniSkillSuccess=success;
+ const analog=analogDirection(),dirX=analog?.x??Math.sin(athlete.rotation.y),dirZ=analog?.z??-Math.cos(athlete.rotation.y);
+ const lateral=kind==='corte'?-1:kind==='finta'?1:0;
+ const step=success?(kind==='giro'?1.65:kind==='corte'?2.1:1.15):.35;
+ d.miniSkillEndX=THREE.MathUtils.clamp(athlete.position.x+(dirX+lateral*.7)*step,-32,32);
+ d.miniSkillEndZ=THREE.MathUtils.clamp(athlete.position.z+dirZ*step,-50,50);
+ if(success&&nearest&&distance<3.6){nearest.userData.miniReactTime=.22+(ability/99)*.18;
+  nearest.userData.miniReactSide=lateral||((nearest.position.x<athlete.position.x)?-1:1);
+ }
+ if(!success&&nearest&&distance<2.2){attached=false;aiPossessor=nearest;lastTouch='red';velocity.set(0,0,0);cooldown=.75;aiDecisionClock=.5}
+ else{ball.position.set(athlete.position.x,.37,athlete.position.z-1.05)}
+ banner.textContent=success?({pedalada:'PEDALADA!',corte:'CORTE RÁPIDO!',finta:'FINTA DE CORPO!',giro:'GIRO 360°!'})[kind]:'DRIBLE INTERCEPTADO!';
+ bannerTime=.8;
+}
+(function miniInstallSkillButtons(){
+ const holder=document.createElement('div');holder.id='miniSkillHolder';holder.style.cssText='position:fixed;right:max(8px,env(safe-area-inset-right));bottom:clamp(105px,22vh,165px);z-index:9;display:flex;flex-direction:column;align-items:flex-end;gap:5px;max-height:65vh';
+ const toggle=document.createElement('button');toggle.type='button';toggle.textContent='DRIBLES';toggle.style.cssText='border:1px solid #b5ff36;border-radius:20px;background:#0b2838;color:#b5ff36;padding:8px 12px;font-weight:bold;font-size:11px;touch-action:manipulation';
+ const panel=document.createElement('div');panel.style.cssText='display:none;grid-template-columns:repeat(2,minmax(66px,1fr));gap:5px;background:#071b20ed;padding:6px;border-radius:10px;max-width:min(200px,36vw);max-height:45vh;overflow:auto';
+ for(const [kind,label] of [['pedalada','PEDALADA'],['corte','CORTE'],['finta','FINTA'],['giro','GIRO 360°']]){
+  const btn=document.createElement('button');btn.type='button';btn.textContent=label;btn.style.cssText='min-height:38px;padding:7px 5px;background:#24475b;color:#fff;border:1px solid #7093a6;border-radius:7px;font-size:clamp(9px,1.4vw,11px);touch-action:manipulation';
+  btn.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();miniDoSkill(kind)});
+  panel.append(btn);
+ }
+ toggle.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();miniSkillPanelOpen=!miniSkillPanelOpen;panel.style.display=miniSkillPanelOpen?'grid':'none'});
+ holder.append(panel,toggle);document.body.append(holder);
+ const responsive=document.createElement('style');responsive.textContent='@media (orientation:landscape) and (max-height:540px){#miniSkillHolder{bottom:12px!important;right:clamp(100px,17vw,220px)!important}#miniSkillHolder>div{max-height:45vh!important}#miniSkillHolder button{min-height:32px}}@media (orientation:portrait){#miniSkillHolder{bottom:24vh!important}}';document.head.append(responsive);
+ window.miniSkillHolder=holder;
+})();
 function kick(power,isShot=false){
  aiPossessor=null;
  if(gamePaused||restartState||(training&&training.waiting))return;
@@ -1238,7 +1430,7 @@ function kick(power,isShot=false){
    dz=analog.z*(1-assist)+goalDir.z*assist;
   }else{dx=goalDir.x;dz=goalDir.z;}
   // Potência excessiva reduz a precisão; erros pequenos e previsíveis.
-  const error=Math.max(0,(power-38)/34)*.13;
+  const error=Math.max(0,(power-38)/34)*.13+(99-miniAthleteAttribute(controlledPlayer,'shooting'))*.0014;
   const angle=(Math.random()-.5)*error;
   const nx=dx*Math.cos(angle)-dz*Math.sin(angle);
   dz=dx*Math.sin(angle)+dz*Math.cos(angle);dx=nx;
@@ -1247,7 +1439,8 @@ function kick(power,isShot=false){
   dz=analog?analog.z:goalDir.z;
  }
  const len=Math.hypot(dx,dz)||1;
- velocity.set(dx/len*power,0,dz/len*power);ballSpin=isShot?THREE.MathUtils.clamp((analog?analog.x:0)*.85,-.85,.85):0;ballBounce=isShot?Math.min(.32,power*.005):.05;
+ const effectivePower=power*miniStatFactor(controlledPlayer,isShot?'shooting':'passing');
+ velocity.set(dx/len*effectivePower,0,dz/len*effectivePower);ballSpin=isShot?THREE.MathUtils.clamp((analog?analog.x:0)*.85,-.85,.85):0;ballBounce=isShot?Math.min(.32,power*.005):.05;
  if(penaltyKick&&isShot){power=Math.min(power,44);penaltyKick.taken=true;}
  shotActive=isShot;lastTouch='blue';lastKickWasPass=!isShot;attached=false;cooldown=.55;controlledPlayer.userData.kickTime=.3;
 }
@@ -1312,6 +1505,7 @@ document.getElementById('switchPlayer').addEventListener('pointerdown',e=>{e.pre
 const joy=document.getElementById('joy'),stick=document.getElementById('stick');function joystick(e){const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dz=e.clientY-r.top-r.height/2,dist=Math.hypot(dx,dz),limit=r.width*.32,scale=Math.min(dist,limit)/Math.max(1,dist);stick.style.transform=`translate(${dx*scale}px,${dz*scale}px)`;input.x=dx/Math.max(limit,dist);input.z=dz/Math.max(limit,dist)}joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);joystick(e)});joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))joystick(e)});function stop(){input.x=0;input.z=0;stick.style.transform=''}joy.addEventListener('pointerup',stop);joy.addEventListener('pointercancel',stop);window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();kick(34,true)}if(e.key.toLowerCase()==='e')kick(16,false);if(e.key.toLowerCase()==='q')switchControlledPlayer()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);document.getElementById('restart').onclick=()=>{for(const [p,m] of medical){m.fatigue=0;m.days=0;m.severity='';p.visible=true}medicalUpdateHud();training=null;trainingPanel.style.display='none';varReview=null;varOverlay.style.display='none';scores=[0,0];elapsed=0;yellowCards=0;redCards=0;redSuspension=false;expelledPlayers.clear();blueRoster.forEach(p=>p.visible=true);offsideCount=0;penaltyCount=0;updateRuleHud();scoreEl.textContent='0 × 0';kickoff()};let lastControlMode='';
 function updateControlMode(){
  const hasBlueBall=attached||(aiPossessor&&blueRoster.includes(aiPossessor));
+ if(window.miniSkillHolder){window.miniSkillHolder.style.display=!fcMenuActive&&!gamePaused&&attached?'flex':'none'}
  const mode=hasBlueBall?'attack':'defense';
  if(mode===lastControlMode)return;
  lastControlMode=mode;
@@ -1352,8 +1546,9 @@ fcChangeVariant();
 function fcAnimate(dt){fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}const t=performance.now()*.001;fcActor.position.y=Math.sin(t*2.2)*.035;fcArmL.rotation.x=Math.sin(t*2.2)*.18;fcArmR.rotation.x=-Math.sin(t*2.2)*.18;fcLegR.rotation.x=Math.sin(t*3)*.16;fcLegL.rotation.x=-Math.sin(t*3)*.12;fcBall.position.set(3.0,.42+Math.abs(Math.sin(t*3.6))*.68,.65);fcBall.rotation.x+=dt*2.2;fcRenderer.render(fcScene,fcCam)}
 function fcScreen(id){fcScreens.forEach(e=>e.classList.toggle('fcOpen',e.id===id))}
 function fcClose(){fcRoot.hidden=true;fcMenuActive=false;fcRenderer.domElement.style.display='none';document.body.classList.remove('fc-menu-open');fcScreen('');last=performance.now();startArrival()}
-const fcClubs=[{league:'Brasil',name:'Azul FC',short:'AZU',color:'#2368d2',stats:[77,74,72]},{league:'Brasil',name:'Vermelho FC',short:'VER',color:'#ce3447',stats:[75,76,71]},{league:'Inglaterra',name:'London City',short:'LON',color:'#2a84cc',stats:[83,80,78]},{league:'Espanha',name:'Madrid Norte',short:'MAD',color:'#f4f4f4',stats:[85,82,80]},{league:'Alemanha',name:'Munique FC',short:'MUN',color:'#c52f43',stats:[84,81,79]},{league:'Itália',name:'Milano FC',short:'MIL',color:'#292d36',stats:[80,78,81]},{league:'França',name:'Paris FC',short:'PAR',color:'#283d8d',stats:[86,78,76]}];
-let fcHome=0,fcAway=1;const fcLeagues=[...new Set(fcClubs.map(c=>c.league))];
+/* Brasileirão Série A 2026: participantes conferidos no regulamento da CBF. Atributos 75 são temporários, não avaliações oficiais; escudos e elencos aguardam assets licenciados e dados verificados. */
+const fcClubs=[{"league":"Brasil","name":"Athletico-PR","short":"CAP","color":"#c8102e","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_2026_11_15","roster":[{"name":"Mycael","number":1,"position":"GOL"},{"name":"Santos","number":23,"position":"GOL"},{"name":"Matheus Soares","number":42,"position":"GOL"},{"name":"Maksym Voronov","number":76,"position":"GOL"},{"name":"Gilberto","number":2,"position":"LD"},{"name":"Léo Pelé","number":3,"position":"ZAG"},{"name":"Arthur Dias","number":4,"position":"ZAG"},{"name":"Léo Derik","number":6,"position":"LE"},{"name":"Carlos Terán","number":22,"position":"ZAG"},{"name":"João Dantas","number":25,"position":"ZAG"},{"name":"Claudinho","number":26,"position":"LE"},{"name":"Gastón Benavídez","number":29,"position":"LD"},{"name":"Juan Aguirre","number":33,"position":"ZAG"},{"name":"Lucas Esquivel","number":37,"position":"LE"},{"name":"Felipinho","number":5,"position":"VOL"},{"name":"João Cruz","number":8,"position":"MC"},{"name":"Bruno Zapelli","number":10,"position":"MEI"},{"name":"Luiz Gustavo","number":14,"position":"VOL"},{"name":"Jadson","number":16,"position":"VOL"},{"name":"Alejandro García","number":20,"position":"MEI"},{"name":"Juan Portilla","number":27,"position":"VOL"},{"name":"Felipe Chiqueti","number":47,"position":"MEI"},{"name":"Dudu Kogitzki","number":53,"position":"MEI"},{"name":"Diogo Riquelme","number":63,"position":"MC"},{"name":"Stiven Mendoza","number":7,"position":"PE"},{"name":"Kevin Viveros","number":9,"position":"ATA"},{"name":"Kerwin Vargas","number":18,"position":"PE"},{"name":"Jorge Rivaldo","number":19,"position":"ATA"},{"name":"Leozinho","number":21,"position":"PD"},{"name":"Renan Viana","number":50,"position":"ATA"},{"name":"Renan Peixoto","number":70,"position":"ATA"}],"rosterSource":"https://www.365scores.com/pt-br/football/team/athletico-paranaense-1210/squad","rosterAdditionalSource":"https://www.netvasco.com.br/news/noticias16/arquivos/20261104-230138-1-.pdf","rosterNote":"31 atletas em listagem consultada em novembro de 2026, com conferência parcial por súmula CBF de 04/11. Algumas numerações podem variar; revisar antes de publicar. Ainda não vinculados à gameplay 3D."},{"league":"Brasil","name":"Atlético-MG","short":"CAM","color":"#252525","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_novembro_2026","roster":[{"name":"Gabriel Delfim","number":1,"position":"GOL"},{"name":"Everson","number":22,"position":"GOL"},{"name":"Robert","number":31,"position":"GOL"},{"name":"Pedro Cobra","number":46,"position":"GOL"},{"name":"Natanael","number":2,"position":"LD"},{"name":"Léo Duarte","number":3,"position":"ZAG"},{"name":"Ruan Tressoldi","number":4,"position":"ZAG"},{"name":"Renan Lodi","number":6,"position":"LE"},{"name":"Lyanco","number":13,"position":"ZAG"},{"name":"Vitor Hugo","number":14,"position":"ZAG"},{"name":"Ángelo Preciado","number":23,"position":"LD"},{"name":"Kauã Pascini","number":36,"position":"LE"},{"name":"Vitão","number":40,"position":"ZAG"},{"name":"Alexsander","number":5,"position":"VOL"},{"name":"Fred","number":7,"position":"VOL"},{"name":"Maycon","number":8,"position":"MC"},{"name":"Gustavo Scarpa","number":10,"position":"MEI"},{"name":"Bernard","number":11,"position":"MEI"},{"name":"Kevin Castaño","number":15,"position":"VOL"},{"name":"Igor Gomes","number":17,"position":"MC"},{"name":"Reinier","number":19,"position":"MEI"},{"name":"Alan Franco","number":21,"position":"VOL"},{"name":"Tomás Pérez","number":25,"position":"VOL"},{"name":"Victor Hugo","number":30,"position":"MEI"},{"name":"Índio","number":38,"position":"MC"},{"name":"Mamady Cissé","number":39,"position":"VOL"},{"name":"Mateo Cassierra","number":9,"position":"ATA"},{"name":"Thiago Borbas","number":18,"position":"ATA"},{"name":"Alan Minda","number":27,"position":"PD"},{"name":"Tomás Cuello","number":28,"position":"PE"},{"name":"Cauã Soares","number":29,"position":"ATA"},{"name":"Dudu","number":92,"position":"PE"}],"rosterSource":"https://bussoladofutebol.com.br/time/atletico-mg","rosterNote":"32 jogadores listados em novembro de 2026. Posições detalhadas são aproximações do cadastro do jogo. Revisar antes da publicação."},{"league":"Brasil","name":"Bahia","short":"BAH","color":"#1554a2","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"site_oficial_consultado_2026_11_15","roster":[{"name":"Ronaldo","number":1,"position":"GOL"},{"name":"Léo Vieira","number":22,"position":"GOL"},{"name":"Guido Herrera","number":17,"position":"GOL"},{"name":"Zé Guilherme","number":66,"position":"LE"},{"name":"Román Gómez","number":31,"position":"LD"},{"name":"Luciano Juba","number":46,"position":"LE"},{"name":"David Duarte","number":33,"position":"ZAG"},{"name":"Marcos Victor","number":44,"position":"ZAG"},{"name":"Luiz Gustavo","number":43,"position":"ZAG"},{"name":"Marco Moreno","number":3,"position":"ZAG"},{"name":"Kanu","number":4,"position":"ZAG"},{"name":"Everton Ribeiro","number":10,"position":"MEI"},{"name":"Nicolás Acevedo","number":5,"position":"VOL"},{"name":"David Martins","number":63,"position":"MC"},{"name":"Erick","number":14,"position":"MC"},{"name":"Rodrigo Nestor","number":11,"position":"MC"},{"name":"Michel Araújo","number":15,"position":"MEI"},{"name":"Lautaro López","number":18,"position":"MC"},{"name":"Caio Alexandre","number":8,"position":"VOL"},{"name":"Jean Lucas","number":6,"position":"MC"},{"name":"Ademir","number":7,"position":"PD"},{"name":"Ruan Pablo","number":77,"position":"ATA"},{"name":"Erick Pulga","number":16,"position":"PE"},{"name":"Willian José","number":12,"position":"ATA"},{"name":"Mateo Sanabria","number":23,"position":"PE"},{"name":"Kauê Furquim","number":57,"position":"ATA"},{"name":"Kike Olivera","number":99,"position":"PD"},{"name":"Alejo Véliz","number":9,"position":"ATA"},{"name":"Everaldo","number":27,"position":"ATA"}],"rosterSource":"https://www.esporteclubebahia.com.br/elenco/masculino/","rosterNote":"29 atletas e números do elenco publicado pelo clube. Posições específicas aproximadas a partir das categorias oficiais. Revisar antes de publicar; dados ainda não vinculados a jogadores 3D."},{"league":"Brasil","name":"Botafogo","short":"BOT","color":"#222222","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_2026_11_15","roster":[{"name":"Gabriel Batista","number":12,"position":"GOL"},{"name":"Warleson","number":17,"position":"GOL"},{"name":"Cristhian Loor","number":40,"position":"GOL"},{"name":"Rhyan","number":32,"position":"GOL"},{"name":"Cléber","number":62,"position":"GOL"},{"name":"Vitinho","number":2,"position":"LD"},{"name":"Arthur Chaves","number":3,"position":"ZAG"},{"name":"Mateo Ponte","number":4,"position":"LD"},{"name":"Nahuel Ferraresi","number":5,"position":"ZAG"},{"name":"Alex Telles","number":13,"position":"LE"},{"name":"Marçal","number":21,"position":"LE"},{"name":"Anthony","number":26,"position":"ZAG"},{"name":"Paulinho","number":29,"position":"LE"},{"name":"Kaio Pantaleão","number":31,"position":"ZAG"},{"name":"Lucas Monzón","number":33,"position":"ZAG"},{"name":"Gabriel Justino","number":34,"position":"ZAG"},{"name":"Kadu Santos","number":42,"position":"LD"},{"name":"Jhoan Hernández","number":67,"position":"LE"},{"name":"Cristian Medina","number":6,"position":"VOL"},{"name":"Danilo","number":8,"position":"VOL"},{"name":"Álvaro Montoro","number":10,"position":"MEI"},{"name":"Jordan Barrera","number":14,"position":"MEI"},{"name":"Hakim Ziyech","number":22,"position":"MEI"},{"name":"Allan","number":25,"position":"VOL"},{"name":"Wallace Davi","number":55,"position":"VOL"},{"name":"Kauan Toledo","number":59,"position":"MEI"},{"name":"Huguinho","number":75,"position":"VOL"},{"name":"Edenílson","number":88,"position":"MC"},{"name":"Domingos Andrade","number":91,"position":"VOL"},{"name":"Júnior Santos","number":7,"position":"ATA"},{"name":"Tiquinho Soares","number":9,"position":"ATA"},{"name":"Matheus Martins","number":11,"position":"ATA"},{"name":"Arthur Cabral","number":19,"position":"ATA"},{"name":"Kadir Barría","number":37,"position":"ATA"},{"name":"Lucas Villalba","number":77,"position":"ATA"},{"name":"Lucas Emanuel","number":79,"position":"ATA"},{"name":"Danilo Pereira","number":90,"position":"ATA"}],"rosterSource":"https://classificacaogeral.com.br/clube/120/botafogo","rosterNote":"Elenco de referência de novembro de 2026; confirmar inscrição, números e posições antes da publicação. Não conectado à gameplay 3D."},{"league":"Brasil","name":"Chapecoense","short":"CHA","color":"#167e44","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"site_oficial_2026_11_15","roster":[{"name":"Anderson","number":98,"position":"GOL"},{"name":"Gabriel Werner","number":14,"position":"GOL"},{"name":"Kainã","number":34,"position":"GOL"},{"name":"Matheus Aurélio","number":30,"position":"GOL"},{"name":"Doma","number":3,"position":"ZAG"},{"name":"João Paulo","number":4,"position":"ZAG"},{"name":"Kauan","number":21,"position":"ZAG"},{"name":"Victor Caetano","number":25,"position":"ZAG"},{"name":"Vinicius","number":35,"position":"ZAG"},{"name":"Bruno Pacheco","number":91,"position":"LE"},{"name":"Bruno Tubarão","number":20,"position":"LD"},{"name":"Everton","number":26,"position":"LD"},{"name":"Fernando","number":12,"position":"LE"},{"name":"Heitor","number":5,"position":"LD"},{"name":"Mancha","number":6,"position":"LE"},{"name":"Vinicius Balieiro","number":17,"position":"VOL"},{"name":"David","number":19,"position":"MC"},{"name":"Camilo","number":27,"position":"VOL"},{"name":"Rosivan","number":55,"position":"VOL"},{"name":"Rafael Carvalheira","number":99,"position":"VOL"},{"name":"Giovanni Augusto","number":10,"position":"MEI"},{"name":"Max","number":22,"position":"MEI"},{"name":"Miguel Carvalho","number":80,"position":"MEI"},{"name":"Robert","number":8,"position":"MEI"},{"name":"Yago Felipe","number":88,"position":"MC"},{"name":"Dylan Borrero","number":77,"position":"PE"},{"name":"Franco Rossi","number":29,"position":"ATA"},{"name":"Marcinho","number":7,"position":"PD"},{"name":"Maurício Garcez","number":31,"position":"PE"},{"name":"Rubens","number":70,"position":"PD"},{"name":"Túlio Eduardo","number":9,"position":"ATA"}],"rosterSource":"https://chapecoense.com/elenco/","rosterNote":"31 jogadores da página oficial do clube em novembro de 2026. Laterais e atacantes foram desdobrados em posições específicas para o jogo; conferir antes de publicar. Ainda não integrado aos modelos 3D."},{"league":"Brasil","name":"Corinthians","short":"COR","color":"#eeeeee","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"elenco_referencias_2026_11_15","roster":[{"name":"Hugo Souza","number":1,"position":"GOL"},{"name":"Felipe Longo","number":40,"position":"GOL"},{"name":"Kauê Camargo","number":51,"position":"GOL"},{"name":"Matheuzinho","number":2,"position":"LD"},{"name":"Gabriel Paulista","number":3,"position":"ZAG"},{"name":"João Pedro","number":4,"position":"ZAG"},{"name":"André Ramalho","number":5,"position":"ZAG"},{"name":"Gustavo Henrique","number":13,"position":"ZAG"},{"name":"Pedro Milans","number":20,"position":"LD"},{"name":"Matheus Bidu","number":21,"position":"LE"},{"name":"Fabrizio Angileri","number":26,"position":"LE"},{"name":"Hugo Farias","number":46,"position":"LE"},{"name":"Iago Machado","number":55,"position":"ZAG"},{"name":"Breno Bidon","number":7,"position":"MC"},{"name":"Rodrigo Garro","number":8,"position":"MEI"},{"name":"Raniele","number":14,"position":"VOL"},{"name":"André Carrillo","number":19,"position":"MC"},{"name":"Matheus Pereira","number":23,"position":"MC"},{"name":"Allan","number":29,"position":"VOL"},{"name":"Charles","number":35,"position":"VOL"},{"name":"André","number":49,"position":"MC"},{"name":"Luiz Gustavo","number":54,"position":"VOL"},{"name":"Jesse Lingard","number":77,"position":"MEI"},{"name":"Alex Santana","number":80,"position":"MC"},{"name":"Yuri Alberto","number":9,"position":"ATA"},{"name":"Memphis Depay","number":10,"position":"ATA"},{"name":"Vitinho","number":11,"position":"PE"},{"name":"Pedro Raul","number":18,"position":"ATA"},{"name":"Kayke","number":31,"position":"PE"},{"name":"Kaio César","number":37,"position":"PD"},{"name":"Zakaria Labyad","number":52,"position":"MEI"},{"name":"Gui Negão","number":56,"position":"ATA"},{"name":"Dieguinho","number":61,"position":"PD"}],"rosterSource":"https://bussoladofutebol.com.br/time/corinthians","rosterNote":"Cadastro de referência; confirmar transferências e inscrições antes da publicação."},{"league":"Brasil","name":"Coritiba","short":"CFC","color":"#087b45","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_2026_11_15","roster":[{"name":"Pedro Morisco","number":1,"position":"GOL"},{"name":"Keiller","number":13,"position":"GOL"},{"name":"Pedro Rangel","number":22,"position":"GOL"},{"name":"Benassi","number":67,"position":"GOL"},{"name":"Tinga","number":2,"position":"LD"},{"name":"Maicon","number":3,"position":"ZAG"},{"name":"Rodrigo Moledo","number":4,"position":"ZAG"},{"name":"Felipe Jonatan","number":6,"position":"LE"},{"name":"Fabrício Bustos","number":14,"position":"LD"},{"name":"Thiago Santos","number":21,"position":"ZAG"},{"name":"Tiago Cóser","number":23,"position":"ZAG"},{"name":"Bruno Melo","number":26,"position":"LE"},{"name":"Jacy Maranhão","number":55,"position":"ZAG"},{"name":"Rodrigo Gelado","number":66,"position":"LE"},{"name":"Lucas Taverna","number":86,"position":"LD"},{"name":"Nicolás Fonseca","number":5,"position":"VOL"},{"name":"Josué","number":10,"position":"MEI"},{"name":"Alejandro Ararat","number":15,"position":"VOL"},{"name":"Sebastián Gómez","number":19,"position":"MC"},{"name":"Richard","number":25,"position":"VOL"},{"name":"Vini Paulista","number":36,"position":"MC"},{"name":"Gustavo Oliveira","number":39,"position":"MEI"},{"name":"Vitor Tissi","number":50,"position":"VOL"},{"name":"Joaquín Lavega","number":7,"position":"PE"},{"name":"Lucas Ronier","number":11,"position":"PD"},{"name":"Brian Ocampo","number":17,"position":"PE"},{"name":"Paulo Roberto","number":18,"position":"ATA"},{"name":"Keno","number":20,"position":"PE"},{"name":"Fabinho","number":28,"position":"PD"},{"name":"Pedro Rocha","number":32,"position":"ATA"},{"name":"Breno Lopes","number":77,"position":"PE"},{"name":"Renato Marques","number":78,"position":"ATA"},{"name":"Rodrigo Rodrigues","number":99,"position":"ATA"}],"rosterSource":"https://bussoladofutebol.com.br/time/coritiba","rosterAdditionalSource":"https://www.365scores.com/pt-br/football/team/coritiba-1212/squad","rosterNote":"33 jogadores conforme listas atualizadas em novembro de 2026. Numeração e posições sujeitas a revisão antes de publicação. Não conectado à gameplay 3D."},{"league":"Brasil","name":"Cruzeiro","short":"CRU","color":"#1649a4","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_novembro_2026","roster":[{"name":"Cássio","number":1,"position":"GOL"},{"name":"Marcelo Eráclito","number":24,"position":"GOL"},{"name":"Léo Aragão","number":41,"position":"GOL"},{"name":"Vitor Lamounier","number":51,"position":"GOL"},{"name":"Otávio","number":81,"position":"GOL"},{"name":"Kauã Moraes","number":2,"position":"LD"},{"name":"Matías Viña","number":6,"position":"LE"},{"name":"William","number":12,"position":"LD"},{"name":"Fabrício Bruno","number":15,"position":"ZAG"},{"name":"Fagner","number":23,"position":"LD"},{"name":"Lucas Villalba","number":25,"position":"ZAG"},{"name":"Gabriel Rojas","number":27,"position":"LE"},{"name":"Jonathan Jesus","number":34,"position":"ZAG"},{"name":"João Marcelo","number":43,"position":"ZAG"},{"name":"Zé Lucas","number":5,"position":"VOL"},{"name":"Matheus Henrique","number":7,"position":"MC"},{"name":"Gerson","number":8,"position":"MC"},{"name":"Matheus Pereira","number":10,"position":"MEI"},{"name":"Lucas Silva","number":16,"position":"VOL"},{"name":"Lucas Romero","number":29,"position":"VOL"},{"name":"Rhuan Gabriel","number":40,"position":"MEI"},{"name":"Bruno Rodrigues","number":9,"position":"ATA"},{"name":"Marquinhos","number":11,"position":"PE"},{"name":"Luis Sinisterra","number":17,"position":"PE"},{"name":"Kaio Jorge","number":19,"position":"ATA"},{"name":"Wesley","number":20,"position":"PD"},{"name":"Néiser Villarreal","number":22,"position":"ATA"},{"name":"Rayan Lelis","number":57,"position":"ATA"},{"name":"João Costa","number":67,"position":"ATA"},{"name":"Kaique Kenji","number":70,"position":"ATA"},{"name":"Gabriel Pec","number":77,"position":"PD"},{"name":"Wanderson","number":94,"position":"PE"},{"name":"Luciano Rodríguez","number":97,"position":"ATA"},{"name":"Keny Arroyo","number":99,"position":"PD"}],"rosterSource":"https://bussoladofutebol.com.br/time/cruzeiro","rosterNote":"34 atletas de referência da temporada 2026, cotejados com FotMob e reportagens de numeração; posições resumidas. Conferir transferências e camisas antes de publicar."},{"league":"Brasil","name":"Flamengo","short":"FLA","color":"#c91e29","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"elenco_publicado_2026_10_31","roster":[{"name":"Rossi","number":1,"position":"GOL"},{"name":"Andrew","number":42,"position":"GOL"},{"name":"Dyogo Alves","number":49,"position":"GOL"},{"name":"Léo Ortiz","number":3,"position":"ZAG"},{"name":"Léo Pereira","number":4,"position":"ZAG"},{"name":"Danilo","number":13,"position":"ZAG"},{"name":"Vitão","number":44,"position":"ZAG"},{"name":"João Victor","number":61,"position":"ZAG"},{"name":"Guillermo Varela","number":2,"position":"LD"},{"name":"Ayrton Lucas","number":6,"position":"LE"},{"name":"Emerson Royal","number":22,"position":"LD"},{"name":"Alex Sandro","number":26,"position":"LE"},{"name":"Erick Pulgar","number":5,"position":"VOL"},{"name":"Saúl Ñíguez","number":8,"position":"MC"},{"name":"Giorgian de Arrascaeta","number":10,"position":"MEI"},{"name":"Jorge Carrascal","number":15,"position":"MEI"},{"name":"Nicolás de la Cruz","number":18,"position":"MC"},{"name":"Lucas Paquetá","number":20,"position":"MEI"},{"name":"Jorginho","number":21,"position":"VOL"},{"name":"Evertton Araújo","number":52,"position":"VOL"},{"name":"Luiz Araújo","number":7,"position":"PD"},{"name":"Pedro","number":9,"position":"ATA"},{"name":"Anthony Valencia","number":14,"position":"PD"},{"name":"Samuel Lino","number":16,"position":"PE"},{"name":"Gonzalo Plata","number":19,"position":"PD"},{"name":"Bruno Henrique","number":27,"position":"ATA"},{"name":"Joaquín Freitas","number":30,"position":"ATA"}],"rosterSource":"https://flavoz.com.br/elenco-flamengo-2026/"},{"league":"Brasil","name":"Fluminense","short":"FLU","color":"#7e2339","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_setembro_2026","roster":[{"name":"Fábio","number":1,"position":"GOL"},{"name":"Pitaluga","number":27,"position":"GOL"},{"name":"Gustavo Félix","number":50,"position":"GOL"},{"name":"Vitor Eudes","number":98,"position":"GOL"},{"name":"Samuel Xavier","number":2,"position":"LD"},{"name":"Thiago Silva","number":3,"position":"ZAG"},{"name":"Ignácio","number":4,"position":"ZAG"},{"name":"Renê","number":6,"position":"LE"},{"name":"Guilherme Arana","number":13,"position":"LE"},{"name":"Igor Rabello","number":21,"position":"ZAG"},{"name":"Juan Freytes","number":22,"position":"ZAG"},{"name":"Guga","number":23,"position":"LD"},{"name":"Julián Millán","number":29,"position":"ZAG"},{"name":"Jemmes","number":44,"position":"ZAG"},{"name":"Júlio Fidélis","number":46,"position":"LD"},{"name":"Facundo Bernal","number":5,"position":"VOL"},{"name":"Martinelli","number":8,"position":"MC"},{"name":"Ganso","number":10,"position":"MEI"},{"name":"Savarino","number":11,"position":"MEI"},{"name":"Nonato","number":16,"position":"MC"},{"name":"Alisson","number":25,"position":"VOL"},{"name":"Yeferson Soteldo","number":30,"position":"PE"},{"name":"Lucho Acosta","number":32,"position":"MEI"},{"name":"Hércules","number":35,"position":"MC"},{"name":"Otávio","number":94,"position":"VOL"},{"name":"Hulk","number":7,"position":"ATA"},{"name":"John Kennedy","number":9,"position":"ATA"},{"name":"Germán Cano","number":14,"position":"ATA"},{"name":"Matheus Reis","number":15,"position":"ATA"},{"name":"Agustín Canobbio","number":17,"position":"PD"},{"name":"Rodrigo Castillo","number":19,"position":"ATA"},{"name":"Riquelme Felipe","number":28,"position":"PE"},{"name":"Wesley Natã","number":34,"position":"ATA"},{"name":"Keven Samuel","number":39,"position":"ATA"},{"name":"Kevin Serna","number":90,"position":"PE"}],"rosterSource":"https://ge.globo.com/futebol/times/fluminense/noticia/2026/09/03/prazo-de-inscricoes-para-as-quartas-da-libertadores-termina-nesta-sexta-veja-a-lista-do-fluminense.ghtml","rosterNote":"Cadastro baseado na lista de inscritos de setembro de 2026 e comparação com listagem de novembro; não representa confirmação de todos os atletas ativos em novembro. Posições resumidas para o jogo."},{"league":"Brasil","name":"Grêmio","short":"GRE","color":"#38a5db","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_2026_11_13","roster":[{"name":"Weverton","number":1,"position":"GOL"},{"name":"Gabriel Grando","number":12,"position":"GOL"},{"name":"Thiago Beltrame","number":24,"position":"GOL"},{"name":"Gabriel Menegon","number":31,"position":"GOL"},{"name":"Balbuena","number":2,"position":"ZAG"},{"name":"Wagner Leonardo","number":3,"position":"ZAG"},{"name":"Kannemann","number":4,"position":"ZAG"},{"name":"Gustavo Martins","number":6,"position":"ZAG"},{"name":"Marcos Rocha","number":14,"position":"LD"},{"name":"João Pedro","number":18,"position":"LD"},{"name":"Marlon","number":23,"position":"LE"},{"name":"Diego Caito","number":27,"position":"LD"},{"name":"Caio Paulista","number":38,"position":"LE"},{"name":"Athos","number":42,"position":"ZAG"},{"name":"Luis Eduardo","number":43,"position":"ZAG"},{"name":"Pedro Gabriel","number":54,"position":"LE"},{"name":"Wallace","number":82,"position":"ZAG"},{"name":"Juan Nardoni","number":5,"position":"VOL"},{"name":"Erick Noriega","number":8,"position":"VOL"},{"name":"Filip Krovinović","number":10,"position":"MEI"},{"name":"Danilo Barbosa","number":15,"position":"VOL"},{"name":"Dodi","number":17,"position":"VOL"},{"name":"Villasanti","number":20,"position":"VOL"},{"name":"Tiago","number":39,"position":"MC"},{"name":"Roger","number":47,"position":"MEI"},{"name":"Riquelme","number":65,"position":"MEI"},{"name":"Pavón","number":7,"position":"PD"},{"name":"Amuzu","number":9,"position":"PE"},{"name":"Tetê","number":11,"position":"PD"},{"name":"Braithwaite","number":22,"position":"ATA"},{"name":"Matheus Nascimento","number":30,"position":"ATA"},{"name":"Jovane Cabral","number":77,"position":"PE"},{"name":"Carlos Vinícius","number":95,"position":"ATA"},{"name":"Enamorado","number":99,"position":"PD"}],"rosterSource":"https://bussoladofutebol.com.br/time/gremio","rosterNote":"34 jogadores conforme listagem recente de novembro de 2026; posições adaptadas para o jogo. Conferir numeração e transferências antes da publicação."},{"league":"Brasil","name":"Internacional","short":"INT","color":"#cb202a","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_2026_11_15","roster":[{"name":"Sergio Rochet","number":1,"position":"GOL"},{"name":"Anthoni","number":12,"position":"GOL"},{"name":"Kauan Jesus","number":22,"position":"GOL"},{"name":"Matheus Cunha","number":23,"position":"GOL"},{"name":"Diego Esser","number":32,"position":"GOL"},{"name":"Guillermo Maripán","number":3,"position":"ZAG"},{"name":"Félix Torres","number":4,"position":"ZAG"},{"name":"Matheus Bahia","number":6,"position":"LE"},{"name":"Bruno Gomes","number":15,"position":"LD"},{"name":"Juninho","number":18,"position":"ZAG"},{"name":"Gabriel Mercado","number":25,"position":"ZAG"},{"name":"Alexandro Bernabei","number":26,"position":"LE"},{"name":"Braian Aguirre","number":35,"position":"LD"},{"name":"Victor Gabriel","number":41,"position":"ZAG"},{"name":"Rodrigo Villagra","number":5,"position":"VOL"},{"name":"Bruno Henrique","number":8,"position":"MC"},{"name":"Alan Patrick","number":10,"position":"MEI"},{"name":"Ronaldo","number":16,"position":"VOL"},{"name":"Niclas Eliasson","number":17,"position":"MEI"},{"name":"Paulinho","number":27,"position":"MC"},{"name":"Thiago Maia","number":29,"position":"VOL"},{"name":"Calebe","number":30,"position":"MEI"},{"name":"Allex","number":31,"position":"MEI"},{"name":"Johan Carbonero","number":7,"position":"PE"},{"name":"Alerrandro","number":9,"position":"ATA"},{"name":"Kayky","number":11,"position":"PD"},{"name":"Antonio Sanabria","number":19,"position":"ATA"},{"name":"Vitinho","number":28,"position":"PD"}],"rosterSource":"https://ingressos.internacional.com.br/equipes/masculino","rosterNote":"28 atletas listados pelo site oficial do Internacional, complementados com numeração e posições de fonte de elenco. Conferir mudanças antes de publicar; ainda não conectados aos modelos 3D."},{"league":"Brasil","name":"Mirassol","short":"MIR","color":"#e4ba22","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_2026_11_15","roster":[{"name":"Georgemy","number":1,"position":"GOL"},{"name":"Walter","number":22,"position":"GOL"},{"name":"Alex Muralha","number":23,"position":"GOL"},{"name":"Thomazella","number":90,"position":"GOL"},{"name":"Lucas Oliveira","number":2,"position":"ZAG"},{"name":"Willian Machado","number":3,"position":"ZAG"},{"name":"Reinaldo","number":6,"position":"LE"},{"name":"Victor Luís","number":12,"position":"LE"},{"name":"Elias","number":18,"position":"LD"},{"name":"Daniel Borges","number":20,"position":"LD"},{"name":"Igor Formiga","number":32,"position":"LD"},{"name":"João Victor","number":34,"position":"ZAG"},{"name":"Gabriel Knesowitsch","number":44,"position":"ZAG"},{"name":"Marcelinho","number":53,"position":"ZAG"},{"name":"Japa","number":5,"position":"MC"},{"name":"Shaylon","number":7,"position":"MEI"},{"name":"Denilson","number":8,"position":"MC"},{"name":"Chico Kim","number":10,"position":"MEI"},{"name":"José Aldo","number":21,"position":"MC"},{"name":"Neto Moura","number":25,"position":"VOL"},{"name":"Eduardo","number":33,"position":"MEI"},{"name":"Gustavo Cazonatti","number":55,"position":"VOL"},{"name":"Wallisson","number":80,"position":"VOL"},{"name":"André Luís","number":99,"position":"ATA"},{"name":"Negueba","number":11,"position":"PD"},{"name":"Gustavo Silva","number":16,"position":"PD"},{"name":"Fernandinho","number":17,"position":"PE"},{"name":"Bruno Santos","number":30,"position":"ATA"},{"name":"Alesson","number":77,"position":"PE"},{"name":"Edson Carioca","number":95,"position":"ATA"},{"name":"Carlos Eduardo","number":96,"position":"PD"},{"name":"Zé Roberto","number":null,"position":"ATA"}],"rosterSource":"https://mirassolfc.com.br/blogs/elenco","rosterAdditionalSource":"https://www.365scores.com/pt-br/football/team/mirassol-1269/squad","rosterNote":"32 jogadores referenciados em fontes de novembro de 2026. Numeração divergente para alguns atletas (especialmente atacantes): Zé Roberto sem número confirmado. Revisar antes de publicar; ainda não conectado à gameplay 3D."},{"league":"Brasil","name":"Palmeiras","short":"PAL","color":"#0b653a","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"elenco_oficial_consultado_2026_11_15","roster":[{"name":"Bruno Bertinato","number":21,"position":"GOL"},{"name":"Carlos Miguel","number":1,"position":"GOL"},{"name":"Marcelo Lomba","number":14,"position":"GOL"},{"name":"Alexander Barboza","number":2,"position":"ZAG"},{"name":"Benedetti","number":43,"position":"ZAG"},{"name":"Bruno Fuchs","number":3,"position":"ZAG"},{"name":"Gustavo Gómez","number":15,"position":"ZAG"},{"name":"Murilo","number":26,"position":"ZAG"},{"name":"Agustín Giay","number":4,"position":"LD"},{"name":"Khellven","number":12,"position":"LD"},{"name":"Arthur","number":56,"position":"LE"},{"name":"Jefté","number":6,"position":"LE"},{"name":"Joaquín Piquerez","number":22,"position":"LE"},{"name":"Andreas Pereira","number":8,"position":"MEI"},{"name":"Emiliano Martínez","number":32,"position":"VOL"},{"name":"Felipe Anderson","number":7,"position":"MEI"},{"name":"Larson","number":48,"position":"MEI"},{"name":"Lucas Evangelista","number":30,"position":"MEI"},{"name":"Marlon Freitas","number":17,"position":"VOL"},{"name":"Mauricio","number":18,"position":"MEI"},{"name":"Jhon Arias","number":11,"position":"ATA"},{"name":"Flaco López","number":42,"position":"ATA"},{"name":"Paulinho","number":10,"position":"ATA"},{"name":"Ramón Sosa","number":19,"position":"ATA"},{"name":"Vitor Roque","number":9,"position":"ATA"}],"rosterSource":"https://palmeiras.com.br/elenco/"},{"league":"Brasil","name":"Red Bull Bragantino","short":"RBB","color":"#f2f2f2","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_2026_11_15","roster":[{"name":"Cleiton","number":1,"position":"GOL"},{"name":"Tiago Volpi","number":18,"position":"GOL"},{"name":"Fabrício","number":37,"position":"GOL"},{"name":"Gustavo Reis","number":56,"position":"GOL"},{"name":"Guzmán Rodríguez","number":2,"position":"ZAG"},{"name":"Eduardo Santos","number":3,"position":"ZAG"},{"name":"Alix Vinícius","number":4,"position":"ZAG"},{"name":"Vanderlan","number":12,"position":"LE"},{"name":"Gustavo Marques","number":16,"position":"ZAG"},{"name":"Agustín Sant'Anna","number":23,"position":"LD"},{"name":"Juninho Capixaba","number":29,"position":"LE"},{"name":"Andrés Hurtado","number":34,"position":"LD"},{"name":"Cauê Nascimento","number":51,"position":"LE"},{"name":"Fabinho","number":5,"position":"VOL"},{"name":"Gabriel Girotto","number":6,"position":"VOL"},{"name":"Eric Ramires","number":7,"position":"MC"},{"name":"Nacho Sosa","number":15,"position":"VOL"},{"name":"Rodriguinho","number":20,"position":"MEI"},{"name":"Gustavo Neves","number":22,"position":"MC"},{"name":"Patrick","number":28,"position":"MC"},{"name":"Matheus Fernandes","number":35,"position":"VOL"},{"name":"Eduardo Sasha","number":8,"position":"ATA"},{"name":"Isidro Pitta","number":9,"position":"ATA"},{"name":"Fernando","number":11,"position":"ATA"},{"name":"Vinicinho","number":17,"position":"ATA"},{"name":"Bruno Gonçalves","number":19,"position":"PE"},{"name":"Lucas Barbosa","number":21,"position":"PD"},{"name":"Davi Gomes","number":27,"position":"ATA"},{"name":"Henry Mosquera","number":30,"position":"PD"},{"name":"José María Herrera","number":32,"position":"ATA"},{"name":"Wallace Yan","number":47,"position":"ATA"},{"name":"Marcelinho Braz","number":57,"position":"ATA"}],"rosterSource":"https://bussoladofutebol.com.br/time/bragantino","rosterAdditionalSource":"https://www.cbf.com.br/futebol-brasileiro/times/campeonato-brasileiro/serie-a/2026/20007","rosterNote":"32 atletas em listagem de novembro de 2026, cruzada com registros da CBF; posições específicas aproximadas e sujeitos a revisão. Ainda não integrados à gameplay 3D."},{"league":"Brasil","name":"Remo","short":"REM","color":"#152a62","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"site_oficial_consultado_2026_11_15","roster":[{"name":"Alexandre","number":1,"position":"GOL"},{"name":"Ivan","number":97,"position":"GOL"},{"name":"João Victor","number":30,"position":"GOL"},{"name":"Marcelo Rangel","number":88,"position":"GOL"},{"name":"Ygor Vinhas","number":94,"position":"GOL"},{"name":"Duplexe Tchamba","number":18,"position":"ZAG"},{"name":"João Lucas","number":2,"position":"LD"},{"name":"Léo Andrade","number":5,"position":"ZAG"},{"name":"Marcelinho","number":79,"position":"LD"},{"name":"Marllon","number":13,"position":"ZAG"},{"name":"Marlon","number":6,"position":"LE"},{"name":"Matheus Alexandre","number":2,"position":"LD"},{"name":"Matheus Felipe","number":4,"position":"ZAG"},{"name":"Mayk","number":77,"position":"LE"},{"name":"Zé Ivaldo","number":29,"position":"ZAG"},{"name":"Edson","number":35,"position":"VOL"},{"name":"Jaderson","number":10,"position":"VOL"},{"name":"Leonel Picco","number":15,"position":"VOL"},{"name":"Zé Ricardo","number":55,"position":"VOL"},{"name":"Zé Welison","number":28,"position":"VOL"},{"name":"David Braga","number":26,"position":"MEI"},{"name":"Patrick","number":8,"position":"MEI"},{"name":"Vitor Bueno","number":15,"position":"MEI"},{"name":"Eduardo Melo","number":39,"position":"ATA"},{"name":"Galeano","number":21,"position":"ATA"},{"name":"Jajá","number":7,"position":"ATA"},{"name":"Poveda","number":9,"position":"ATA"},{"name":"Taliari","number":19,"position":"ATA"},{"name":"Tico","number":61,"position":"ATA"},{"name":"Yago Pikachu","number":22,"position":"ATA"}],"rosterSource":"https://clubedoremo.com.br/elenco","rosterAdditionalSource":"https://ge.globo.com/pa/futebol/times/remo/noticia/2026/09/13/com-29-reforcos-no-ano-remo-reduz-ritmo-e-reformula-time-entre-janelas-veja-atual-elenco.ghtml","rosterNote":"30 jogadores conforme site oficial consultado em novembro de 2026. A fonte oficial apresenta numeração duplicada (João Lucas e Matheus Alexandre: 2; Picco e Vitor Bueno: 15), mantida fielmente para revisão. Posições agrupadas por categorias oficiais; dados ainda não integrados aos modelos 3D."},{"league":"Brasil","name":"Santos","short":"SAN","color":"#f5f5f5","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"elenco_referencia_novembro_2026","roster":[{"name":"Diógenes","number":1,"position":"GOL"},{"name":"João Paulo","number":34,"position":"GOL"},{"name":"Rodrigo Falcão","number":67,"position":"GOL"},{"name":"Gabriel Brazão","number":77,"position":"GOL"},{"name":"João Pedro","number":79,"position":"GOL"},{"name":"Vinícius Lira","number":3,"position":"LE"},{"name":"Lucas Veríssimo","number":4,"position":"ZAG"},{"name":"Luan Peres","number":14,"position":"ZAG"},{"name":"Igor Vinícius","number":18,"position":"LD"},{"name":"Rodinei","number":23,"position":"LD"},{"name":"João Ananias","number":26,"position":"ZAG"},{"name":"Escobar","number":31,"position":"LE"},{"name":"Rafael Gonzaga","number":38,"position":"LE"},{"name":"João Alencar","number":42,"position":"ZAG"},{"name":"João Schmidt","number":5,"position":"VOL"},{"name":"Arthur","number":6,"position":"MC"},{"name":"Gabriel Bontempo","number":8,"position":"MC"},{"name":"Willian Arão","number":15,"position":"VOL"},{"name":"Thaciano","number":16,"position":"MEI"},{"name":"Pepê Fermino","number":20,"position":"MC"},{"name":"Gabriel Menino","number":25,"position":"MC"},{"name":"Christian Oliva","number":28,"position":"VOL"},{"name":"Miguelito","number":30,"position":"MEI"},{"name":"Benjamín Rollheiser","number":32,"position":"MEI"},{"name":"Lima","number":45,"position":"MEI"},{"name":"Gustavo Henrique","number":48,"position":"VOL"},{"name":"Everton","number":7,"position":"PE"},{"name":"Gabriel Barbosa","number":9,"position":"ATA"},{"name":"Neymar","number":10,"position":"ATA"},{"name":"Rony","number":33,"position":"ATA"},{"name":"Gustavo Caballero","number":17,"position":"PD"},{"name":"Moisés","number":21,"position":"ATA"},{"name":"Álvaro Barreal","number":22,"position":"PE"},{"name":"Mateus Xavier","number":47,"position":"ATA"},{"name":"Nadson","number":57,"position":"ATA"}],"rosterSource":"https://www.santosfc.com.br/masculino/","rosterNote":"Nomes conferidos com o site oficial e listas de novembro de 2026; números e posições complementados por fontes secundárias. Conferir inscrições e mudanças antes de publicar."},{"league":"Brasil","name":"São Paulo","short":"SAO","color":"#e9e9e9","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"elenco_site_oficial_2026_11_15","roster":[{"name":"Rafael Tolói","number":2,"position":"ZAG"},{"name":"Arboleda","number":5,"position":"ZAG"},{"name":"Lucas Moura","number":7,"position":"PD"},{"name":"Marcos Antônio","number":8,"position":"MC"},{"name":"Jonathan Calleri","number":9,"position":"ATA"},{"name":"Luciano","number":10,"position":"ATA"},{"name":"Ferreira","number":11,"position":"PE"},{"name":"Iago","number":12,"position":"LE"},{"name":"Enzo Díaz","number":13,"position":"LE"},{"name":"Damián Bobadilla","number":16,"position":"MC"},{"name":"André Silva","number":17,"position":"ATA"},{"name":"Wendell","number":18,"position":"LE"},{"name":"Lucas Ramon","number":19,"position":"LD"},{"name":"Aurélio Buta","number":20,"position":"LD"},{"name":"Cédric Soares","number":21,"position":"LD"},{"name":"Domingos Duarte","number":22,"position":"ZAG"},{"name":"Rafael","number":23,"position":"GOL"},{"name":"Victor Sá","number":27,"position":"PE"},{"name":"Newton","number":28,"position":"VOL"},{"name":"Pablo Maia","number":29,"position":"VOL"},{"name":"Carlos Coronel","number":31,"position":"GOL"},{"name":"Pedro Lima","number":32,"position":"LD"},{"name":"Tetê","number":34,"position":"PD"},{"name":"Sabino","number":35,"position":"ZAG"},{"name":"Artur","number":37,"position":"PD"},{"name":"João Pedro Pantiga","number":41,"position":"GOL"},{"name":"Gustavo Santana","number":43,"position":"ATA"},{"name":"Lucca","number":45,"position":"PE"},{"name":"Pedro Ferreira","number":46,"position":"MC"},{"name":"Djhordney","number":48,"position":"MC"},{"name":"Ryan Francisco","number":49,"position":"ATA"},{"name":"Young","number":50,"position":"GOL"},{"name":"Felipe Preis","number":52,"position":"GOL"},{"name":"Isac","number":53,"position":"ZAG"},{"name":"Osorio","number":54,"position":"ZAG"},{"name":"Nicolas","number":56,"position":"LE"},{"name":"Cauly","number":80,"position":"MEI"},{"name":"Danielzinho","number":94,"position":"MC"}],"rosterSource":"https://www.saopaulofc.net/esporte/futebol-masculino-profissional/","rosterNote":"Números do site oficial; posições classificadas com apoio de lista de jogadores relacionados e fontes de elenco. Confirmar alterações antes de publicar."},{"league":"Brasil","name":"Vasco da Gama","short":"VAS","color":"#202020","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_2026_11_15","roster":[{"name":"Léo Jardim","number":1,"position":"GOL"},{"name":"Daniel Fuzato","number":13,"position":"GOL"},{"name":"Pablo","number":37,"position":"GOL"},{"name":"José Luis Rodríguez","number":2,"position":"LD"},{"name":"Alan Saldivia","number":4,"position":"ZAG"},{"name":"Lucas Piton","number":6,"position":"LE"},{"name":"Paulinho","number":29,"position":"LE"},{"name":"Robert Renan","number":30,"position":"ZAG"},{"name":"Lucas Freitas","number":43,"position":"ZAG"},{"name":"Carlos Cuesta","number":46,"position":"ZAG"},{"name":"Gabriel Pereira","number":55,"position":"ZAG"},{"name":"JV Fonseca","number":60,"position":"LD"},{"name":"Walace Falcão","number":64,"position":"ZAG"},{"name":"Cuiabano","number":66,"position":"LE"},{"name":"Paulo Henrique","number":96,"position":"LD"},{"name":"Riquelme","number":null,"position":"LE"},{"name":"Tchê Tchê","number":3,"position":"VOL"},{"name":"Santiago Sosa","number":5,"position":"VOL"},{"name":"Jair","number":8,"position":"VOL"},{"name":"Johan Rojas","number":10,"position":"MEI"},{"name":"Guilherme Estrella","number":14,"position":"MEI"},{"name":"Alan Lescano","number":22,"position":"MEI"},{"name":"Thiago Mendes","number":23,"position":"MC"},{"name":"Euder","number":70,"position":"MC"},{"name":"Ramon Rique","number":83,"position":"MC"},{"name":"Mateus Carvalho","number":85,"position":"VOL"},{"name":"Cauan Barros","number":88,"position":"VOL"},{"name":"David","number":7,"position":"PE"},{"name":"Facundo Colidio","number":9,"position":"ATA"},{"name":"Andrés Gómez","number":11,"position":"PD"},{"name":"Nuno Moreira","number":17,"position":"PE"},{"name":"Marino Hinestroza","number":18,"position":"PD"},{"name":"Bruno Duarte","number":19,"position":"ATA"},{"name":"Brenner","number":20,"position":"ATA"},{"name":"Adson","number":28,"position":"PD"},{"name":"Loide Augusto","number":45,"position":"PE"},{"name":"Claudio Spinelli","number":77,"position":"ATA"}],"rosterSource":"https://www.netvasco.com.br/futebol/jogadores-elenco-2026.shtml","rosterNote":"37 atletas conforme relação de temporada 2026; posições simplificadas, número de Riquelme não confirmado. Conferir elenco ativo antes de publicar."},{"league":"Brasil","name":"Vitória","short":"VIT","color":"#c72730","stats":[75,75,75],"statsStatus":"provisorio","crest":null,"rosterStatus":"referencia_novembro_2026","roster":[{"name":"Lucas Arcanjo","number":1,"position":"GOL"},{"name":"Fintelman","number":35,"position":"GOL"},{"name":"Yuri Sena","number":71,"position":"GOL"},{"name":"Emanuel Brítez","number":2,"position":"ZAG"},{"name":"Darlan","number":3,"position":"ZAG"},{"name":"Camutanga","number":4,"position":"ZAG"},{"name":"Riccieli","number":5,"position":"ZAG"},{"name":"Ramon","number":13,"position":"LE"},{"name":"Walace","number":15,"position":"ZAG"},{"name":"Kauan","number":18,"position":"ZAG"},{"name":"Cacá","number":25,"position":"ZAG"},{"name":"Edenilson","number":26,"position":"ZAG"},{"name":"Luan Cândido","number":36,"position":"LE"},{"name":"Edu","number":43,"position":"ZAG"},{"name":"Nathan Mendes","number":45,"position":"LD"},{"name":"Fabiano","number":70,"position":"LD"},{"name":"Jamerson","number":83,"position":"LE"},{"name":"Mateusinho","number":98,"position":"LD"},{"name":"Emmanuel Martínez","number":6,"position":"MEI"},{"name":"Tomás Pochettino","number":8,"position":"MEI"},{"name":"Matheuzinho","number":10,"position":"MEI"},{"name":"Rúben Ismael","number":16,"position":"VOL"},{"name":"Dudu","number":21,"position":"VOL"},{"name":"Gabriel Baralhas","number":44,"position":"VOL"},{"name":"Zé Vitor","number":88,"position":"MC"},{"name":"Caíque","number":95,"position":"VOL"},{"name":"Marinho","number":7,"position":"PD"},{"name":"Alex Bruno","number":9,"position":"ATA"},{"name":"Osvaldo","number":11,"position":"PD"},{"name":"Diego Tarzia","number":12,"position":"ATA"},{"name":"Lucas Silva","number":20,"position":"PD"},{"name":"Fabri","number":23,"position":"ATA"},{"name":"Anderson Pato","number":28,"position":"PE"},{"name":"Erick","number":33,"position":"PD"},{"name":"Nacho Laquintana","number":77,"position":"PD"},{"name":"Renato Kayzer","number":79,"position":"ATA"},{"name":"Renê","number":91,"position":"ATA"}],"rosterSource":"https://www.cbf.com.br/futebol-brasileiro/times/campeonato-brasileiro/serie-a/2026/20018","rosterAdditionalSource":"https://www.365scores.com/pt-br/football/team/vitoria-1228/squad","rosterNote":"Cadastro de referência baseado na CBF e listagens de novembro de 2026. Revisar numeração e status ativo, sobretudo nomes presentes em listagens de épocas distintas, antes de publicar. Não conectado à gameplay 3D."},{"league":"Inglaterra","name":"London City","short":"LON","color":"#2a84cc","stats":[83,80,78]},{"league":"Espanha","name":"Madrid Norte","short":"MAD","color":"#f4f4f4","stats":[85,82,80]},{"league":"Alemanha","name":"Munique FC","short":"MUN","color":"#c52f43","stats":[84,81,79]},{"league":"Itália","name":"Milano FC","short":"MIL","color":"#292d36","stats":[80,78,81]},{"league":"França","name":"Paris FC","short":"PAR","color":"#283d8d","stats":[86,78,76]}];
+let fcHome=8,fcAway=13;const fcLeagues=[...new Set(fcClubs.map(c=>c.league))];
 
 const fcDescriptions={player:['MODO CARREIRA JOGADOR','O modo carreira jogador ainda não foi implementado. Esta tela está preparada para receber a progressão e os contratos.'],manager:['MODO CARREIRA TÉCNICO','O modo carreira técnico ainda não foi implementado. Gestão de elenco e calendário serão adicionados futuramente.'],tournaments:['TORNEIOS','O sistema de torneios ainda não está disponível nesta versão.']};
 fcRoot.querySelectorAll('.fcOption').forEach(b=>b.onclick=()=>{fcRoot.querySelectorAll('.fcOption').forEach(x=>x.classList.remove('fcSelected'));b.classList.add('fcSelected');const mode=b.dataset.mode;if(mode==='quick'){fcScreen('fcQuick')}else if(mode==='settings'){fcScreen('fcSettings')}else if(mode==='training'){document.getElementById('fcInfoTitle').textContent='TREINAMENTO';document.getElementById('fcInfoText').textContent='Treino de finalização disponível: entre na partida e abra Pausa → Treino de finalização.';const a=document.getElementById('fcInfoActions');a.replaceChildren();const btn=document.createElement('button');btn.className='fcAction';btn.textContent='▶ ABRIR PARTIDA PARA TREINAR';btn.onclick=()=>{fcClose();setPaused(true)};a.append(btn);fcScreen('fcInfo')}else{document.getElementById('fcInfoTitle').textContent=fcDescriptions[mode][0];document.getElementById('fcInfoText').textContent=fcDescriptions[mode][1];document.getElementById('fcInfoActions').replaceChildren();fcScreen('fcInfo')}});
@@ -1374,12 +1569,13 @@ function miniDraw(side){
  const rating=Math.max(1,Math.min(5,Math.round(c.stats.reduce((a,b)=>a+b,0)/60)));
  document.getElementById(prefix+'Stars').textContent='★'.repeat(rating)+'☆'.repeat(5-rating);
  document.getElementById(prefix+'Stats').innerHTML=['ATA','MEI','DEF'].map((n,i)=>'<span>'+n+'<br><b>'+c.stats[i]+'</b></span>').join('');
+ document.getElementById(prefix+'Stats').title=c.statsStatus==='provisorio'?'Atributos provisórios, ainda não baseados em elenco verificado':'';
 }
 for(const side of ['Home','Away']){
  const sel=document.getElementById('mini'+side+'League');
  for(const league of fcLeagues){const op=document.createElement('option');op.value=league;op.textContent=miniLeagueLabels[league]||league;sel.append(op)}
  for(const [dir,step] of [['Prev',-1],['Next',1]])document.getElementById('mini'+side+dir).addEventListener('click',()=>{
- miniSelection[side]=(miniSelection[side]+step+fcClubs.length)%fcClubs.length;miniChoose(side);miniDraw(side)});
+ (()=>{const league=fcClubs[miniSelection[side]].league;const pool=fcClubs.map((c,i)=>c.league===league?i:-1).filter(i=>i>=0);const at=pool.indexOf(miniSelection[side]);miniSelection[side]=pool[(at+step+pool.length)%pool.length]})();miniChoose(side);miniDraw(side)});
  sel.addEventListener('change',()=>{const i=fcClubs.findIndex(c=>c.league===sel.value);if(i>=0){miniSelection[side]=i;miniChoose(side);miniDraw(side)}});
  document.getElementById('mini'+side+'Panel').addEventListener('click',()=>miniChoose(side));
  document.getElementById('mini'+side+'Panel').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){miniChoose(side);e.preventDefault()}});
@@ -1393,6 +1589,134 @@ for(const [id,key,off,on] of [['miniAdvantage','advantage','DESATIVADA','ATIVADA
 }
 document.getElementById('miniRandom').onclick=()=>{miniSelection.Home=Math.floor(Math.random()*fcClubs.length);miniSelection.Away=Math.floor(Math.random()*fcClubs.length);miniDraw('Home');miniDraw('Away')};
 document.getElementById('miniFooterBack').onclick=()=>fcScreen('');
+const miniFormationTemplates={"4-3-3":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["MC",-14,11],["VOL",0,16],["MC",14,11],["PE",-23,-12],["PD",23,-12],["ATA",0,-23]],"4-4-2":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["PE",-23,7],["MC",-8,12],["MC",8,12],["PD",23,7],["ATA",-9,-18],["ATA",9,-18]],"4-2-3-1":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["VOL",-10,16],["VOL",10,16],["PE",-23,-4],["MEI",0,-3],["PD",23,-4],["ATA",0,-24]],"4-1-2-1-2":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["VOL",0,20],["MC",-15,7],["MC",15,7],["MEI",0,-6],["ATA",-10,-23],["ATA",10,-23]],"4-3-2-1":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["MC",-15,10],["VOL",0,17],["MC",15,10],["MEI",-10,-8],["MEI",10,-8],["ATA",0,-25]],"4-5-1":[["LE",-23,29],["ZAG",-8,32],["ZAG",8,32],["LD",23,29],["PE",-25,0],["MC",-12,12],["VOL",0,16],["MC",12,12],["PD",25,0],["ATA",0,-23]],"3-5-2":[["ZAG",-17,30],["ZAG",0,34],["ZAG",17,30],["LE",-27,5],["MC",-12,12],["VOL",0,17],["MC",12,12],["LD",27,5],["ATA",-10,-21],["ATA",10,-21]],"3-4-3":[["ZAG",-17,30],["ZAG",0,34],["ZAG",17,30],["PE",-25,8],["MC",-9,14],["MC",9,14],["PD",25,8],["PE",-22,-18],["ATA",0,-25],["PD",22,-18]],"5-3-2":[["LE",-27,25],["ZAG",-15,32],["ZAG",0,35],["ZAG",15,32],["LD",27,25],["MC",-14,7],["VOL",0,14],["MC",14,7],["ATA",-10,-20],["ATA",10,-20]],"5-2-3":[["LE",-27,25],["ZAG",-15,32],["ZAG",0,35],["ZAG",15,32],["LD",27,25],["VOL",-10,10],["MC",10,10],["PE",-22,-15],["ATA",0,-23],["PD",22,-15]]};
+let miniFormationHome='4-3-3',miniFormationAway='4-3-3';
+function miniSetFormation(side,name){
+ const rows=miniFormationTemplates[name]||miniFormationTemplates['4-3-3'];
+ const positions=side==='Home'?miniHomePositions:miniAwayPositions;
+ for(let i=0;i<10;i++){const r=rows[i];positions[i][0]=r[1];positions[i][1]=side==='Home'?r[2]:-r[2]}
+ if(side==='Home'){miniFormationHome=name;const chosen=blueRoster.find(p=>p===controlledPlayer);if(chosen&&blueRoster.indexOf(chosen)>0)controlledPlayer=blueRoster[0]}
+ else miniFormationAway=name;
+ const team=side==='Home'?blueRoster:foes;
+ team.forEach((p,i)=>{p.position.set(positions[i][0],.35,positions[i][1])});
+ return rows.map(r=>r[0]);
+}
+
+/* Escalações 11x11 com posições por formação e banco de reservas. */
+function miniPickLineup(club,formation='4-3-3'){
+ const pool=Array.isArray(club.roster)?club.roster.filter(p=>p&&p.name):[];
+ const used=new Set();
+ function take(test){const index=pool.findIndex((p,i)=>!used.has(i)&&test(p));if(index<0)return null;used.add(index);return pool[index]}
+ const keeper=take(p=>p.position==='GOL');
+ const roles=(miniFormationTemplates[formation]||miniFormationTemplates['4-3-3']).map(r=>r[0]);
+ const field=roles.map(role=>take(p=>p.position===role)||take(p=>p.position!=='GOL'));
+ const bench=pool.filter((_,i)=>!used.has(i));
+ return {keeper,field,bench};
+}
+/* Gerenciador pré-jogo: escalações independentes e trocas de titulares/reservas. */
+const miniLineupEdits={Home:null,Away:null};
+let miniEditorSide='Home';
+function miniCurrentLineup(side){
+ const club=fcClubs[miniSelection[side]],formation=document.getElementById(side==='Home'?'miniFormationHome':'miniFormationAway')?.value||'4-3-3';
+ const old=miniLineupEdits[side];
+ if(!old||old.club!==club.name||old.formation!==formation){
+  miniLineupEdits[side]={club:club.name,formation,...miniPickLineup(club,formation)};
+ }
+ return miniLineupEdits[side];
+}
+/* Atributos provisórios do MINI FC27: estimativas de gameplay, não ratings oficiais. */
+function miniPlayerStats(p){
+ if(!p)return null;
+ const raw=p.stats||p.attributes||{};
+ const clamp=v=>Math.max(1,Math.min(99,Math.round(Number(v)||0)));
+ const number=(keys,fallback)=>{for(const key of keys){const v=Number(raw[key]??p[key]);if(Number.isFinite(v)&&v>0)return clamp(v)}return fallback};
+ const role=p.position||'MC';
+ const seed=Array.from(String(p.name||'' )).reduce((n,c)=>((n*31+c.charCodeAt(0))>>>0),27);
+ const base=64+(seed%14);
+ const pace=number(['pace','pac','speed'],clamp(base+(role==='PE'||role==='PD'?9:role==='ZAG'?-4:0)));
+ const shooting=number(['shooting','sho','shot'],clamp(base+(role==='ATA'?10:role==='GOL'?-20:0)));
+ const passing=number(['passing','pas','pass'],clamp(base+(role==='MC'||role==='MEI'?9:0)));
+ const dribbling=number(['dribbling','dri'],clamp(base+(role==='PE'||role==='PD'||role==='MEI'?8:0)));
+ const defending=number(['defending','def'],clamp(base+(role==='ZAG'||role==='VOL'?12:role==='ATA'?-14:0)));
+ const physical=number(['physical','phy'],clamp(base+(role==='ZAG'||role==='VOL'?7:0)));
+ const overall=number(['overall','ovr','rating'],clamp(role==='GOL'?base+4:(pace+shooting+passing+dribbling+defending+physical)/6));
+ return {overall,pace,shooting,passing,dribbling,defending,physical,estimated:!['overall','ovr','rating'].some(k=>Number(p[k]??raw[k])>0)};
+}
+function miniPlayerCondition(p,side){
+ const athlete=side==='Home'?blueRoster.find(a=>a.userData.miniPlayer===p):null;
+ const m=athlete?medical.get(athlete):null;
+ return m?Math.round((1-m.fatigue)*100):100;
+}
+let miniEditorSlot=0;
+function miniEditorRender(){
+ const data=miniCurrentLineup(miniEditorSide),root=document.getElementById('miniSquadContent');root.replaceChildren();
+ document.getElementById('miniSquadTitle').textContent=fcClubs[miniSelection[miniEditorSide]].name+' — '+data.formation;
+ const roles=miniFormationTemplates[data.formation]||miniFormationTemplates['4-3-3'];
+ const wrap=document.createElement('div');wrap.style.cssText='display:grid;grid-template-columns:minmax(210px,1fr) minmax(150px,.75fr);gap:12px;align-items:start';
+ const pitch=document.createElement('div');pitch.style.cssText='position:relative;width:100%;aspect-ratio:68/105;max-height:65vh;border:2px solid #e5f5eb;border-radius:8px;background:repeating-linear-gradient(to bottom,#237649 0%,#237649 12.5%,#2c8053 12.5%,#2c8053 25%);overflow:hidden';
+ pitch.innerHTML='<div style="position:absolute;inset:0;border:1px solid #d9f4e0;pointer-events:none"><div style="position:absolute;top:50%;width:100%;border-top:1px solid white"></div><div style="position:absolute;top:50%;left:50%;width:23%;aspect-ratio:1;border:1px solid white;border-radius:50%;transform:translate(-50%,-50%)"></div><div style="position:absolute;top:0;left:22%;width:56%;height:16%;border:1px solid white;border-top:0"></div><div style="position:absolute;bottom:0;left:22%;width:56%;height:16%;border:1px solid white;border-bottom:0"></div></div>';
+ const slots=[{role:'GOL',player:data.keeper,index:-1,x:0,z:48},...data.field.map((p,i)=>({role:roles[i][0],player:p,index:i,x:roles[i][1],z:roles[i][2]}))];
+ function selectSlot(i){miniEditorSlot=i;miniEditorRender()}
+ for(const slot of slots){
+  const button=document.createElement('button');button.type='button';
+  const active=miniEditorSlot===slot.index;
+  button.style.cssText='position:absolute;transform:translate(-50%,-50%);left:'+((slot.x+34)/68*100)+'%;top:'+((slot.z+52.5)/105*100)+'%;width:clamp(36px,7vw,56px);height:clamp(36px,7vw,56px);border-radius:50%;border:2px solid '+(active?'#b5ff36':'white')+';background:'+(slot.index===-1?'#f4cb3c':'#2074dc')+';color:'+(slot.index===-1?'#12232c':'white')+';font-size:10px;font-weight:bold;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px #0007';
+  const num=document.createElement('span');num.textContent=String(slot.player?.number??(slot.index+2));button.append(num);
+  const ovr=document.createElement('span');ovr.style.cssText='font-size:8px';ovr.textContent=miniPlayerStats(slot.player)?.overall??'--';button.append(ovr);
+  const pos=document.createElement('span');pos.style.fontSize='8px';pos.textContent=slot.role;button.append(pos);
+  button.title=(slot.player?.name||'Sem atleta')+' — '+slot.role;
+  button.onclick=()=>selectSlot(slot.index);pitch.append(button);
+ }
+ const side=document.createElement('div');side.style.cssText='background:#102b34;border-radius:9px;padding:10px;max-height:65vh;overflow:auto';
+ const activeSlot=slots.find(x=>x.index===miniEditorSlot)||slots[0];
+ const title=document.createElement('strong');title.textContent='TITULAR: '+(activeSlot.player?.name||'Vaga livre');side.append(title);
+ const stats=miniPlayerStats(activeSlot.player);
+ if(stats){
+  const panel=document.createElement('div');panel.style.cssText='display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:10px 0;font-size:11px';
+  const items=[['OVR',stats.overall],['Ritmo',stats.pace],['Chute',stats.shooting],['Passe',stats.passing],['Drible',stats.dribbling],['Defesa',stats.defending],['Físico',stats.physical],['Condição',miniPlayerCondition(activeSlot.player,miniEditorSide)+'%']];
+  items.forEach(([name,value])=>{const el=document.createElement('div');el.style.cssText='background:#214550;padding:6px;border-radius:5px';el.textContent=name+': '+value;panel.append(el)});
+  side.append(panel);
+  const notice=document.createElement('small');notice.style.cssText='display:block;color:#b9ced1;margin-bottom:9px';notice.textContent=stats.estimated?'OVR estimado para gameplay; não é nota oficial.':'OVR fornecido pelo cadastro do jogador.';side.append(notice);
+ }
+ const hint=document.createElement('p');hint.style.cssText='font-size:12px;color:#b6d2d5';hint.textContent='Toque em um jogador no campo e depois em um reserva para trocar.';side.append(hint);
+ const benchTitle=document.createElement('strong');benchTitle.textContent='BANCO DE RESERVAS';side.append(benchTitle);
+ const bench=document.createElement('div');bench.style.cssText='display:flex;flex-direction:column;gap:5px;margin-top:8px';
+ data.bench.forEach((p,i)=>{
+  const btn=document.createElement('button');btn.type='button';btn.textContent=(p.number??'--')+' · '+p.name+' · OVR '+(miniPlayerStats(p)?.overall??'--')+' ('+p.position+')';
+  const eligible=activeSlot.index===-1?p.position==='GOL':p.position!=='GOL';
+  btn.disabled=!eligible;btn.style.cssText='text-align:left;padding:8px;border:1px solid #52727b;border-radius:6px;background:#193d48;color:white;font-size:12px;opacity:'+(eligible?'1':'.4');
+  btn.onclick=()=>{if(!eligible)return;const selected=miniEditorSlot;if(selected===-1){data.bench[i]=data.keeper;data.keeper=p}else{data.bench[i]=data.field[selected];data.field[selected]=p}data.bench=data.bench.filter(Boolean);miniEditorRender()};
+  bench.append(btn);
+ });
+ if(!data.bench.length){const empty=document.createElement('p');empty.textContent='Sem reservas cadastrados';bench.append(empty)}
+ side.append(bench);wrap.append(pitch,side);root.append(wrap);
+}
+function miniEditorOpen(){
+ const panel=document.getElementById('miniSquadEditor');panel.hidden=false;miniEditorRender();
+}
+function miniPlayerLabel(athlete,entry){
+ if(athlete.userData.miniNameTag){athlete.remove(athlete.userData.miniNameTag);athlete.userData.miniNameTag.material.map.dispose();athlete.userData.miniNameTag.material.dispose();}
+ athlete.userData.miniPlayer=entry||null;
+ if(!entry)return;
+ const canvas=document.createElement('canvas');canvas.width=256;canvas.height=64;
+ const ctx=canvas.getContext('2d');ctx.fillStyle='rgba(7,18,30,.8)';ctx.fillRect(0,0,256,64);
+ ctx.fillStyle='#fff';ctx.font='bold 23px Arial';ctx.textAlign='center';
+ const surname=entry.name.trim().split(/\s+/).slice(-2).join(' ');
+ ctx.fillText((entry.number==null?'':entry.number+'  ')+surname,128,41,246);
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ const tag=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,depthTest:false,transparent:true}));
+ tag.position.set(0,3.15,0);tag.scale.set(3.5,.87,1);tag.renderOrder=100;
+ athlete.add(tag);athlete.userData.miniNameTag=tag;
+}
+function miniBindMatchRoster(home,away){
+ const h=miniCurrentLineup('Home'),a=miniCurrentLineup('Away');
+ blueRoster.forEach((athlete,i)=>{miniPlayerLabel(athlete,h.field[i]);const m=medical.get(athlete);if(m)m.number=h.field[i]?.number??(i+1)});
+ foes.forEach((athlete,i)=>miniPlayerLabel(athlete,a.field[i]));
+ // Índice 0 do vetor keepers defende o gol adversário (-Z), índice 1 o gol mandante (+Z).
+ miniPlayerLabel(keepers[0],a.keeper);miniPlayerLabel(keepers[1],h.keeper);
+ window.miniActiveLineups={home:{club:home.name,...h},away:{club:away.name,...a},format:'11x11',formations:{home:miniFormationHome,away:miniFormationAway}};
+ medicalUpdateHud();
+}
 function miniApplyKit(athletes,club){
  const tint=new THREE.Color(club.color);
  for(const athlete of athletes){
@@ -1404,20 +1728,34 @@ function miniApplyKit(athletes,club){
   for(const mat of athlete.userData.miniKitMaterials)mat.color.copy(tint);
  }
 }
+(function(){const quick=document.getElementById('fcQuick');const footer=quick&&quick.querySelector('.miniQuickFooter');if(footer)footer.insertAdjacentHTML('beforebegin',"<div id=\"miniFormations\" style=\"display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:6px 8px;background:#071b20;color:white;font-size:12px\"><label>Formação mandante <select id=\"miniFormationHome\" style=\"background:#193b43;color:white;border:1px solid #78939a;border-radius:6px;padding:5px\"><option value=\"4-3-3\">4-3-3</option><option value=\"4-4-2\">4-4-2</option><option value=\"4-2-3-1\">4-2-3-1</option><option value=\"4-1-2-1-2\">4-1-2-1-2</option><option value=\"4-3-2-1\">4-3-2-1</option><option value=\"4-5-1\">4-5-1</option><option value=\"3-5-2\">3-5-2</option><option value=\"3-4-3\">3-4-3</option><option value=\"5-3-2\">5-3-2</option><option value=\"5-2-3\">5-2-3</option></select></label><label>Formação visitante <select id=\"miniFormationAway\" style=\"background:#193b43;color:white;border:1px solid #78939a;border-radius:6px;padding:5px\"><option value=\"4-3-3\">4-3-3</option><option value=\"4-4-2\">4-4-2</option><option value=\"4-2-3-1\">4-2-3-1</option><option value=\"4-1-2-1-2\">4-1-2-1-2</option><option value=\"4-3-2-1\">4-3-2-1</option><option value=\"4-5-1\">4-5-1</option><option value=\"3-5-2\">3-5-2</option><option value=\"3-4-3\">3-4-3</option><option value=\"5-3-2\">5-3-2</option><option value=\"5-2-3\">5-2-3</option></select></label></div>");})();
+(function(){
+ const quick=document.getElementById('fcQuick');if(!quick)return;
+ const form=document.getElementById('miniFormations');if(!form)return;
+ const btn=document.createElement('button');btn.type='button';btn.textContent='GERENCIAR ELENCO';btn.style.cssText='padding:7px 12px;border-radius:7px;background:#b5ff36;color:#071b14;border:0;font-weight:bold';
+ btn.addEventListener('click',miniEditorOpen);form.append(btn);
+ document.body.insertAdjacentHTML('beforeend',"<div id=\"miniSquadEditor\" hidden style=\"position:fixed;inset:3%;z-index:9999;background:#081c24;color:#fff;border:2px solid #76a6ac;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #000b;font-family:Arial\"><div style=\"display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap\"><strong>GERENCIAR ELENCO</strong><button type=\"button\" id=\"miniSquadClose\" style=\"padding:9px 16px;border-radius:8px;background:#b5ff36;color:#092016;border:0;font-weight:bold\">CONCLUIR</button></div><div style=\"display:flex;gap:8px;margin:12px 0\"><button type=\"button\" id=\"miniSquadHome\" style=\"padding:8px;border-radius:7px\">MANDANTE</button><button type=\"button\" id=\"miniSquadAway\" style=\"padding:8px;border-radius:7px\">VISITANTE</button></div><h3 id=\"miniSquadTitle\"></h3><div id=\"miniSquadContent\"></div></div>");
+ document.getElementById('miniSquadClose').onclick=()=>document.getElementById('miniSquadEditor').hidden=true;
+ document.getElementById('miniSquadHome').onclick=()=>{miniEditorSide='Home';miniEditorRender()};
+ document.getElementById('miniSquadAway').onclick=()=>{miniEditorSide='Away';miniEditorRender()};
+})();
 document.getElementById('fcPlay').onclick=()=>{
  fcHome=miniSelection.Home;fcAway=miniSelection.Away;
  const home=fcClubs[fcHome],away=fcClubs[fcAway];
+ miniSetFormation('Home',document.getElementById('miniFormationHome')?.value||'4-3-3');
+ miniSetFormation('Away',document.getElementById('miniFormationAway')?.value||'4-3-3');
  miniApplyKit(blueRoster,home);miniApplyKit(foes,away);
+ miniBindMatchRoster(home,away);
  const hud=document.getElementById('hud');hud.dataset.home=home.short;hud.dataset.away=away.short;
  const score=document.getElementById('score');if(score){hud.childNodes.forEach(n=>{if(n.nodeType===3&&n.textContent.trim())n.textContent=' '});hud.insertBefore(document.createTextNode(home.short+' '),score);hud.insertBefore(document.createTextNode(' '+away.short+' '),document.getElementById('clock'))}
- window.miniMatchSelection={home:home.name,away:away.name,advantage:miniSelection.advantage,form:miniSelection.form};
+ window.miniMatchSelection={home:home.name,away:away.name,advantage:miniSelection.advantage,form:miniSelection.form,formations:{home:miniFormationHome,away:miniFormationAway}};
  fcClose();
 };
 
 document.getElementById('fcCamera').onchange=()=>document.getElementById('cameraMode').click();
 document.getElementById('fcVar').onchange=e=>document.getElementById('varEnabled').checked=e.target.checked;
 
-function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(fcMenuActive){fcAnimate(dt);return}if(arrival.active){updateArrival(dt);return}if(walkout.active){updateWalkout(dt);return}if(gamePaused){renderer.render(scene,camera);return}if(advanceGoalReview(dt)){renderer.render(scene,camera);return}elapsed+=dt;medicalTick(dt);trainingStep(dt);weatherUpdate(dt,elapsed);if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
+function tick(now){requestAnimationFrame(tick);const dt=Math.min((now-last)/1000,.05);last=now;if(fcMenuActive){fcAnimate(dt);return}if(arrival.active){updateArrival(dt);return}if(walkout.active){updateWalkout(dt);return}if(gamePaused){renderer.render(scene,camera);return}if(advanceGoalReview(dt)){renderer.render(scene,camera);return}elapsed+=dt;miniSkillCooldown=Math.max(0,miniSkillCooldown-dt);medicalTick(dt);trainingStep(dt);weatherUpdate(dt,elapsed);if(restartTimer>0){restartTimer=Math.max(0,restartTimer-dt);if(restartTimer===0)resumeRule()}cooldown=Math.max(0,cooldown-dt);bannerTime-=dt;if(chargingShot)powerFill.style.height=(Math.min(1,(performance.now()-chargeStart)/1500)*100)+'%';if(bannerTime<=0)banner.textContent='';let dx=input.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dz=input.z+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);const len=Math.hypot(dx,dz);if(len>.05&&!restartState&&!(attached&&controlledPlayer.userData.miniSkillTime>0)){dx/=len;dz/=len;// Analógico relativo à câmera: direita/cima da tela, não aos eixos do campo.
 const m=camera.matrixWorld.elements;
 let rx=m[0],rz=m[2],ux=m[4],uz=m[6];
 const rl=Math.hypot(rx,rz),ul=Math.hypot(ux,uz);
@@ -1426,7 +1764,13 @@ else{rx=1;rz=0;ux=0;uz=-1;}
 const mx=dx*rx-dz*ux,mz=dx*rz-dz*uz;
 const ml=Math.hypot(mx,mz)||1;
 const moveX=mx/ml,moveZ=mz/ml;
-controlledPlayer.position.x=THREE.MathUtils.clamp(controlledPlayer.position.x+moveX*(sprintHeld?16:11)*(1-weather.wetness*.13-weather.snow*.12)*dt,-29,29);
-controlledPlayer.position.z=THREE.MathUtils.clamp(controlledPlayer.position.z+moveZ*(sprintHeld?16:11)*(1-weather.wetness*.13-weather.snow*.12)*dt,-47,47);
-controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ballSpin=0;ballBounce=0;ball.position.set(controlledPlayer.position.x,.37,controlledPlayer.position.z-1.15)}else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}velocity.x+=weather.wind*dt*.012;ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*(1-weather.wetness*.3+weather.snow*.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<12&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();arrivalCamera.aspect=innerWidth/innerHeight;arrivalCamera.updateProjectionMatrix();walkoutCamera.aspect=innerWidth/innerHeight;walkoutCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);fcCam.aspect=innerWidth/innerHeight;fcCam.updateProjectionMatrix();fcRenderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
+controlledPlayer.position.x=THREE.MathUtils.clamp(controlledPlayer.position.x+moveX*(sprintHeld?16:11)*miniStatFactor(controlledPlayer,'pace')*(1-weather.wetness*.13-weather.snow*.12)*dt,-33,33);
+controlledPlayer.position.z=THREE.MathUtils.clamp(controlledPlayer.position.z+moveZ*(sprintHeld?16:11)*miniStatFactor(controlledPlayer,'pace')*(1-weather.wetness*.13-weather.snow*.12)*dt,-51,51);
+controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=false;ballSpin=0;ballBounce=0;
+ const control=miniAthleteAttribute(controlledPlayer,'dribbling');
+ const touch=1.05+(99-control)*.004;
+ const sd=controlledPlayer.userData,skillP=sd.miniSkillTime>0?1-sd.miniSkillTime/(sd.miniSkillDuration||.55):0;
+ const sway=sd.miniSkillTime>0?Math.sin(skillP*Math.PI*2)*.45:0;
+ ball.position.set(controlledPlayer.position.x+sway,.37,controlledPlayer.position.z-touch+(sd.miniSkillTime>0?Math.sin(skillP*Math.PI)*.22:0));
+}else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}velocity.x+=weather.wind*dt*.012;ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*(1-weather.wetness*.3+weather.snow*.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<(8+miniAthleteAttribute(controlledPlayer,'dribbling')*.065)&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();arrivalCamera.aspect=innerWidth/innerHeight;arrivalCamera.updateProjectionMatrix();walkoutCamera.aspect=innerWidth/innerHeight;walkoutCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);fcCam.aspect=innerWidth/innerHeight;fcCam.updateProjectionMatrix();fcRenderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=20").catch(console.warn))}</script></body></html>
