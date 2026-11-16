@@ -823,6 +823,34 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
 #fcMenu .fcOption{border-bottom:0!important;text-decoration:none!important}
 #fcMenu .miniHeroDots{line-height:1!important}
 @media (orientation:landscape) and (max-height:500px){#fcMenu .miniHeroPanel{transform:translateY(-5px)!important}#fcMenu #miniHeroEnter{min-height:32px!important;max-height:38px!important;padding:7px 14px!important;font-size:11px!important}#fcMenu .fcNav{max-height:calc(100dvh - 95px)!important;overflow-y:auto!important}#fcMenu .fcOption{line-height:1.2!important}}
+</style><style id="miniMenu2027Refinement">
+/* Menu cinematográfico responsivo: alterações isoladas ao menu principal. */
+#fcMenu:not([hidden]){background:linear-gradient(90deg,rgba(5,9,16,.91) 0%,rgba(7,11,19,.66) 39%,rgba(10,13,19,.05) 76%)!important}
+#fcMenu .fcTop{padding:clamp(8px,2vh,18px) clamp(15px,3vw,48px)!important}
+#fcMenu .fcBrand{font-style:italic;letter-spacing:-2px;font-weight:900;font-size:clamp(23px,3.2vw,45px)}
+#fcMenu .fcBrand span{color:#f5f5f5}
+#fcMenu .fcLayout{padding:0 3vw 2vh!important;gap:clamp(10px,2vw,35px)!important}
+#fcMenu .fcNav{width:min(32vw,360px)!important;min-width:185px!important;flex:0 0 min(32vw,360px)!important;gap:clamp(2px,.6vh,8px)!important;overflow-x:hidden}
+#fcMenu .fcOption{background:transparent!important;border:0!important;border-left:3px solid transparent!important;border-radius:0!important;box-shadow:none!important;color:#e4e6e9!important;font-size:clamp(12px,1.55vw,20px)!important;letter-spacing:.025em!important;font-weight:800!important;padding:clamp(6px,1.5vh,13px) 12px!important;transition:background .2s ease,color .2s ease,padding .2s ease!important}
+#fcMenu .fcOption small{display:none}
+#fcMenu .fcOption.fcSelected,#fcMenu .fcOption:focus-visible{background:linear-gradient(90deg,rgba(255,255,255,.14),rgba(255,255,255,.015))!important;color:white!important;border-left-color:white!important;padding-left:17px!important}
+#fcMenu .fcOption:hover{background:rgba(255,255,255,.07)!important}
+#fcMenu .miniHeroPanel{min-width:0;max-width:min(37vw,500px);text-shadow:0 2px 12px #0009}
+#fcMenu #miniHeroEnter{transition:transform .18s,background .18s;min-height:42px}
+#fcMenu #miniHeroEnter:active{transform:scale(.96)}
+#fcMenu .fcSceneLabel{background:rgba(7,12,20,.56);border:1px solid #ffffff24;border-radius:7px;padding:10px 13px}
+@media (orientation:landscape) and (max-height:480px){
+ #fcMenu .fcNav{min-width:170px!important;gap:1px!important}
+ #fcMenu .fcOption{font-size:clamp(10px,1.35vw,15px)!important;min-height:30px!important;padding:5px 9px!important}
+ #fcMenu .fcTop{padding:5px 3vw!important}
+ #fcMenu .fcBottom{padding:3px 3vw!important}
+ #fcMenu .fcSceneLabel{bottom:7vh}
+}
+@media (orientation:portrait){
+ #fcMenu .fcNav{width:51vw!important;min-width:0!important;flex:0 0 51vw!important}
+ #fcMenu .fcOption{font-size:clamp(10px,2.7vw,15px)!important}
+ #fcMenu .miniHeroPanel{max-width:40vw}
+}
 </style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><div style="font-size:13px;margin-top:14px;text-align:left"><label for="weatherChoice">CLIMA</label><select id="weatherChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="auto">Automático</option><option value="sun">Ensolarado</option><option value="cloud">Nublado</option><option value="rain">Chuvoso</option><option value="snow">Neve</option><option value="random">Aleatório</option></select><label for="timeChoice">HORÁRIO</label><select id="timeChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="day">Tarde</option><option value="morning">Manhã</option><option value="dusk">Entardecer</option><option value="night">Noite</option></select><div id="weatherStatus" style="margin-top:5px;color:#c8dbea">Ensolarado · gramado seco</div></div><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><div id="arrivalHud" style="display:none;position:fixed;inset:0;z-index:11;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99);color:white"><div style="position:absolute;left:5%;bottom:8%;font-size:clamp(17px,3vw,30px);font-weight:bold">MINI FC27 · CHEGADA AO ESTÁDIO<div id="arrivalCaption" style="font-size:14px;font-weight:normal;margin-top:8px">O ônibus da equipe se aproxima do estádio</div></div><button id="arrivalSkip" style="position:absolute;right:3%;top:5%;pointer-events:auto;width:auto;height:auto;padding:10px 16px;border-radius:8px">Pular ▶</button></div>
 <div id="walkoutHud" style="display:none;position:fixed;inset:0;z-index:12;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99)"><div id="walkoutCaption" style="position:absolute;bottom:8%;left:5%;font-weight:bold">Entrada dos jogadores</div><button id="walkoutSkip" style="position:absolute;top:5%;right:3%;pointer-events:auto;padding:10px;border-radius:8px">Pular ▶</button></div>
 <div id="medicalStatus" style="display:none" aria-live="polite"></div><button id="medicalRecover" type="button" hidden>Recuperar elenco</button>
@@ -2292,14 +2320,14 @@ document.body.appendChild(fcModelStatus);
   setTimeout(()=>fcModelStatus.remove(),4000);
   console.info('MINI FC27: GLB carregado',buffer.byteLength);
  }catch(error){
-  fcModelStatus.textContent='Modelo 3D não carregou: '+String(error.message||error).slice(0,90);
+  fcModelStatus.textContent='Modelo 3D indisponível — personagem reserva ativo';
   console.warn('MINI FC27: mantendo jogador anterior',error);
  }
 })();
 function fcAnimate(dt){
 if(fcImportedMixer)fcImportedMixer.update(dt);fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}
 const t=performance.now()*.001,beat=t*2.4,phase=t*3.6;
-fcActor.position.y=Math.sin(beat)*.035;fcPreviewHold=Math.max(0,fcPreviewHold-dt);if(!fcPreviewHold)fcPreviewRotation+=dt*.16;fcActor.rotation.y=fcPreviewRotation+Math.sin(t*.6)*.08;fcHeadPivot.rotation.y=Math.sin(t*.75)*.08;const blink=Math.pow(Math.max(0,Math.sin(t*1.7)),30);fcLids.forEach(l=>l.scale.y=.03+blink*.7);fcMouth.scale.y=.16+Math.max(0,Math.sin(t*2.2))*.08;
+fcActor.position.y=Math.sin(beat)*(fcImportedPlayer?.012:.035);fcPreviewHold=Math.max(0,fcPreviewHold-dt);if(!fcPreviewHold)fcPreviewRotation+=dt*.16;fcActor.rotation.y=fcPreviewRotation+Math.sin(t*.6)*.08;fcHeadPivot.rotation.y=Math.sin(t*.75)*.08;const blink=Math.pow(Math.max(0,Math.sin(t*1.7)),30);fcLids.forEach(l=>l.scale.y=.03+blink*.7);fcMouth.scale.y=.16+Math.max(0,Math.sin(t*2.2))*.08;
 fcArmL.rotation.x=Math.sin(beat)*.22;fcArmR.rotation.x=-Math.sin(beat)*.22;
 const gait=Math.sin(beat*1.2);fcLimbJoints.hipL.rotation.x=gait*.24;fcLimbJoints.hipR.rotation.x=-gait*.24;fcLimbJoints.kneeL.rotation.x=Math.max(0,-gait)*.35;fcLimbJoints.kneeR.rotation.x=Math.max(0,gait)*.35;fcLimbJoints.shoulderL.rotation.x=-gait*.18;fcLimbJoints.shoulderR.rotation.x=gait*.18;fcLimbJoints.elbowL.rotation.x=-.18+Math.sin(t*1.7)*.06;fcLimbJoints.elbowR.rotation.x=-.18-Math.sin(t*1.7)*.06;fcClothPanel.scale.x=1.02+Math.sin(beat)*.012;fcBody.scale.y=fcBreathBase+Math.sin(t*1.5)*.008;
 if(!fcImportedPlayer)fcBall.position.set(2.45+.55+Math.sin(t*.85)*.12,.33+Math.abs(Math.sin(phase))*.7,.65);
