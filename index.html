@@ -851,6 +851,25 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
  #fcMenu .fcOption{font-size:clamp(10px,2.7vw,15px)!important}
  #fcMenu .miniHeroPanel{max-width:40vw}
 }
+</style><style id="miniReferenceMenuVideo">
+/* Composição inspirada nas referências fornecidas: navegação leve, hero à esquerda e jogador à direita. */
+#fcMenu:not([hidden]){background:linear-gradient(90deg,rgba(5,9,13,.83) 0%,rgba(6,10,14,.57) 31%,rgba(6,10,14,.08) 67%,rgba(6,10,14,.01) 100%)!important}
+#fcMenu .fcTop{padding:clamp(8px,2vh,16px) 2.8vw!important}
+#fcMenu .fcLayout{padding-left:2.7vw!important;align-items:center!important;gap:clamp(12px,3.2vw,55px)!important}
+#fcMenu .fcNav{width:min(27vw,320px)!important;min-width:160px!important;flex:0 0 min(27vw,320px)!important}
+#fcMenu .fcOption{font-size:clamp(11px,1.38vw,18px)!important;line-height:1.22!important;min-height:34px!important;letter-spacing:.02em!important}
+#fcMenu .miniHeroPanel{max-width:min(32vw,420px)!important;align-self:center!important}
+#fcMenu .miniHeroPanel h1{font-size:clamp(20px,2.7vw,36px)!important}
+#fcMenu .fcSceneLabel{font-size:clamp(10px,1vw,13px)!important;bottom:8vh!important}
+@media (orientation:landscape) and (max-height:490px){
+ #fcMenu .fcNav{width:27vw!important;min-width:145px!important;flex-basis:27vw!important}
+ #fcMenu .fcOption{font-size:clamp(10px,1.25vw,14px)!important;min-height:29px!important;padding:4px 8px!important}
+ #fcMenu .miniHeroPanel{max-width:30vw!important}
+}
+@media (orientation:portrait){
+ #fcMenu .fcNav{width:49vw!important;min-width:0!important;flex-basis:49vw!important}
+ #fcMenu .miniHeroPanel{max-width:43vw!important}
+}
 </style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><div style="font-size:13px;margin-top:14px;text-align:left"><label for="weatherChoice">CLIMA</label><select id="weatherChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="auto">Automático</option><option value="sun">Ensolarado</option><option value="cloud">Nublado</option><option value="rain">Chuvoso</option><option value="snow">Neve</option><option value="random">Aleatório</option></select><label for="timeChoice">HORÁRIO</label><select id="timeChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="day">Tarde</option><option value="morning">Manhã</option><option value="dusk">Entardecer</option><option value="night">Noite</option></select><div id="weatherStatus" style="margin-top:5px;color:#c8dbea">Ensolarado · gramado seco</div></div><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><div id="arrivalHud" style="display:none;position:fixed;inset:0;z-index:11;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99);color:white"><div style="position:absolute;left:5%;bottom:8%;font-size:clamp(17px,3vw,30px);font-weight:bold">MINI FC27 · CHEGADA AO ESTÁDIO<div id="arrivalCaption" style="font-size:14px;font-weight:normal;margin-top:8px">O ônibus da equipe se aproxima do estádio</div></div><button id="arrivalSkip" style="position:absolute;right:3%;top:5%;pointer-events:auto;width:auto;height:auto;padding:10px 16px;border-radius:8px">Pular ▶</button></div>
 <div id="walkoutHud" style="display:none;position:fixed;inset:0;z-index:12;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99)"><div id="walkoutCaption" style="position:absolute;bottom:8%;left:5%;font-weight:bold">Entrada dos jogadores</div><button id="walkoutSkip" style="position:absolute;top:5%;right:3%;pointer-events:auto;padding:10px;border-radius:8px">Pular ▶</button></div>
 <div id="medicalStatus" style="display:none" aria-live="polite"></div><button id="medicalRecover" type="button" hidden>Recuperar elenco</button>
