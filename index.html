@@ -741,6 +741,26 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
  #fcQuick .miniLineupActions{width:clamp(90px,10vw,145px)!important;height:clamp(100px,31vh,170px)!important}
  #fcQuick .miniLineupActions button{min-height:32px!important;font-size:clamp(8px,.9vw,12px)!important}
 }
+</style><style id="mini-menu-refresh-2026">
+/* Menu principal MINI FC27: interface responsiva sem alterar a partida */
+#fcMenu{background:linear-gradient(90deg,#050910fa 0%,#09111fe8 27%,#09111f88 52%,#070c1510 100%)!important}
+#fcMenu::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(0deg,#050a13b8 0%,transparent 25%,transparent 78%,#050a1388 100%)}
+#fcMenu .fcTop{padding:clamp(12px,3vh,28px) 4.5vw!important;border-bottom:1px solid #ffffff22}
+#fcMenu .fcBrand{font-family:Arial,sans-serif;font-size:clamp(26px,4.5vw,56px)!important;font-weight:950!important;letter-spacing:-2px!important;font-style:italic;text-shadow:0 3px 18px #000b}
+#fcMenu .fcBrand span{color:#c8fb39!important}
+#fcMenu .fcBadge{border:1px solid #ffffff45;background:#111d2ab8;padding:8px 12px;border-radius:20px;font-weight:700}
+#fcMenu .fcLayout{padding:2vh 4.5vw 2vh!important}
+#fcMenu .fcNav{gap:clamp(6px,1.3vh,12px)!important;max-width:440px!important}
+#fcMenu .fcOption{position:relative;display:flex!important;align-items:center!important;justify-content:space-between!important;background:linear-gradient(110deg,#182436ee,#121d2bcc)!important;border:1px solid #ffffff36!important;border-left:4px solid #8c9aaa!important;border-radius:5px!important;color:#eef4fa!important;padding:clamp(9px,2vh,19px) clamp(12px,2vw,23px)!important;min-height:45px!important;letter-spacing:.55px!important;box-shadow:0 8px 20px #0004;transition:background .2s,transform .2s,border-color .2s!important}
+#fcMenu .fcOption small{font-size:20px!important;opacity:.8}
+#fcMenu .fcOption:is(:hover,:focus-visible,.fcSelected){background:linear-gradient(100deg,#d0ff49,#a7e728)!important;color:#101a24!important;border-color:#dfff79!important;border-left-color:white!important;transform:translateX(5px)!important}
+#fcMenu .fcSceneLabel{padding:10px 15px;border:1px solid #ffffff40;background:#07101dbb;border-radius:5px;letter-spacing:2px}
+#fcMenu .fcBottom{font-size:clamp(10px,1.25vw,13px)!important;letter-spacing:1px;text-transform:uppercase;color:#d5e0e9!important}
+#fcMenu .fcScreen{background:linear-gradient(135deg,#07101cf8,#10213bf5)!important}
+#fcMenu .fcAction{background:#c8fb39!important;color:#121b22!important}
+@media(max-width:740px) and (orientation:landscape){#fcMenu .fcTop{padding:5px 3vw!important}#fcMenu .fcBrand{font-size:23px!important}#fcMenu .fcBadge{padding:4px 8px;font-size:9px!important}#fcMenu .fcLayout{padding:4px 3vw!important}#fcMenu .fcNav{gap:4px!important}#fcMenu .fcOption{min-height:29px!important;padding:5px 10px!important;font-size:11px!important}#fcMenu .fcOption small{font-size:14px!important}#fcMenu .fcBottom{padding:2px 3vw 5px!important;font-size:9px!important}}
+@media(orientation:portrait){#fcMenu{background:linear-gradient(90deg,#060c18f5,#071020c4 70%,#07102080)!important}#fcMenu .fcNav{max-width:85vw!important}#fcMenu .fcTop{align-items:flex-start!important}#fcMenu .fcBadge{letter-spacing:0!important}#fcMenu .fcOption{min-height:48px!important}}
+@media(prefers-reduced-motion:reduce){#fcMenu .fcOption{transition:none!important}}
 </style></head><body><div id="hud">AZU <span id="score">0 × 0</span> VER <span id="clock">00:00</span></div><div id="tip">MINI FC27 · WASD/setas para mover · Espaço para chutar · E para passar</div><button id="cameraMode" aria-label="Alternar câmera">📺 CÂMERA: TV</button><button id="restart">Reiniciar</button><div id="ruleHud" style="position:fixed;top:48px;left:50%;transform:translateX(-50%);z-index:10;background:#071a2dcc;color:white;padding:5px 10px;border-radius:9px;font-size:12px;white-space:nowrap;pointer-events:none">🟨 0 · 🟥 0</div><div id="banner"></div><canvas id="miniMap" width="240" height="136" aria-label="Minimapa do campo"></canvas><div id="joy"><div id="stick"></div></div><div id="buttons"><button id="switchPlayer" aria-label="Trocar jogador">TROCAR</button><button id="tackle" style="background:#b94d25;color:white;border-radius:50%;width:68px;height:68px;touch-action:none">CARRINHO</button><button id="pass">Passe</button><button id="lob">Lançam.</button><button id="shoot">Chute</button><button id="sprint">Acelerar</button></div><button id="pauseGame" aria-label="Pausar partida">Ⅱ</button><div id="pauseOverlay"><div class="pausePanel"><h2>PARTIDA PAUSADA</h2><div style="font-size:13px;margin-top:14px;text-align:left"><label for="weatherChoice">CLIMA</label><select id="weatherChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="auto">Automático</option><option value="sun">Ensolarado</option><option value="cloud">Nublado</option><option value="rain">Chuvoso</option><option value="snow">Neve</option><option value="random">Aleatório</option></select><label for="timeChoice">HORÁRIO</label><select id="timeChoice" style="width:100%;padding:9px;margin:5px 0;background:#111936;color:white"><option value="day">Tarde</option><option value="morning">Manhã</option><option value="dusk">Entardecer</option><option value="night">Noite</option></select><div id="weatherStatus" style="margin-top:5px;color:#c8dbea">Ensolarado · gramado seco</div></div><button id="resumeGame">Continuar partida</button></div></div><div id="error"></div><div id="arrivalHud" style="display:none;position:fixed;inset:0;z-index:11;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99);color:white"><div style="position:absolute;left:5%;bottom:8%;font-size:clamp(17px,3vw,30px);font-weight:bold">MINI FC27 · CHEGADA AO ESTÁDIO<div id="arrivalCaption" style="font-size:14px;font-weight:normal;margin-top:8px">O ônibus da equipe se aproxima do estádio</div></div><button id="arrivalSkip" style="position:absolute;right:3%;top:5%;pointer-events:auto;width:auto;height:auto;padding:10px 16px;border-radius:8px">Pular ▶</button></div>
 <div id="walkoutHud" style="display:none;position:fixed;inset:0;z-index:12;pointer-events:none;background:linear-gradient(transparent 60%,#07101e99)"><div id="walkoutCaption" style="position:absolute;bottom:8%;left:5%;font-weight:bold">Entrada dos jogadores</div><button id="walkoutSkip" style="position:absolute;top:5%;right:3%;pointer-events:auto;padding:10px;border-radius:8px">Pular ▶</button></div>
 <div id="medicalStatus" style="display:none" aria-live="polite"></div><button id="medicalRecover" type="button" hidden>Recuperar elenco</button>
@@ -749,7 +769,7 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
 <div id="trainingPanel" style="display:none;position:fixed;top:10%;left:50%;transform:translateX(-50%);z-index:15;background:#081b2de8;padding:14px;border-radius:10px">Treino · Pontos <b id="trainingScore">0</b> · Chutes <b id="trainingAttempts">0</b><button id="trainingExit" type="button">Sair do treino</button></div>
 <button id="trainingStart" type="button" hidden>Iniciar treino</button>
 <div id="fcMenu">
-  <div class="fcTop"><div class="fcBrand">MINI <span>FC27</span></div><div class="fcBadge">FUTEBOL 3D · ANDROID</div></div>
+  <div class="fcTop"><div class="fcBrand">MINI <span>FC27</span></div><div class="fcBadge">EDIÇÃO 2027 · FUTEBOL 3D</div></div>
   <div class="fcLayout"><nav class="fcNav" aria-label="Menu principal">
     <button type="button" class="fcOption fcSelected" data-mode="quick" onclick="window.miniOpenQuick&&window.miniOpenQuick()">JOGO RÁPIDO <small>▶</small></button>
     <button class="fcOption" data-mode="player">MODO CARREIRA JOGADOR <small>›</small></button>
@@ -757,7 +777,7 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
     <button class="fcOption" data-mode="tournaments">TORNEIOS <small>›</small></button>
     <button class="fcOption" data-mode="training">TREINAMENTO <small>›</small></button>
     <button class="fcOption" data-mode="settings">CONFIGURAÇÕES <small>›</small></button>
-  </nav></div><div class="fcSceneLabel" id="fcSceneLabel">VESTIÁRIO · MINI FC27</div><div class="fcBottom">Escolha um modo para começar · controles adaptados para toque</div>
+  </nav></div><div class="fcSceneLabel" id="fcSceneLabel">VESTIÁRIO · MINI FC27</div><div class="fcBottom">ESCOLHA SEU CAMINHO · ENTRE EM CAMPO</div>
   <section class="fcScreen" id="fcQuick" aria-label="Seleção de times do Jogo Rápido">
 <div class="miniStage" aria-hidden="true">
  <div class="miniStageWall"><div class="miniStageTriangle miniStageTriangleA"></div><div class="miniStageTriangle miniStageTriangleB"></div><div class="miniStageTriangle miniStageTriangleC"></div><div class="miniStageTriangle miniStageTriangleD"></div><div class="miniStageBeam"></div></div>
