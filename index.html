@@ -895,6 +895,54 @@ function aiPass(carrier,receivers,goalZ){
  velocity.set((dx/d*cs-dz/d*sn)*speed,0,(dx/d*sn+dz/d*cs)*speed);ball.position.set(carrier.position.x,.37,carrier.position.z);
  attached=false;aiPossessor=null;shotActive=false;cooldown=.65;lastTouch=goalZ<0?'blue':'red';return true;
 }
+/* Cobertura e marcação: cálculo leve, sem buscas de caminho ou novos modelos. */
+function miniDefensiveTarget(p,team,opponents,home,pressing){
+ const oursBlue=team===blueRoster,goalZ=oursBlue?49:-49;
+ const carrier=attached?controlledPlayer:aiPossessor;
+ const threat=carrier&&opponents.includes(carrier)?carrier:null;
+ const boxDanger=threat&&Math.abs(threat.position.z-goalZ)<25;
+ if(p===pressing)return {x:ball.position.x,z:ball.position.z};
+ const mark=opponents.filter(q=>q.visible&&!expelledPlayers.has(q)).reduce((best,q)=>{
+  const dist=Math.hypot(q.position.x-home[0],q.position.z-home[1]);
+  const goalThreat=Math.max(0,32-Math.abs(q.position.z-goalZ))*.2;
+  const score=dist-goalThreat;
+  return !best||score<best.score?{q,score}:best;
+ },null)?.q;
+ let x=home[0],z=home[1];
+ if(mark){
+  const protect=Math.min(1,boxDanger?.8:.55);
+  x=THREE.MathUtils.lerp(x,mark.position.x,protect);
+  z=THREE.MathUtils.lerp(z,mark.position.z+(goalZ-mark.position.z)*.17,protect);
+ }
+ if(threat){
+  const dx=threat.position.x-x,dz=threat.position.z-z;
+  const d=Math.hypot(dx,dz)||1;
+  if(d<12){x+=dx/d*(boxDanger?1.7:1);z+=dz/d*(boxDanger?1.7:1)}
+ }
+ return {x:THREE.MathUtils.clamp(x,-30,30),z:THREE.MathUtils.clamp(z,-46,46)};
+}
+function miniInterceptPass(dt){
+ if(attached||aiPossessor||restartState||penaltyKick||cooldown>0||velocity.length()<3)return;
+ const team=lastTouch==='blue'?foes:blueRoster;
+ let chosen=null,score=Infinity;
+ const horizon=.18;
+ const futureX=ball.position.x+velocity.x*horizon,futureZ=ball.position.z+velocity.z*horizon;
+ for(const p of team){
+  if(!p.visible||expelledPlayers.has(p)||p===controlledPlayer)continue;
+  const dist=Math.hypot(p.position.x-futureX,p.position.z-futureZ);
+  if(dist<score){score=dist;chosen=p}
+ }
+ if(!chosen||score>3.2)return;
+ aiMove(chosen,futureX,futureZ,7.4,dt);
+ const reach=1.05+(miniAthleteAttribute(chosen,'defending')-60)*.008;
+ if(aiDist(chosen,ball)<reach&&velocity.length()<20){
+  miniContactAnimation(chosen,'standing',.3);
+  velocity.set(0,0,0);shotActive=false;
+  if(team===foes){aiPossessor=chosen;lastTouch='red';aiDecisionClock=.4}
+  else{aiPossessor=chosen;lastTouch='blue';aiDecisionClock=.4}
+  cooldown=.48;
+ }
+}
 function aiPlay(dt){
  if(restartState||penaltyKick){aiPossessor=null;return}
  aiThinkClock+=dt;aiDecisionClock=Math.max(0,aiDecisionClock-dt);
@@ -916,6 +964,10 @@ function aiPlay(dt){
    let x=home[0]+shiftX*(isDefender?.45:isMid?.7:1);
    let z=home[1]+shiftZ*(isDefender?.35:isMid?.65:1);
    if(p===pressing){x=ball.position.x;z=ball.position.z}
+   else if(!attacking&&isDefender){
+    const cover=miniDefensiveTarget(p,team,opponent,home,pressing);
+    x=cover.x;z=cover.z;
+   }
    else if(attacking){
     const forward=team===blueRoster?-1:1;
     z+=forward*(isDefender?1.5:isMid?4:7);
@@ -932,6 +984,7 @@ function aiPlay(dt){
  }
  tacticalMove(blueRoster,miniHomePositions,blueHasBall,bluePress,foes,1);
  tacticalMove(foes,miniAwayPositions,redHasBall,redPress,blueRoster,aggression);
+ miniInterceptPass(dt);
  // Companheiro que ficou com a bola após troca de controle continua jogando.
  if(aiPossessor&&blueRoster.includes(aiPossessor)){
   const c=aiPossessor;
