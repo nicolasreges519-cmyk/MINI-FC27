@@ -2305,9 +2305,27 @@ const miniKitOverlay=document.createElement('div');miniKitOverlay.id='miniKitOve
 miniKitOverlay.innerHTML='<div style="width:min(720px,95vw);max-height:90dvh;overflow:auto;background:#10212d;border:1px solid #ffffff33;border-radius:15px;padding:16px"><h2 style="margin:0 0 6px">ESCOLHER UNIFORMES</h2><p style="font-size:12px;color:#d6dbe0">Cores de prévia provisórias — não representam uniformes oficiais de 2026/27.</p><div id="miniKitColumns" style="display:flex;gap:12px;justify-content:space-around"></div><p id="miniKitConflict" style="font-size:12px"></p><div style="display:flex;gap:12px;justify-content:flex-end"><button id="miniKitBack" type="button">Voltar</button><button id="miniKitConfirm" type="button">Iniciar partida</button></div></div>';
 document.body.appendChild(miniKitOverlay);
 const miniKitColumns=miniKitOverlay.querySelector('#miniKitColumns');
-function miniRenderKitPicker(){miniKitColumns.replaceChildren();for(const side of ['Home','Away']){const club=fcClubs[miniSelection[side]],index=miniKitState[side],kit=miniGetKit(club,index);const col=document.createElement('div');col.style.cssText='flex:1;text-align:center;min-width:0';const heading=document.createElement('strong');heading.textContent=(side==='Home'?'CASA — ':'FORA — ')+club.name;col.appendChild(heading);
+function miniRenderKitPicker(){for(const renderer of window.miniKitPreviewRenderers||[])renderer.dispose();window.miniKitPreviewRenderers=[];miniKitColumns.replaceChildren();for(const side of ['Home','Away']){const club=fcClubs[miniSelection[side]],index=miniKitState[side],kit=miniGetKit(club,index);const col=document.createElement('div');col.style.cssText='flex:1;text-align:center;min-width:0';const heading=document.createElement('strong');heading.textContent=(side==='Home'?'CASA — ':'FORA — ')+club.name;col.appendChild(heading);
 const canvas=document.createElement('canvas');canvas.width=150;canvas.height=180;canvas.style.cssText='width:min(100%,150px);height:150px;display:block;margin:5px auto';col.appendChild(canvas);
-const sceneKit=new THREE.Scene(),camKit=new THREE.PerspectiveCamera(42,150/180,.1,30);camKit.position.set(0,1.6,6);camKit.lookAt(0,1.3,0);sceneKit.add(new THREE.AmbientLight(0xffffff,2));const shirt=new THREE.Mesh(new THREE.CapsuleGeometry(.55,.7,4,10),new THREE.MeshLambertMaterial({color:kit.shirt}));shirt.position.y=1.7;sceneKit.add(shirt);const shorts=new THREE.Mesh(new THREE.BoxGeometry(.8,.4,.45),new THREE.MeshLambertMaterial({color:kit.shorts}));shorts.position.y=.9;sceneKit.add(shorts);for(const x of [-.25,.25]){const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.15,.65,3,6),new THREE.MeshLambertMaterial({color:kit.socks}));leg.position.set(x,.32,0);sceneKit.add(leg)}const rendererKit=new THREE.WebGLRenderer({canvas,alpha:true,antialias:false});rendererKit.setPixelRatio(1);rendererKit.setSize(150,180,false);rendererKit.render(sceneKit,camKit);rendererKit.dispose();
+const sceneKit=new THREE.Scene(),camKit=new THREE.PerspectiveCamera(40,150/180,.1,30);
+camKit.position.set(0,1.6,6.5);camKit.lookAt(0,1.3,0);
+sceneKit.add(new THREE.AmbientLight(0xffffff,2));
+const model=(side==='Home'?blueRoster[0]:foes[0]).clone(true);
+model.position.set(0,0,0);model.rotation.set(0,Math.PI,0);
+model.traverse(m=>{if(m.isMesh&&m.material){m.material=m.material.clone();if(m.material.color&&m.position.y>1.3&&m.parent===model)m.material.color.set(kit.shirt);}});
+sceneKit.add(model);
+const rendererKit=new THREE.WebGLRenderer({canvas,alpha:true,antialias:false});
+rendererKit.setPixelRatio(1);rendererKit.setSize(150,180,false);
+let angle=Math.PI;
+const draw=()=>{model.rotation.y=angle;rendererKit.render(sceneKit,camKit)};
+draw();
+let dragX=null;canvas.style.touchAction='none';canvas.addEventListener('pointerdown',e=>{dragX=e.clientX;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(dragX===null)return;angle+=(e.clientX-dragX)*.018;dragX=e.clientX;draw()});
+canvas.addEventListener('pointerup',()=>dragX=null);canvas.addEventListener('pointercancel',()=>dragX=null);
+const turn=document.createElement('button');turn.type='button';turn.textContent='Girar 360°';turn.onclick=()=>{angle+=Math.PI/2;draw()};col.appendChild(turn);
+miniKitOverlay.addEventListener('transitionend',()=>{}, {once:true});
+if(!window.miniKitPreviewRenderers)window.miniKitPreviewRenderers=[];
+window.miniKitPreviewRenderers.push(rendererKit);
 const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;justify-content:center;gap:8px';const left=document.createElement('button');left.textContent='◀';const right=document.createElement('button');right.textContent='▶';const label=document.createElement('span');label.textContent=kit.label+' '+(kit.verified?'✓':'(prévia)');left.onclick=()=>{miniKitState[side]=(index+2)%3;miniRenderKitPicker()};right.onclick=()=>{miniKitState[side]=(index+1)%3;miniRenderKitPicker()};row.append(left,label,right);col.appendChild(row);miniKitColumns.appendChild(col);}
 const home=miniGetKit(fcClubs[miniSelection.Home],miniKitState.Home),away=miniGetKit(fcClubs[miniSelection.Away],miniKitState.Away);const clash=miniKitDistance(home,away)<.32;miniKitOverlay.querySelector('#miniKitConflict').textContent=clash?'⚠ Cores semelhantes. Considere trocar um uniforme.':'Cores suficientemente diferentes na comparação básica.';}
 function miniApplyDetailedKit(athletes,kit){for(const p of athletes){if(!p.userData.miniKitParts){const meshes=[];p.traverse(m=>{if(m.isMesh&&m.material?.color)meshes.push(m)});p.userData.miniKitParts=meshes.filter(m=>m.parent===p||m.parent?.parent===p).map(m=>{m.material=m.material.clone();return m});}for(const m of p.userData.miniKitParts){const y=m.position.y,arm=m.parent!==p;if(y>1.25&&!arm)m.material.color.set(kit.shirt);else if(y>.82&&y<1.25&&!arm)m.material.color.set(kit.shorts);else if(arm&&m.position.y<-.7)m.material.color.set(kit.socks);else if(arm)m.material.color.set(kit.shirt);}}}
