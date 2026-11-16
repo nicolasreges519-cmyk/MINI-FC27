@@ -1652,11 +1652,49 @@ const miniReplayActors=[...blueRoster,...foes,...keepers];
 const miniReplayFrames=new Array(120);let miniReplayHead=0,miniReplayCount=0,miniReplayAccum=0,miniGoalScene=null;
 const miniGoalHud=document.createElement('div');miniGoalHud.style.cssText='position:fixed;top:18%;left:50%;transform:translateX(-50%);z-index:20;display:none;text-align:center;font:bold 30px Arial;color:white;text-shadow:0 3px 8px black;pointer-events:none';document.body.appendChild(miniGoalHud);
 const miniSkipReplay=document.createElement('button');miniSkipReplay.textContent='Pular replay ›';miniSkipReplay.style.cssText='position:fixed;top:20%;right:3%;z-index:21;width:auto;height:auto;padding:12px;border-radius:8px;display:none';document.body.appendChild(miniSkipReplay);
-miniSkipReplay.addEventListener('click',()=>{if(miniGoalScene&&miniGoalScene.phase==='replay')miniGoalScene.t=999});
+miniSkipReplay.addEventListener('click',()=>{if(miniGoalScene){if(miniGoalScene.phase==='celebrate'){miniGoalScene.phase='replay';miniGoalScene.t=0;miniSkipReplay.style.display='block'}else if(miniGoalScene.phase==='replay')miniGoalScene.t=999}});
 function miniRecordReplay(dt){miniReplayAccum+=dt;if(miniReplayAccum<.1)return;miniReplayAccum=0;miniReplayFrames[miniReplayHead]={ball:[ball.position.x,ball.position.y,ball.position.z],actors:miniReplayActors.map(p=>[p.position.x,p.position.y,p.position.z,p.rotation.y])};miniReplayHead=(miniReplayHead+1)%120;miniReplayCount=Math.min(120,miniReplayCount+1);}
-function miniStartGoalScene(side){if(miniGoalScene)return;const frames=[];for(let i=0;i<miniReplayCount;i++)frames.push(miniReplayFrames[(miniReplayHead-miniReplayCount+i+120)%120]);frames.push({ball:[ball.position.x,ball.position.y,ball.position.z],actors:miniReplayActors.map(p=>[p.position.x,p.position.y,p.position.z,p.rotation.y])});const scorer=side===0?(controlledPlayer||player):(aiPossessor&&foes.includes(aiPossessor)?aiPossessor:foes[0]);miniGoalScene={side,frames,scorer,t:0,phase:'celebrate',savedCamera:camera.position.clone(),countdown:3};miniGoalHud.style.display='block';miniGoalHud.textContent='GOOOL!';miniSkipReplay.style.display='none';velocity.set(0,0,0);attached=false;shotActive=false;}
+function miniStartGoalScene(side){if(miniGoalScene)return;const frames=[];for(let i=0;i<miniReplayCount;i++)frames.push(miniReplayFrames[(miniReplayHead-miniReplayCount+i+120)%120]);frames.push({ball:[ball.position.x,ball.position.y,ball.position.z],actors:miniReplayActors.map(p=>[p.position.x,p.position.y,p.position.z,p.rotation.y])});const scorer=side===0?(controlledPlayer||player):(aiPossessor&&foes.includes(aiPossessor)?aiPossessor:foes[0]);const celebrationTypes=[{id:'group',duration:3.8},{id:'face',duration:3.6},{id:'chest',duration:3.5},{id:'near-face',duration:3.6}];
+const previous=window.miniLastCelebration;const available=celebrationTypes.filter(c=>c.id!==previous);const celebration=available[Math.floor(Math.random()*available.length)];window.miniLastCelebration=celebration.id;
+const partners=(side===0?blueRoster:foes).filter(p=>p!==scorer).sort((a,b)=>a.position.distanceToSquared(scorer.position)-b.position.distanceToSquared(scorer.position)).slice(0,3);
+miniGoalScene={side,frames,scorer,partners,celebration,origin:scorer.position.clone(),cameraSide:Math.random()<.5?-1:1,t:0,phase:'celebrate',savedCamera:camera.position.clone(),countdown:3};miniGoalHud.style.display='block';miniGoalHud.textContent='GOOOL!';miniSkipReplay.style.display='block';velocity.set(0,0,0);attached=false;shotActive=false;}
 function miniGoalStep(dt){const g=miniGoalScene;if(!g)return false;g.t+=dt;
-if(g.phase==='celebrate'){miniGoalHud.textContent='GOOOL!';const p=g.scorer;const v=Math.sin(g.t*9);p.userData.limbs[0].rotation.z=1.2;p.userData.limbs[2].rotation.z=-1.2;p.position.y=.35+Math.max(0,v)*.22;for(const teammate of (g.side===0?blueRoster:foes)){if(teammate===p)continue;teammate.position.lerp(p.position,.008)}camera.position.lerp(new THREE.Vector3(p.position.x+8,5,p.position.z+12),.045);camera.lookAt(p.position.x,1.4,p.position.z);if(g.t>=2.8){g.phase='replay';g.t=0;miniSkipReplay.style.display='block';} }
+if(g.phase==='celebrate'){
+ miniGoalHud.textContent='GOOOL!';
+ const p=g.scorer,d=p.userData,t=g.t,duration=g.celebration.duration;
+ const ease=x=>{x=THREE.MathUtils.clamp(x,0,1);return x*x*(3-2*x)};
+ const blend=ease(t/.55)*(1-ease((t-(duration-.6))/.6));
+ const a=d.limbs[0],b=d.limbs[2],l=d.limbs[1],r=d.limbs[3];
+ a.rotation.set(0,0,0);b.rotation.set(0,0,0);l.rotation.x=0;r.rotation.x=0;
+ d.headPivot.rotation.x=0;d.headPivot.rotation.y=0;p.position.y=.35;
+ const kind=g.celebration.id;
+ if(kind==='group'){
+   const approach=ease(t/1.15);
+   p.position.x=g.origin.x+Math.sin(t*4)*.1*approach;
+   p.position.z=g.origin.z+(g.side===0?-1:1)*approach*1.4;
+   a.rotation.z=1.35*blend;b.rotation.z=-1.35*blend;
+   for(let i=0;i<g.partners.length;i++){const q=g.partners[i];const angle=i*2.4+.5;const target=new THREE.Vector3(p.position.x+Math.cos(angle)*1.05,.35,p.position.z+Math.sin(angle)*1.05);q.position.lerp(target,.07);q.rotation.y=Math.atan2(p.position.x-q.position.x,p.position.z-q.position.z);q.userData.limbs[0].rotation.z=1.1*blend;q.userData.limbs[2].rotation.z=-1.1*blend;}
+ }else if(kind==='face'){
+   const pose=ease((t-.4)/.8)*(1-ease((t-2.7)/.65));
+   a.rotation.x=-2.05*pose;b.rotation.x=-2.05*pose;
+   a.rotation.z=-.25*pose;b.rotation.z=.25*pose;
+   d.headPivot.rotation.x=-.12*pose;
+ }else if(kind==='chest'){
+   const pose=ease((t-.25)/.7)*(1-ease((t-2.65)/.8));
+   a.rotation.x=-1.4*pose;b.rotation.x=-1.4*pose;
+   a.rotation.z=-.55*pose;b.rotation.z=.55*pose;
+   d.headPivot.rotation.x=-.16*pose;d.headPivot.rotation.y=Math.sin(t*3)*.1*pose;
+ }else if(kind==='near-face'){
+   const pose=ease((t-.65)/.6)*(1-ease((t-2.8)/.7));
+   a.rotation.x=-1.8*pose;a.rotation.z=-.15*pose;
+   d.headPivot.rotation.y=Math.sin(t*1.2)*.12;
+   p.position.z=g.origin.z+(g.side===0?-1:1)*Math.min(t,1.1)*.65;
+ }
+ const front=g.cameraSide;
+ const target=new THREE.Vector3(p.position.x+front*5,3.3,p.position.z+7);
+ camera.position.lerp(target,1-Math.exp(-dt*3));camera.lookAt(p.position.x,1.6,p.position.z);
+ if(t>=duration){g.phase='replay';g.t=0;miniSkipReplay.style.display='block';p.position.y=.35;}
+}
 else if(g.phase==='replay'){miniGoalHud.textContent='REPLAY';const index=Math.min(g.frames.length-1,Math.floor(g.t*8));const snap=g.frames[index];if(snap){ball.position.set(...snap.ball);snap.actors.forEach((a,i)=>{const p=miniReplayActors[i];p.position.set(a[0],a[1],a[2]);p.rotation.y=a[3]});}const b=ball.position;const angle=Math.floor(g.t/2)%4;const positions=[[b.x+24,18,b.z+25],[b.x,5,b.z+(g.side===0?-62:62)],[b.x+7,4,b.z+8],[b.x+30,34,b.z+18]];camera.position.lerp(new THREE.Vector3(...positions[angle]),.12);camera.lookAt(b);if(g.t>=g.frames.length/8){g.phase='countdown';g.t=0;miniSkipReplay.style.display='none';kickoff();ball.position.set(0,.37,0);attached=false;}}
 else {miniGoalHud.textContent='RECOMEÇA EM '+Math.max(1,3-Math.floor(g.t));if(g.t>=3){miniGoalHud.style.display='none';miniGoalScene=null;attached=true;camera.position.copy(g.savedCamera);}}renderer.render(scene,camera);return true;}
 function startGoalReview(x,z){
