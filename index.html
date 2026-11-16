@@ -2253,10 +2253,24 @@ document.body.appendChild(fcModelStatus);
 (async()=>{
  try{
   const asset=new URL('./professional-soccer-standing.glb',location.href).href;
-  // O GET é feito diretamente: servidores estáticos nem sempre aceitam HEAD.
-  const response=await fetch(asset,{cache:'no-store'});
-  if(!response.ok)throw new Error('Arquivo GLB indisponível (HTTP '+response.status+')');
-  const buffer=await response.arrayBuffer();
+  // GitHub Pages pode falhar temporariamente ao servir arquivos binários grandes.
+  // Tenta o site publicado, depois o conteúdo bruto do repositório.
+  const candidates=[asset,'https://raw.githubusercontent.com/nicolasreges519-cmyk/MINI-FC27/main/professional-soccer-standing.glb'];
+  let buffer=null,lastError=null;
+  for(const url of candidates){
+   for(let attempt=0;attempt<2;attempt++){
+    try{
+     fcModelStatus.textContent='Carregando jogador 3D… '+(url===asset?'site':'GitHub')+' ('+(attempt+1)+'/2)';
+     const response=await fetch(url,{cache:'default'});
+     if(!response.ok)throw new Error('HTTP '+response.status);
+     const data=await response.arrayBuffer();
+     if(data.byteLength<20)throw new Error('Arquivo vazio');
+     buffer=data;break;
+    }catch(error){lastError=error}
+   }
+   if(buffer)break;
+  }
+  if(!buffer)throw lastError||new Error('Download indisponível');
   if(buffer.byteLength<20)throw new Error('Arquivo GLB vazio');
   const {GLTFLoader}=await import('https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/GLTFLoader.js');
   const loader=new GLTFLoader();
