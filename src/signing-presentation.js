@@ -58,7 +58,7 @@ function animate(now){
  if(t>=24){finish();return}
  raf=requestAnimationFrame(animate);
 }
-function finish(){screen.hidden=true;dispose()}
+function finish(){screen.hidden=true;dispose();if(entry?.onFinish){const cb=entry.onFinish;entry=null;cb();}}
 $('signSkip').onclick=finish;$('signReplay').onclick=()=>{if(entry)show(entry)};
 window.miniShowSigningPresentation=show;
 })();
