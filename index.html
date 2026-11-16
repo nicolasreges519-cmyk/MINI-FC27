@@ -2160,10 +2160,30 @@ const fcLegL=fcPart(new THREE.CapsuleGeometry(.15,.8,4,8),fcDark,-.23,.92,0),fcL
 fcPart(new THREE.BoxGeometry(.3,.16,.53),fcBoot,-.23,.2,.16);fcPart(new THREE.BoxGeometry(.3,.16,.53),fcBoot,.23,.2,.16);
 const fcArmL=fcPart(new THREE.CapsuleGeometry(.12,.66,4,8),fcSkin,-.56,2.04,0),fcArmR=fcPart(new THREE.CapsuleGeometry(.12,.66,4,8),fcSkin,.56,2.04,0);
 const fcBall=new THREE.Mesh(new THREE.SphereGeometry(.27,16,12),fcMat(0xe8edf1,.4));fcScene.add(fcBall);
+// Detalhes leves para o vestiário e o atleta, compartilhando geometrias e materiais.
+const fcBench=new THREE.Mesh(new THREE.BoxGeometry(5.8,.16,.68),fcMat(0x574c40));fcBench.position.set(-1.5,.55,1.5);fcScene.add(fcBench);
+for(const x of [-4.05,.95]){const support=new THREE.Mesh(new THREE.BoxGeometry(.13,.52,.52),fcMat(0x202a31));support.position.set(x,.27,1.5);fcScene.add(support)}
+const fcFaceMat=fcMat(0x17171a),fcTrim=fcMat(0xe9e9e9),fcSock=fcMat(0xe1e5ed);
+for(const x of [-.115,.115]){fcPart(new THREE.SphereGeometry(.026,6,6),fcFaceMat,x,3.075,.285);fcPart(new THREE.BoxGeometry(.17,.3,.18),fcSock,x<0?-.23:.23,.53,.01)}
+fcPart(new THREE.BoxGeometry(.32,.035,.045),fcTrim,0,2.43,.36);
+const fcBallMark=fcMat(0x222d38);for(let i=0;i<5;i++){const a=i*Math.PI*2/5;const dot=new THREE.Mesh(new THREE.CircleGeometry(.065,5),fcBallMark);dot.position.set(Math.sin(a)*.24,Math.cos(a)*.24,.13);fcBall.add(dot)}
+const fcKitSleeveL=fcPart(new THREE.CapsuleGeometry(.145,.22,3,7),fcBody.material,-.56,2.27,0),fcKitSleeveR=fcPart(new THREE.CapsuleGeometry(.145,.22,3,7),fcBody.material,.56,2.27,0);
+const fcShowroomLights=[fcFill,fcLight];const fcBaseFill=fcFill.intensity;
 const fcVariants=[{name:'AZUL FC',kit:0x245bca,locker:0x344159},{name:'VERMELHO FC',kit:0xd83f4d,locker:0x4c2936},{name:'VERDE FC',kit:0x19a17a,locker:0x284b46},{name:'OURO FC',kit:0xd7b647,locker:0x4c4530}];
-function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcBody.material.color.setHex(v.kit);fcLockers.forEach(l=>{l.children[0].material.color.setHex(v.locker)});document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
+function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcBody.material.color.setHex(v.kit);fcKitSleeveL.material.color.setHex(v.kit);fcKitSleeveR.material.color.setHex(v.kit);fcFill.color.setHex(v.kit);fcLockers.forEach(l=>{l.children[0].material.color.setHex(v.locker)});document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
 fcChangeVariant();
-function fcAnimate(dt){fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}const t=performance.now()*.001;const beat=t*2.4;fcActor.position.y=Math.sin(beat)*.045;fcActor.rotation.y=Math.sin(t*.55)*.13;fcArmL.rotation.x=Math.sin(beat)*.23;fcArmR.rotation.x=-Math.sin(beat)*.23;fcLegR.rotation.x=Math.sin(beat*1.2)*.19;fcLegL.rotation.x=-Math.sin(beat*1.2)*.15;fcBall.position.set(3.0+Math.sin(t*.85)*.16,.42+Math.abs(Math.sin(t*3.6))*.68,.65);fcBall.rotation.x+=dt*2.2;fcBall.rotation.z+=dt*.8;fcCam.position.x+=(Math.sin(t*.23)*.22-fcCam.position.x)*Math.min(1,dt*.6);fcCam.lookAt(0,1.7,0);fcRenderer.render(fcScene,fcCam)}
+function fcAnimate(dt){
+fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}
+const t=performance.now()*.001,beat=t*2.4,phase=t*3.6;
+fcActor.position.y=Math.sin(beat)*.035;fcActor.rotation.y=Math.sin(t*.6)*.15;
+fcArmL.rotation.x=Math.sin(beat)*.22;fcArmR.rotation.x=-Math.sin(beat)*.22;
+fcLegR.rotation.x=Math.sin(beat*1.2)*.19;fcLegL.rotation.x=-Math.sin(beat*1.2)*.15;
+fcBall.position.set(2.45+.55+Math.sin(t*.85)*.12,.33+Math.abs(Math.sin(phase))*.7,.65);
+fcBall.rotation.x+=dt*2.2;fcBall.rotation.z+=dt*.8;
+fcFill.intensity=fcBaseFill+Math.sin(t*1.5)*.15;
+fcCam.position.x+=(Math.sin(t*.23)*.22-fcCam.position.x)*Math.min(1,dt*.6);fcCam.lookAt(0,1.7,0);
+fcRenderer.render(fcScene,fcCam)
+}
 function fcScreen(id){fcScreens.forEach(e=>{const active=!!id&&e.id===id;e.classList.toggle('fcOpen',active);e.style.display=active?'flex':'none'})}
 function fcClose(){fcRoot.hidden=true;fcMenuActive=false;fcRenderer.domElement.style.display='none';document.body.classList.remove('fc-menu-open');fcScreen('');last=performance.now();startArrival()}
 /* Brasileirão Série A 2026: participantes conferidos no regulamento da CBF. Atributos 75 são temporários, não avaliações oficiais; escudos e elencos aguardam assets licenciados e dados verificados. */
