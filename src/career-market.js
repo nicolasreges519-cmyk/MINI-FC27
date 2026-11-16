@@ -138,5 +138,20 @@ $('careerExit').onclick=()=>{root.hidden=true;fcScreen('')};
 $('careerExport').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='mini-fc27-carreira.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 $('careerImport').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const parsed=JSON.parse(await file.text());if(!parsed||!fcClubs.some(c=>c.name===parsed.club)||!parsed.rosters||!Number.isFinite(parsed.transferBudget)||!Array.isArray(parsed.history))throw Error('Formato inválido');state=parsed;save();render()}catch(e){alert('Arquivo de carreira inválido')}};
 window.miniCareerOpen=()=>{state=load();if(!state||!state.rosters){const options=fcClubs.filter(c=>c.roster?.length);const club=options[0];if(!club)return alert('Nenhum clube com elenco disponível');const name=prompt('Clube para iniciar carreira:\n'+options.map(c=>c.name).join(', '),club.name);const selectedClub=options.find(c=>c.name.toLowerCase()===String(name).toLowerCase());if(!selectedClub)return alert('Escolha um clube da lista');state=base(selectedClub);save()}root.hidden=false;render()};
+window.miniCareerPressMatch=(context)=>{
+ if(!state?.club)return false;
+ state.pressReputation=state.pressReputation||{morale:{},board:50,fans:50,manager:50,lockerRoom:50};
+ const apply=(delta,answer)=>{
+  const r=state.pressReputation;
+  r.board=Math.max(0,Math.min(100,r.board+delta.board));
+  r.fans=Math.max(0,Math.min(100,r.fans+delta.fans));
+  r.manager=Math.max(0,Math.min(100,(r.manager??50)+delta.board));
+  r.lockerRoom=Math.max(0,Math.min(100,(r.lockerRoom??50)+delta.morale));
+  for(const p of (state.rosters[state.club]||[]))r.morale[p.name]=Math.max(0,Math.min(100,(r.morale[p.name]??50)+delta.morale));
+  state.history.push('Entrevista '+(context.type==='pre'?'pré-jogo':'pós-jogo')+': '+answer.question+' — '+answer.answer);
+  save();
+ };
+ return window.miniPressMatchInterview?.(context,apply)||false;
+};
 window.miniCareerRosterFor=club=>state?.rosters?.[club]||null;
 })();
