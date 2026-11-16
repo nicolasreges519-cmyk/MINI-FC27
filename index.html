@@ -1428,6 +1428,29 @@ function miniCurrentLineup(side){
  }
  return miniLineupEdits[side];
 }
+/* Atributos provisórios do MINI FC27: estimativas de gameplay, não ratings oficiais. */
+function miniPlayerStats(p){
+ if(!p)return null;
+ const raw=p.stats||p.attributes||{};
+ const clamp=v=>Math.max(1,Math.min(99,Math.round(Number(v)||0)));
+ const number=(keys,fallback)=>{for(const key of keys){const v=Number(raw[key]??p[key]);if(Number.isFinite(v)&&v>0)return clamp(v)}return fallback};
+ const role=p.position||'MC';
+ const seed=Array.from(String(p.name||'' )).reduce((n,c)=>((n*31+c.charCodeAt(0))>>>0),27);
+ const base=64+(seed%14);
+ const pace=number(['pace','pac','speed'],clamp(base+(role==='PE'||role==='PD'?9:role==='ZAG'?-4:0)));
+ const shooting=number(['shooting','sho','shot'],clamp(base+(role==='ATA'?10:role==='GOL'?-20:0)));
+ const passing=number(['passing','pas','pass'],clamp(base+(role==='MC'||role==='MEI'?9:0)));
+ const dribbling=number(['dribbling','dri'],clamp(base+(role==='PE'||role==='PD'||role==='MEI'?8:0)));
+ const defending=number(['defending','def'],clamp(base+(role==='ZAG'||role==='VOL'?12:role==='ATA'?-14:0)));
+ const physical=number(['physical','phy'],clamp(base+(role==='ZAG'||role==='VOL'?7:0)));
+ const overall=number(['overall','ovr','rating'],clamp(role==='GOL'?base+4:(pace+shooting+passing+dribbling+defending+physical)/6));
+ return {overall,pace,shooting,passing,dribbling,defending,physical,estimated:!['overall','ovr','rating'].some(k=>Number(p[k]??raw[k])>0)};
+}
+function miniPlayerCondition(p,side){
+ const athlete=side==='Home'?blueRoster.find(a=>a.userData.miniPlayer===p):null;
+ const m=athlete?medical.get(athlete):null;
+ return m?Math.round((1-m.fatigue)*100):100;
+}
 let miniEditorSlot=0;
 function miniEditorRender(){
  const data=miniCurrentLineup(miniEditorSide),root=document.getElementById('miniSquadContent');root.replaceChildren();
@@ -1443,6 +1466,7 @@ function miniEditorRender(){
   const active=miniEditorSlot===slot.index;
   button.style.cssText='position:absolute;transform:translate(-50%,-50%);left:'+((slot.x+34)/68*100)+'%;top:'+((slot.z+52.5)/105*100)+'%;width:clamp(36px,7vw,56px);height:clamp(36px,7vw,56px);border-radius:50%;border:2px solid '+(active?'#b5ff36':'white')+';background:'+(slot.index===-1?'#f4cb3c':'#2074dc')+';color:'+(slot.index===-1?'#12232c':'white')+';font-size:10px;font-weight:bold;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 8px #0007';
   const num=document.createElement('span');num.textContent=String(slot.player?.number??(slot.index+2));button.append(num);
+  const ovr=document.createElement('span');ovr.style.cssText='font-size:8px';ovr.textContent=miniPlayerStats(slot.player)?.overall??'--';button.append(ovr);
   const pos=document.createElement('span');pos.style.fontSize='8px';pos.textContent=slot.role;button.append(pos);
   button.title=(slot.player?.name||'Sem atleta')+' — '+slot.role;
   button.onclick=()=>selectSlot(slot.index);pitch.append(button);
@@ -1450,11 +1474,19 @@ function miniEditorRender(){
  const side=document.createElement('div');side.style.cssText='background:#102b34;border-radius:9px;padding:10px;max-height:65vh;overflow:auto';
  const activeSlot=slots.find(x=>x.index===miniEditorSlot)||slots[0];
  const title=document.createElement('strong');title.textContent='TITULAR: '+(activeSlot.player?.name||'Vaga livre');side.append(title);
+ const stats=miniPlayerStats(activeSlot.player);
+ if(stats){
+  const panel=document.createElement('div');panel.style.cssText='display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:10px 0;font-size:11px';
+  const items=[['OVR',stats.overall],['Ritmo',stats.pace],['Chute',stats.shooting],['Passe',stats.passing],['Drible',stats.dribbling],['Defesa',stats.defending],['Físico',stats.physical],['Condição',miniPlayerCondition(activeSlot.player,miniEditorSide)+'%']];
+  items.forEach(([name,value])=>{const el=document.createElement('div');el.style.cssText='background:#214550;padding:6px;border-radius:5px';el.textContent=name+': '+value;panel.append(el)});
+  side.append(panel);
+  const notice=document.createElement('small');notice.style.cssText='display:block;color:#b9ced1;margin-bottom:9px';notice.textContent=stats.estimated?'OVR estimado para gameplay; não é nota oficial.':'OVR fornecido pelo cadastro do jogador.';side.append(notice);
+ }
  const hint=document.createElement('p');hint.style.cssText='font-size:12px;color:#b6d2d5';hint.textContent='Toque em um jogador no campo e depois em um reserva para trocar.';side.append(hint);
  const benchTitle=document.createElement('strong');benchTitle.textContent='BANCO DE RESERVAS';side.append(benchTitle);
  const bench=document.createElement('div');bench.style.cssText='display:flex;flex-direction:column;gap:5px;margin-top:8px';
  data.bench.forEach((p,i)=>{
-  const btn=document.createElement('button');btn.type='button';btn.textContent=(p.number??'--')+' · '+p.name+' ('+p.position+')';
+  const btn=document.createElement('button');btn.type='button';btn.textContent=(p.number??'--')+' · '+p.name+' · OVR '+(miniPlayerStats(p)?.overall??'--')+' ('+p.position+')';
   const eligible=activeSlot.index===-1?p.position==='GOL':p.position!=='GOL';
   btn.disabled=!eligible;btn.style.cssText='text-align:left;padding:8px;border:1px solid #52727b;border-radius:6px;background:#193d48;color:white;font-size:12px;opacity:'+(eligible?'1':'.4');
   btn.onclick=()=>{if(!eligible)return;const selected=miniEditorSlot;if(selected===-1){data.bench[i]=data.keeper;data.keeper=p}else{data.bench[i]=data.field[selected];data.field[selected]=p}data.bench=data.bench.filter(Boolean);miniEditorRender()};
