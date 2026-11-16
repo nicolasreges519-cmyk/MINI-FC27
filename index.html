@@ -761,8 +761,9 @@ function animatePlayers(dt){
  g.rotation.z+=(0-g.rotation.z)*Math.min(1,dt*10);d.lastX=g.position.x;d.lastZ=g.position.z;
  }
 }
-const miniHomePositions=[[0,12],[-15,5],[15,5],[0,28],[-20,20],[20,20],[-20,4],[20,4],[-10,-10],[10,-10]];
-const miniAwayPositions=[[-12,-13],[12,-13],[0,-28],[0,-40],[-20,-31],[20,-31],[-20,-12],[20,-12],[-10,8],[10,8]];
+/* 4-3-3: z positivo é o campo defensivo azul; o azul ataca para -Z. */
+const miniHomePositions=[[0,12],[-23,29],[-8,32],[8,32],[23,29],[-14,11],[0,16],[14,11],[-23,-12],[23,-12]];
+const miniAwayPositions=[[-23,-29],[-8,-32],[8,-32],[23,-29],[-14,-11],[0,-16],[14,-11],[-23,12],[23,12],[0,3]];
 const player=person(0,12,0x2072ff);const teammates=miniHomePositions.slice(1).map(p=>person(...p,0x2072ff));let controlledPlayer=player;const blueRoster=[player,...teammates];
 /* Departamento médico — etapa 1: fadiga, lesão por contato e dias de recuperação.
    Simulação simplificada; sem diagnóstico clínico real ou animação de maca. */
@@ -861,38 +862,33 @@ function aiPlay(dt){
  const redHasBall=aiPossessor&&foes.includes(aiPossessor);
  const bluePress=!blueHasBall&&blueChaser;
  const redPress=!redHasBall&&redChaser;
- for(let i=0;i<blueRoster.length;i++){
-  const p=blueRoster[i],home=i===0?[0,12]:aiHomeBlue[i-1];
-  if(expelledPlayers.has(p))continue;
-  if(p===controlledPlayer)continue;
-  if(p===aiPossessor)continue;
-  let x=home[0],z=home[1];
-  if(p===bluePress){x=ball.position.x;z=ball.position.z}
-  else if(blueHasBall){
-   const laneSide=i===0?-1:i===1?1:(controlledPlayer.position.x>0?-1:1);
-   x=THREE.MathUtils.clamp(controlledPlayer.position.x+laneSide*(9+i*2),-25,25);
-   z=THREE.MathUtils.clamp(controlledPlayer.position.z-10-(i%2)*7,-42,37);
-   if(foes.some(q=>Math.hypot(q.position.x-x,q.position.z-z)<5))x=THREE.MathUtils.clamp(x+laneSide*6,-26,26);
+ // Bloco tático 4-3-3: mantém setores e desloca a equipe com a bola.
+ function tacticalMove(team,homes,attacking,pressing,opponent,speed){
+  const shiftX=THREE.MathUtils.clamp(ball.position.x*.22,-7,7);
+  const shiftZ=THREE.MathUtils.clamp(ball.position.z*.26,-12,12);
+  for(let i=0;i<team.length;i++){
+   const p=team[i];if(p===controlledPlayer||p===aiPossessor||expelledPlayers.has(p)||!p.visible)continue;
+   const home=homes[i],isDefender=i>=1&&i<=4,isMid=i>=5&&i<=7;
+   const lateral=home[0]===0?0:Math.sign(home[0]);
+   let x=home[0]+shiftX*(isDefender?.45:isMid?.7:1);
+   let z=home[1]+shiftZ*(isDefender?.35:isMid?.65:1);
+   if(p===pressing){x=ball.position.x;z=ball.position.z}
+   else if(attacking){
+    const forward=team===blueRoster?-1:1;
+    z+=forward*(isDefender?1.5:isMid?4:7);
+    x+=lateral*(isDefender?0:isMid?1:2);
+   }else{
+    z+=(team===blueRoster?1:-1)*(isDefender?1.5:3);
+    if(!isDefender&&opponent.length){
+     const mark=opponent.reduce((best,q)=>Math.hypot(q.position.x-x,q.position.z-z)<Math.hypot(best.position.x-x,best.position.z-z)?q:best,opponent[0]);
+     if(Math.hypot(mark.position.x-x,mark.position.z-z)<9){x=x*.65+mark.position.x*.35;z=z*.7+mark.position.z*.3}
+    }
+   }
+   aiMove(p,THREE.MathUtils.clamp(x,-31,31),THREE.MathUtils.clamp(z,-47,47),p===pressing?7.5*speed:5.3*speed,dt);
   }
-  else{x=home[0]*.6+ball.position.x*.4;z=home[1]*.6+ball.position.z*.4}
-  aiMove(p,x,z,p===bluePress?7.4:5.3,dt);
  }
- for(let i=0;i<foes.length;i++){
-  const p=foes[i],home=aiHomeRed[i];if(p===aiPossessor)continue;
-  let x=home[0],z=home[1];
-  if(p===redPress){x=ball.position.x;z=ball.position.z}
-  else if(blueHasBall){
-   const mark=i%2===0?player:(teammates[(i-1)%teammates.length]||player);
-   x=home[0]*.3+mark.position.x*.7;z=THREE.MathUtils.clamp(mark.position.z-3+(i%2)*2,-44,43);
-  }else if(redHasBall){
-   const side=i%2===0?-1:1;
-   x=THREE.MathUtils.clamp(aiPossessor.position.x+side*(8+i),-25,25);
-   z=THREE.MathUtils.clamp(aiPossessor.position.z+8+(i%2)*5,-39,43);
-   if(blueRoster.some(q=>Math.hypot(q.position.x-x,q.position.z-z)<4))x=THREE.MathUtils.clamp(x+side*5,-26,26);
-  }
-  else{x=home[0]*.6+ball.position.x*.4;z=home[1]*.65+ball.position.z*.35}
-  aiMove(p,x,z,p===redPress?7.1*aggression:5.1*aggression,dt);
- }
+ tacticalMove(blueRoster,miniHomePositions,blueHasBall,bluePress,foes,1);
+ tacticalMove(foes,miniAwayPositions,redHasBall,redPress,blueRoster,aggression);
  // Companheiro que ficou com a bola após troca de controle continua jogando.
  if(aiPossessor&&blueRoster.includes(aiPossessor)){
   const c=aiPossessor;
@@ -1204,7 +1200,7 @@ function refereeTackle(){
  awardRestart(inBlueBox?'PÊNALTI ADVERSÁRIO!':redCards?'SEGUNDO AMARELO! VERMELHO!':'FALTA! CARTÃO AMARELO!',controlledPlayer.position.x,controlledPlayer.position.z,'red');
 }
 document.getElementById('tackle').addEventListener('pointerdown',e=>{e.preventDefault();refereeTackle()});
-const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){controlledPlayer=blueRoster.find(p=>medicalAvailable(p))||player;selectedIndex=blueRoster.indexOf(controlledPlayer);aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(0,0,12);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;blueRoster.forEach((p,i)=>{if(p!==controlledPlayer)p.position.set(miniHomePositions[i][0],.35,miniHomePositions[i][1])});foes.forEach((p,i)=>p.position.set(miniAwayPositions[i][0],.35,miniAwayPositions[i][1]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-45.5:45.5);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.37,16,12),new THREE.MeshLambertMaterial({color:0xffffff}));scene.add(ball);let shotActive=false;let velocity=new THREE.Vector3(),input={x:0,z:0},keys={},scores=[0,0],elapsed=0,last=performance.now(),attached=true,cooldown=0,bannerTime=0;const scoreEl=document.getElementById('score'),clockEl=document.getElementById('clock'),banner=document.getElementById('banner');function kickoff(){controlledPlayer=blueRoster.find(p=>medicalAvailable(p))||player;selectedIndex=blueRoster.indexOf(controlledPlayer);aiPossessor=null;aiDecisionClock=0;aiDribbleClock=0;restartState=null;restartTimer=0;penaltyKick=null;offsidePending=null;controlledPlayer.position.set(miniHomePositions[selectedIndex][0],.35,miniHomePositions[selectedIndex][1]);ball.position.set(0,.37,10.8);velocity.set(0,0,0);shotActive=false;attached=true;blueRoster.forEach((p,i)=>{if(p!==controlledPlayer)p.position.set(miniHomePositions[i][0],.35,miniHomePositions[i][1])});foes.forEach((p,i)=>p.position.set(miniAwayPositions[i][0],.35,miniAwayPositions[i][1]));keepers.forEach((k,i)=>{k.position.set(0,.35,i===0?-50:50);k.rotation.z=0;k.userData.saveTime=0;k.position.y=.35;k.userData.limbs[0].rotation.z=0;k.userData.limbs[2].rotation.z=0;Object.assign(keeperState[i],{dive:0,side:0,recover:0,saveCooldown:0})})}// A direção do chute é independente da câmera e do analógico.
 // Finalização original inspirada em jogos de futebol: mira livre, assistência leve e força carregável.
 let chargingShot=false,chargeStart=0,chargePointer=null;
 const shootButton=document.getElementById('shoot');
