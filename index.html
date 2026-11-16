@@ -878,6 +878,40 @@ function aiMove(p,x,z,speed,dt){
  p.rotation.y=Math.atan2(-vx,-vz);
 }
 function aiNearest(team,target){let best=null,dist=Infinity;for(const p of team){const d=Math.hypot(p.position.x-target.x,p.position.z-target.z);if(d<dist){dist=d;best=p}}return best}
+/* Corridas ofensivas e tabelas com espaço e risco de passe. */
+function miniAttackRun(p,team,opponents,home,carrier){
+ const forward=team===blueRoster?-1:1;
+ const distance=Math.hypot(p.position.x-carrier.position.x,p.position.z-carrier.position.z);
+ const isForward=forward*(home[1]-carrier.position.z)>-12;
+ const marker=aiNearest(opponents,p.position);
+ const pressure=marker?aiDist(marker,p):99;
+ const lane=aiLaneRisk(carrier,p,opponents);
+ let x=home[0],z=home[1];
+ if(isForward&&distance<32){
+  const advance=THREE.MathUtils.clamp(7+miniAthleteAttribute(p,'pace')*.065,8,14);
+  z=THREE.MathUtils.clamp(p.position.z+forward*advance,-43,43);
+  const side=Math.sign(home[0]||p.position.x||1);
+  x=THREE.MathUtils.clamp(p.position.x+(pressure<5?side*4:side*1.3),-28,28);
+  if(lane>9)x=THREE.MathUtils.clamp(x+side*3,-28,28);
+ }
+ return {x,z};
+}
+function miniTryOneTwo(carrier,team,goalZ){
+ if(!carrier||!team.includes(carrier)||carrier.userData.miniOneTwoUntil>0)return false;
+ const opponents=team===blueRoster?foes:blueRoster;
+ const forward=goalZ<0?-1:1;
+ const candidates=team.filter(p=>p!==carrier&&p.visible&&!expelledPlayers.has(p)&&aiDist(p,carrier)<15&&aiDist(p,carrier)>3&&forward*(p.position.z-carrier.position.z)>-5&&aiLaneRisk(carrier,p,opponents)<10);
+ if(!candidates.length)return false;
+ candidates.sort((a,b)=>aiLaneRisk(carrier,a,opponents)-aiLaneRisk(carrier,b,opponents));
+ const receiver=candidates[0];
+ const dx=receiver.position.x-carrier.position.x,dz=receiver.position.z-carrier.position.z,len=Math.hypot(dx,dz)||1;
+ velocity.set(dx/len*17*miniStatFactor(carrier,'passing'),0,dz/len*17*miniStatFactor(carrier,'passing'));
+ ball.position.set(carrier.position.x,.37,carrier.position.z);
+ attached=false;aiPossessor=null;shotActive=false;lastTouch=goalZ<0?'blue':'red';cooldown=.4;
+ carrier.userData.miniOneTwoUntil=1.4;carrier.userData.miniOneTwoTarget=receiver;
+ receiver.userData.miniReturnTarget=carrier;receiver.userData.miniReturnUntil=1.4;
+ return true;
+}
 function aiPass(carrier,receivers,goalZ){
  const candidates=receivers.filter(p=>p!==carrier).map(p=>{
   const dx=p.position.x-carrier.position.x,dz=p.position.z-carrier.position.z;
@@ -889,6 +923,13 @@ function aiPass(carrier,receivers,goalZ){
   return {p,score:forward*.5-pressure*7-lane-Math.abs(distance-14)*.3+(Math.abs(p.position.x)<23?2:0)};
  }).sort((a,b)=>b.score-a.score);
  const pick=candidates[0];if(!pick)return false;
+ if(carrier.userData.miniReturnTarget&&carrier.userData.miniReturnUntil>0){
+  const returnee=carrier.userData.miniReturnTarget;
+  if(receivers.includes(returnee)&&aiLaneRisk(carrier,returnee,goalZ<0?foes:blueRoster)<12){
+   pick.p=returnee;
+  }
+  carrier.userData.miniReturnTarget=null;carrier.userData.miniReturnUntil=0;
+ }
  const dx=pick.p.position.x-carrier.position.x,dz=pick.p.position.z-carrier.position.z;
  const d=Math.hypot(dx,dz)||1;
  const accuracy=miniAthleteAttribute(carrier,'passing');const error=(Math.random()-.5)*(99-accuracy)*.0018;const cs=Math.cos(error),sn=Math.sin(error);const speed=20*miniStatFactor(carrier,'passing');
@@ -946,6 +987,11 @@ function miniInterceptPass(dt){
 function aiPlay(dt){
  if(restartState||penaltyKick){aiPossessor=null;return}
  aiThinkClock+=dt;aiDecisionClock=Math.max(0,aiDecisionClock-dt);
+ for(const p of [...blueRoster,...foes]){
+  if(p.userData.miniOneTwoUntil>0)p.userData.miniOneTwoUntil=Math.max(0,p.userData.miniOneTwoUntil-dt);
+  if(p.userData.miniReturnUntil>0)p.userData.miniReturnUntil=Math.max(0,p.userData.miniReturnUntil-dt);
+  else p.userData.miniReturnTarget=null;
+ }
  const target=attached?controlledPlayer.position:ball.position;
  const blueChaser=aiNearest(blueRoster.filter(p=>p!==controlledPlayer&&!expelledPlayers.has(p)),target),redChaser=aiNearest(foes,target);
  const blueHasBall=attached||(aiPossessor&&blueRoster.includes(aiPossessor));
@@ -969,6 +1015,11 @@ function aiPlay(dt){
     x=cover.x;z=cover.z;
    }
    else if(attacking){
+    const carrier=team===blueRoster?(attached?controlledPlayer:aiPossessor):aiPossessor;
+    if(carrier&&team.includes(carrier)&&i>=5){
+     const run=miniAttackRun(p,team,opponent,home,carrier);
+     x=run.x;z=run.z;
+    }
     const forward=team===blueRoster?-1:1;
     z+=forward*(isDefender?1.5:isMid?4:7);
     x+=lateral*(isDefender?0:isMid?1:2);
@@ -990,7 +1041,9 @@ function aiPlay(dt){
   const c=aiPossessor;
   aiMove(c,THREE.MathUtils.clamp(c.position.x,-25,25),-42,5.8,dt);
   ball.position.set(c.position.x,.37,c.position.z-1);
-  if(aiDecisionClock<=0){aiDecisionClock=.8;aiPass(c,blueRoster.filter(p=>p!==c),-48)}
+  if(aiDecisionClock<=0){aiDecisionClock=.8;
+   if(!miniTryOneTwo(c,blueRoster,-48))aiPass(c,blueRoster.filter(p=>p!==c),-48)
+  }
  }
  // O adversário com a bola progride, procura companheiros ou finaliza.
  if(redHasBall){
@@ -1013,7 +1066,7 @@ function aiPlay(dt){
     const gx=THREE.MathUtils.clamp((Math.random()-.5)*5,-3,3)-ball.position.x,gz=48-ball.position.z;
     const d=Math.hypot(gx,gz)||1;velocity.set(gx/d*38,0,gz/d*38);aiPossessor=null;shotActive=true;cooldown=.65;lastTouch='red';
    }else if(distance<3.4||strategy==='defend'&&c.position.z<18){
-    aiPass(c,foes,48);
+    if(!miniTryOneTwo(c,foes,48))aiPass(c,foes,48);
    }
   }
  }
