@@ -457,6 +457,35 @@ body>canvas:first-child{position:fixed!important;inset:0!important;z-index:0!imp
 (function(){
  const root=document.getElementById('fcMenu');if(!root)return;
  function openScreen(id){root.querySelectorAll('.fcScreen').forEach(el=>{const active=el.id===id;el.classList.toggle('fcOpen',active);el.style.display=active?'flex':'none'});}
+
+ /* Cadastro independente do Three.js: selecao funciona mesmo se CDN 3D falhar. */
+ const fallbackClubs=[["Brasil","Athletico-PR",[75,75,75],"#c8102e"],["Brasil","Atlético-MG",[75,75,75],"#252525"],["Brasil","Bahia",[75,75,75],"#1554a2"],["Brasil","Botafogo",[75,75,75],"#222222"],["Brasil","Chapecoense",[75,75,75],"#167e44"],["Brasil","Corinthians",[75,75,75],"#eeeeee"],["Brasil","Coritiba",[75,75,75],"#087b45"],["Brasil","Cruzeiro",[75,75,75],"#1649a4"],["Brasil","Flamengo",[75,75,75],"#c91e29"],["Brasil","Fluminense",[75,75,75],"#7e2339"],["Brasil","Grêmio",[75,75,75],"#38a5db"],["Brasil","Internacional",[75,75,75],"#cb202a"],["Brasil","Mirassol",[75,75,75],"#e4ba22"],["Brasil","Palmeiras",[75,75,75],"#0b653a"],["Brasil","Red Bull Bragantino",[75,75,75],"#f2f2f2"],["Brasil","Remo",[75,75,75],"#152a62"],["Brasil","Santos",[75,75,75],"#f5f5f5"],["Brasil","São Paulo",[75,75,75],"#e9e9e9"],["Brasil","Vasco da Gama",[75,75,75],"#202020"],["Brasil","Vitória",[75,75,75],"#c72730"],["Inglaterra","London City",[83,80,78],"#2a84cc"],["Espanha","Madrid Norte",[85,82,80],"#f4f4f4"],["Alemanha","Munique FC",[84,81,79],"#c52f43"],["Itália","Milano FC",[80,78,81],"#292d36"],["França","Paris FC",[86,78,76],"#283d8d"]];
+ const labels={'Brasil':'BRASILEIRÃO SÉRIE A','Inglaterra':'PREMIER LEAGUE','Espanha':'LA LIGA','Alemanha':'BUNDESLIGA','Itália':'SERIE A','França':'LIGUE 1'};
+ const flags={'Brasil':'🇧🇷','Inglaterra':'🇬🇧','Espanha':'🇪🇸','Alemanha':'🇩🇪','Itália':'🇮🇹','França':'🇫🇷'};
+ const fallbackSelection={Home:8,Away:13};
+ function drawFallback(side){
+  const c=fallbackClubs[fallbackSelection[side]],prefix='mini'+side;
+  document.getElementById(prefix+'Name').textContent=c[1];
+  document.getElementById(prefix+'Flag').textContent=flags[c[0]]||'⚽';
+  document.getElementById(prefix+'Footer').textContent=labels[c[0]]||c[0];
+  document.getElementById(prefix+'League').value=c[0];
+  document.getElementById(prefix+'Stats').innerHTML=['ATA','MEI','DEF'].map((x,i)=>'<span>'+x+'<br><b>'+c[2][i]+'</b></span>').join('');
+  const emblem=document.getElementById(prefix+'Emblem');
+  emblem.textContent=c[1].split(' ').map(x=>x[0]).slice(0,3).join('').toUpperCase();
+  emblem.style.cssText='font-size:clamp(26px,5vw,65px);font-weight:900;color:'+c[3]+';text-shadow:0 2px 4px #000';
+ }
+ for(const side of ['Home','Away']){
+  const select=document.getElementById('mini'+side+'League');
+  for(const league of Object.keys(labels)){const opt=document.createElement('option');opt.value=league;opt.textContent=labels[league];select.append(opt)}
+  select.addEventListener('change',()=>{if(window.miniFullGameReady)return;const idx=fallbackClubs.findIndex(c=>c[0]===select.value);if(idx>=0){fallbackSelection[side]=idx;drawFallback(side)}});
+  for(const [direction,step] of [['Prev',-1],['Next',1]]){
+   document.getElementById('mini'+side+direction).addEventListener('click',()=>{if(window.miniFullGameReady)return;const pool=fallbackClubs.map((c,i)=>c[0]===fallbackClubs[fallbackSelection[side]][0]?i:-1).filter(i=>i>=0);fallbackSelection[side]=pool[(pool.indexOf(fallbackSelection[side])+step+pool.length)%pool.length];drawFallback(side)});
+  }
+  drawFallback(side);
+ }
+ document.getElementById('fcPlay').addEventListener('click',()=>{
+  if(!window.miniFullGameReady)document.getElementById('miniQuickNotice').textContent='Clubes carregados. O motor 3D ainda não iniciou; conecte à internet e recarregue para jogar.';
+ });
  window.miniOpenQuick=function(){openScreen('fcQuick');root.querySelectorAll('.fcOption').forEach(el=>el.classList.toggle('fcSelected',el.dataset.mode==='quick'));};
  root.addEventListener('click',function(ev){
    const btn=ev.target.closest('button');if(!btn||!root.contains(btn))return;
@@ -1593,6 +1622,7 @@ for(const side of ['Home','Away']){
  miniDraw(side);
 }
 miniChoose('Home');
+window.miniFullGameReady=true;
 for(const [id,key,off,on] of [['miniAdvantage','advantage','DESATIVADA','ATIVADA'],['miniForm','form','DESATIVADA','ATIVADA']]){
  const el=document.getElementById(id);
  el.onclick=()=>{miniSelection[key]=!miniSelection[key];el.setAttribute('aria-pressed',String(miniSelection[key]));el.querySelector('strong').textContent=miniSelection[key]?on:off};
@@ -1783,4 +1813,4 @@ controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=fa
  const sway=sd.miniSkillTime>0?Math.sin(skillP*Math.PI*2)*.45:0;
  ball.position.set(controlledPlayer.position.x+sway,.37,controlledPlayer.position.z-touch+(sd.miniSkillTime>0?Math.sin(skillP*Math.PI)*.22:0));
 }else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}velocity.x+=weather.wind*dt*.012;ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*(1-weather.wetness*.3+weather.snow*.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<(8+miniAthleteAttribute(controlledPlayer,'dribbling')*.065)&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();arrivalCamera.aspect=innerWidth/innerHeight;arrivalCamera.updateProjectionMatrix();walkoutCamera.aspect=innerWidth/innerHeight;walkoutCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);fcCam.aspect=innerWidth/innerHeight;fcCam.updateProjectionMatrix();fcRenderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
-</script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=22").catch(console.warn))}</script></body></html>
+</script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=23").catch(console.warn))}</script></body></html>
