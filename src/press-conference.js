@@ -12,6 +12,7 @@ const questions=[
  {q:'Como pretende utilizar esse reforço?',a:['Será uma peça importante para nossa equipe.','Vamos estudar a melhor função para ele.','Terá de se adaptar às exigências táticas.']}
 ];
 let current=null,scene,camera,renderer,raf=0,start=0,figures=[],speaker=null,shirt=null,flash=null;
+let activeQuestions=questions;
 const mat=c=>new THREE.MeshLambertMaterial({color:c});
 function mesh(parent,geo,m,x,y,z){const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);parent.add(o);return o}
 function human(x,z,shirtColor){
@@ -53,14 +54,14 @@ function animate(now){
  renderer.render(scene,camera);raf=requestAnimationFrame(animate);
 }
 function showQuestion(){
- const q=questions[current.index];$('pressAnswers').replaceChildren();$('pressQuestion').textContent='Jornalista: '+q.q;
+ const q=activeQuestions[current.index];$('pressAnswers').replaceChildren();$('pressQuestion').textContent='Jornalista: '+q.q;
  q.a.forEach((answer,i)=>{const b=document.createElement('button');b.textContent=answer;b.style.cssText='padding:10px;min-height:42px;border:1px solid #637cb5;border-radius:8px;background:'+(current.choice===i?'#6487ce':'#263657')+';color:white';b.onclick=()=>{current.choice=i;showQuestion()};$('pressAnswers').append(b)});
  $('pressFeedback').textContent=current.answered?'Resposta registrada.':'Escolha uma resposta e toque em RESPONDER.';
  $('pressAnswer').disabled=current.answered;$('pressNext').disabled=!current.answered;
 }
 function conclude(){
  if(current?.phase==='questions'&&!current.answered)return;
- if(current?.phase==='questions'&&current.index<questions.length-1){current.index++;current.choice=null;current.answered=false;showQuestion();return}
+ if(current?.phase==='questions'&&current.index<activeQuestions.length-1){current.index++;current.choice=null;current.answered=false;showQuestion();return}
  current.phase='photo';current.photoAt=performance.now();$('pressQuestion').textContent='NOVO REFORÇO CONFIRMADO! '+current.player.name;
  $('pressAnswers').replaceChildren();$('pressFeedback').textContent='Fotografias oficiais e apresentação da camisa.';
  $('pressAnswer').disabled=true;$('pressNext').disabled=true;
@@ -70,11 +71,41 @@ $('pressAnswer').onclick=()=>{
  if(!current||current.answered||current.choice===null)return;
  current.answered=true;
  const delta=[{morale:3,board:1,fans:2},{morale:0,board:2,fans:0},{morale:-2,board:1,fans:-1}][current.choice];
- current.apply?.(delta,{question:questions[current.index].q,answer:questions[current.index].a[current.choice]});
+ current.apply?.(delta,{question:activeQuestions[current.index].q,answer:activeQuestions[current.index].a[current.choice]});
  showQuestion();
 };
 $('pressNext').onclick=conclude;$('pressSkip').onclick=finish;$('pressContinue').onclick=finish;
-window.miniStartPressConference=(data,apply)=>{
+window.miniStartPressConference=(data,apply,customQuestions)=>{
+ activeQuestions=Array.isArray(customQuestions)&&customQuestions.length?customQuestions:questions;
  current={...data,apply,index:0,choice:null,answered:false,phase:'questions'};root.hidden=false;showQuestion();build();
 };
+const triple=(q,a,b,c)=>({q,a:[a,b,c]});
+window.miniPressMatchInterview=(context,apply)=>{
+ const type=context?.type||'pre',home=context?.home||'Mandante',away=context?.away||'Visitante';
+ let qs;
+ if(type==='pre'){
+  qs=[
+   triple('Qual será sua estratégia para enfrentar '+away+'?','Vamos buscar o ataque desde o início.','Vamos manter o equilíbrio.','Precisamos ser mais agressivos na marcação.'),
+   triple('Você pretende mudar a escalação?','Confio no nosso elenco.','Decidiremos após o aquecimento.','Ninguém tem vaga garantida.'),
+   triple('Seu time está preparado para essa partida?','Estamos muito confiantes.','A preparação foi adequada.','Precisamos demonstrar mais em campo.')
+  ];
+ }else{
+  const goalsHome=Number(context?.goalsHome),goalsAway=Number(context?.goalsAway);
+  if(!Number.isFinite(goalsHome)||!Number.isFinite(goalsAway))return false;
+  const result=goalsHome>goalsAway?'vitória':goalsHome<goalsAway?'derrota':'empate';
+  qs=result==='vitória'?[
+   triple('Como avalia a vitória por '+goalsHome+' a '+goalsAway+'?','Os jogadores merecem elogios.','Foi um bom trabalho coletivo.','Ainda temos muito a melhorar.'),
+   triple('O que espera da próxima partida?','Queremos manter o ritmo.','Vamos preparar o próximo desafio.','Exigirei ainda mais da equipe.')
+  ]:result==='derrota'?[
+   triple('O que deu errado na derrota por '+goalsHome+' a '+goalsAway+'?','Confio na recuperação do grupo.','Vamos analisar nossos erros.','Precisamos de uma reação imediata.'),
+   triple('Você mudará a escalação?','O elenco merece confiança.','Vamos avaliar as opções.','Alguns atletas precisarão melhorar.')
+  ]:[
+   triple('O que faltou no empate por '+goalsHome+' a '+goalsAway+'?','A equipe mostrou dedicação.','Faltou aproveitar as chances.','Precisamos ser mais eficientes.'),
+   triple('Como avalia o desempenho coletivo?','Tivemos bons momentos.','Foi uma atuação equilibrada.','Espero mais concentração.')
+  ];
+ }
+ const data={player:{name:type==='pre'?'Técnico de '+home:'Técnico de '+home},color:context.color||'#425d9a'};
+ window.miniStartPressConference(data,apply,qs);return true;
+};
+
 })();
