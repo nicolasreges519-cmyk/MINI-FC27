@@ -1417,6 +1417,45 @@ function miniPickLineup(club,formation='4-3-3'){
  const bench=pool.filter((_,i)=>!used.has(i));
  return {keeper,field,bench};
 }
+/* Gerenciador pré-jogo: escalações independentes e trocas de titulares/reservas. */
+const miniLineupEdits={Home:null,Away:null};
+let miniEditorSide='Home';
+function miniCurrentLineup(side){
+ const club=fcClubs[miniSelection[side]],formation=document.getElementById(side==='Home'?'miniFormationHome':'miniFormationAway')?.value||'4-3-3';
+ const old=miniLineupEdits[side];
+ if(!old||old.club!==club.name||old.formation!==formation){
+  miniLineupEdits[side]={club:club.name,formation,...miniPickLineup(club,formation)};
+ }
+ return miniLineupEdits[side];
+}
+function miniEditorRender(){
+ const data=miniCurrentLineup(miniEditorSide),root=document.getElementById('miniSquadContent');root.replaceChildren();
+ document.getElementById('miniSquadTitle').textContent=fcClubs[miniSelection[miniEditorSide]].name+' — '+data.formation;
+ const roles=(miniFormationTemplates[data.formation]||miniFormationTemplates['4-3-3']).map(r=>r[0]);
+ const list=document.createElement('div');list.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px';
+ const slots=[{role:'GOL',player:data.keeper,index:-1},...data.field.map((p,i)=>({role:roles[i],player:p,index:i}))];
+ for(const slot of slots){
+  const label=document.createElement('label');label.style.cssText='display:flex;flex-direction:column;gap:4px;background:#16343b;padding:8px;border-radius:8px;font-size:12px';
+  const heading=document.createElement('span');heading.textContent=slot.role+' · '+(slot.player?.name||'Sem atleta');label.append(heading);
+  const select=document.createElement('select');select.style.cssText='width:100%;padding:6px;border-radius:6px;background:#092128;color:white;border:1px solid #5b7c82';
+  const current=document.createElement('option');current.value='current';current.textContent='Manter titular';select.append(current);
+  data.bench.forEach((p,i)=>{if(slot.role==='GOL'&&p.position!=='GOL')return;if(slot.role!=='GOL'&&p.position==='GOL')return;const opt=document.createElement('option');opt.value=String(i);opt.textContent=(p.number??'--')+' '+p.name+' ('+p.position+')';select.append(opt)});
+  select.addEventListener('change',()=>{
+   if(select.value==='current')return;
+   const index=Number(select.value),replacement=data.bench[index];if(!replacement)return;
+   if(slot.index===-1){data.bench[index]=data.keeper;data.keeper=replacement}
+   else{data.bench[index]=data.field[slot.index];data.field[slot.index]=replacement}
+   data.bench=data.bench.filter(Boolean);miniEditorRender();
+  });
+  label.append(select);list.append(label);
+ }
+ root.append(list);
+ const bench=document.createElement('p');bench.style.cssText='font-size:12px;color:#b6d2d5;margin-top:10px';
+ bench.textContent='Reservas: '+(data.bench.map(p=>(p.number??'--')+' '+p.name).join(' · ')||'Nenhum reserva cadastrado');root.append(bench);
+}
+function miniEditorOpen(){
+ const panel=document.getElementById('miniSquadEditor');panel.hidden=false;miniEditorRender();
+}
 function miniPlayerLabel(athlete,entry){
  if(athlete.userData.miniNameTag){athlete.remove(athlete.userData.miniNameTag);athlete.userData.miniNameTag.material.map.dispose();athlete.userData.miniNameTag.material.dispose();}
  athlete.userData.miniPlayer=entry||null;
@@ -1432,7 +1471,7 @@ function miniPlayerLabel(athlete,entry){
  athlete.add(tag);athlete.userData.miniNameTag=tag;
 }
 function miniBindMatchRoster(home,away){
- const h=miniPickLineup(home,miniFormationHome),a=miniPickLineup(away,miniFormationAway);
+ const h=miniCurrentLineup('Home'),a=miniCurrentLineup('Away');
  blueRoster.forEach((athlete,i)=>{miniPlayerLabel(athlete,h.field[i]);const m=medical.get(athlete);if(m)m.number=h.field[i]?.number??(i+1)});
  foes.forEach((athlete,i)=>miniPlayerLabel(athlete,a.field[i]));
  // Índice 0 do vetor keepers defende o gol adversário (-Z), índice 1 o gol mandante (+Z).
@@ -1452,6 +1491,16 @@ function miniApplyKit(athletes,club){
  }
 }
 (function(){const quick=document.getElementById('fcQuick');const footer=quick&&quick.querySelector('.miniQuickFooter');if(footer)footer.insertAdjacentHTML('beforebegin',"<div id=\"miniFormations\" style=\"display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:6px 8px;background:#071b20;color:white;font-size:12px\"><label>Formação mandante <select id=\"miniFormationHome\" style=\"background:#193b43;color:white;border:1px solid #78939a;border-radius:6px;padding:5px\"><option value=\"4-3-3\">4-3-3</option><option value=\"4-4-2\">4-4-2</option><option value=\"4-2-3-1\">4-2-3-1</option><option value=\"4-1-2-1-2\">4-1-2-1-2</option><option value=\"4-3-2-1\">4-3-2-1</option><option value=\"4-5-1\">4-5-1</option><option value=\"3-5-2\">3-5-2</option><option value=\"3-4-3\">3-4-3</option><option value=\"5-3-2\">5-3-2</option><option value=\"5-2-3\">5-2-3</option></select></label><label>Formação visitante <select id=\"miniFormationAway\" style=\"background:#193b43;color:white;border:1px solid #78939a;border-radius:6px;padding:5px\"><option value=\"4-3-3\">4-3-3</option><option value=\"4-4-2\">4-4-2</option><option value=\"4-2-3-1\">4-2-3-1</option><option value=\"4-1-2-1-2\">4-1-2-1-2</option><option value=\"4-3-2-1\">4-3-2-1</option><option value=\"4-5-1\">4-5-1</option><option value=\"3-5-2\">3-5-2</option><option value=\"3-4-3\">3-4-3</option><option value=\"5-3-2\">5-3-2</option><option value=\"5-2-3\">5-2-3</option></select></label></div>");})();
+(function(){
+ const quick=document.getElementById('fcQuick');if(!quick)return;
+ const form=document.getElementById('miniFormations');if(!form)return;
+ const btn=document.createElement('button');btn.type='button';btn.textContent='GERENCIAR ELENCO';btn.style.cssText='padding:7px 12px;border-radius:7px;background:#b5ff36;color:#071b14;border:0;font-weight:bold';
+ btn.addEventListener('click',miniEditorOpen);form.append(btn);
+ document.body.insertAdjacentHTML('beforeend',"<div id=\"miniSquadEditor\" hidden style=\"position:fixed;inset:3%;z-index:9999;background:#081c24;color:#fff;border:2px solid #76a6ac;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #000b;font-family:Arial\"><div style=\"display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap\"><strong>GERENCIAR ELENCO</strong><button type=\"button\" id=\"miniSquadClose\" style=\"padding:9px 16px;border-radius:8px;background:#b5ff36;color:#092016;border:0;font-weight:bold\">CONCLUIR</button></div><div style=\"display:flex;gap:8px;margin:12px 0\"><button type=\"button\" id=\"miniSquadHome\" style=\"padding:8px;border-radius:7px\">MANDANTE</button><button type=\"button\" id=\"miniSquadAway\" style=\"padding:8px;border-radius:7px\">VISITANTE</button></div><h3 id=\"miniSquadTitle\"></h3><div id=\"miniSquadContent\"></div></div>");
+ document.getElementById('miniSquadClose').onclick=()=>document.getElementById('miniSquadEditor').hidden=true;
+ document.getElementById('miniSquadHome').onclick=()=>{miniEditorSide='Home';miniEditorRender()};
+ document.getElementById('miniSquadAway').onclick=()=>{miniEditorSide='Away';miniEditorRender()};
+})();
 document.getElementById('fcPlay').onclick=()=>{
  fcHome=miniSelection.Home;fcAway=miniSelection.Away;
  const home=fcClubs[fcHome],away=fcClubs[fcAway];
