@@ -1112,7 +1112,14 @@ function person(x,z,color){
    shape(headPivot,humanGeo.brow,hair,side*.115,.145,-.274,1,1,1);
  }
  shape(headPivot,humanGeo.nose,skin,0,-.02,-.306,.76,1.25,1.1);
- shape(headPivot,humanGeo.lip,humanMat(0x945d54),0,-.165,-.265,1,.26,.38);
+ const miniMouth=shape(headPivot,humanGeo.lip,humanMat(0x945d54),0,-.165,-.265,1,.26,.38);
+ const miniEyes=[],miniBrows=[];
+ for(const side of [-1,1]){
+  const iris=shape(headPivot,new THREE.SphereGeometry(.027,8,6),humanIris[id%humanIris.length],side*.115,.055,-.306);
+  const lid=shape(headPivot,new THREE.SphereGeometry(.052,8,6),skin,side*.115,.055,-.285,1,.03,1);
+  const brow=shape(headPivot,humanGeo.brow,hair,side*.115,.16,-.275);
+  miniEyes.push({iris,lid,baseX:side*.115});miniBrows.push(brow);
+ }
  const hairStyle=id%7;
  if(hairStyle!==6){
    const crown=shape(headPivot,humanGeo.hair,hair,0,.17,.025,1, hairStyle===3?.62:.38,1);
@@ -1157,12 +1164,26 @@ function person(x,z,color){
  g.position.set(x,.35,z);scene.add(g);
  // Dedos simples anexados às mãos, acompanhando os braços em todas as animações.
  for(const arm of [limbs[0],limbs[2]]){for(let finger=0;finger<4;finger++){const mesh=new THREE.Mesh(new THREE.CapsuleGeometry(.018,.085,2,4),skin);mesh.position.set((finger-1.5)*.046,-1.20,-.02);arm.add(mesh);}}
- g.userData={limbs,headPivot,phase:(id*2.399)%6.28,lastX:x,lastZ:z,kickTime:0,expression:0};
+ g.userData={limbs,headPivot,miniFace:{mouth:miniMouth,eyes:miniEyes,brows:miniBrows,blink:0,nextBlink:1.5+(id%5)*.7,elapsed:0,emotion:0},phase:(id*2.399)%6.28,lastX:x,lastZ:z,kickTime:0,expression:0};
  animatedPlayers.push(g);return g;
+}
+function miniAnimateFace(g,dt,emotion=0){
+ const face=g.userData.miniFace;if(!face)return;
+ face.elapsed+=dt;face.blink=Math.max(0,face.blink-dt);
+ if(face.elapsed>=face.nextBlink){face.blink=.15;face.nextBlink=face.elapsed+2.4+Math.random()*3;}
+ const blinking=face.blink>0?Math.sin(Math.PI*face.blink/.15):0;
+ const target=ball.position.clone().sub(g.position);const yaw=Math.atan2(target.x,target.z)-g.rotation.y;
+ const eyeX=THREE.MathUtils.clamp(Math.sin(yaw)*.022,-.022,.022);
+ for(const eye of face.eyes){eye.iris.position.x=eye.baseX+eyeX;eye.lid.scale.y=.03+Math.max(0,blinking)*12;}
+ const mouthOpen=emotion===1?.8:emotion===2?.45:.16;
+ face.mouth.scale.y=THREE.MathUtils.lerp(face.mouth.scale.y,mouthOpen,Math.min(1,dt*9));
+ face.mouth.scale.x=THREE.MathUtils.lerp(face.mouth.scale.x,emotion===1?1.4:1,Math.min(1,dt*8));
+ face.brows.forEach((b,i)=>{b.position.y=THREE.MathUtils.lerp(b.position.y,emotion===1?.21:emotion===2?.11:.16,Math.min(1,dt*7));b.rotation.z=(i?1:-1)*(emotion===2?.18:0);});
 }
 function animatePlayers(dt){
  for(const g of animatedPlayers){
  const d=g.userData,speed=Math.min(1,Math.hypot(g.position.x-d.lastX,g.position.z-d.lastZ)/Math.max(.001,dt)/8);
+ miniAnimateFace(g,dt,0);
  // Respiração, balanço da cabeça e redução de movimentos bruscos.
  d.headPivot.rotation.z=THREE.MathUtils.lerp(d.headPivot.rotation.z,Math.sin(d.phase*.6)*.025*(.4+speed),Math.min(1,dt*5));
  d.headPivot.rotation.x=THREE.MathUtils.lerp(d.headPivot.rotation.x,speed*.035,Math.min(1,dt*5));
@@ -1695,6 +1716,7 @@ miniGoalScene={side,frames,scorer,partners,celebration,celebrationTypes,origin:s
 function miniGoalStep(dt){const g=miniGoalScene;if(!g)return false;g.t+=dt;
 if(g.phase==='choose'){camera.position.lerp(new THREE.Vector3(g.scorer.position.x+8,4,g.scorer.position.z+10),.07);camera.lookAt(g.scorer.position.x,1.5,g.scorer.position.z);if(g.t>=5)miniChooseCelebration(g.celebration.id);renderer.render(scene,camera);return true;}
 if(g.phase==='celebrate'){
+ miniAnimateFace(g.scorer,dt,1);for(const teammate of g.partners)miniAnimateFace(teammate,dt,1);
  miniGoalHud.textContent='GOOOL!';
  const p=g.scorer,d=p.userData,t=g.t,duration=g.celebration.duration;
  const ease=x=>{x=THREE.MathUtils.clamp(x,0,1);return x*x*(3-2*x)};
