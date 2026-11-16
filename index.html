@@ -1047,6 +1047,16 @@ for(const x of [-49,49])for(const z of [-70,70]){
  const lamps=stadiumBox(8,2.5,1.1,x,17.2,z,0xdbeaf4);
  lamps.material=new THREE.MeshBasicMaterial({color:0xe9f5ff});
 }
+/* MINI FC27 — painéis LED animados com marcas fictícias */
+const ledMessages=['MINI FC27','MINI SPORTS','GOL TOTAL','ARENA 27'];
+let ledAdIndex=0;
+const ledCanvas=document.createElement('canvas');ledCanvas.width=1024;ledCanvas.height=128;
+const ledCtx=ledCanvas.getContext('2d');
+function ledPaint(){const colors=['#073e32','#11274b','#3e1439','#0a4d51'];ledCtx.fillStyle=colors[ledAdIndex];ledCtx.fillRect(0,0,1024,128);ledCtx.font='bold 65px Arial';ledCtx.textAlign='center';ledCtx.fillStyle='#83ffce';for(let x=150;x<1150;x+=340)ledCtx.fillText(ledMessages[ledAdIndex],x,87);}
+ledPaint();
+const ledTexture=new THREE.CanvasTexture(ledCanvas);ledTexture.wrapS=THREE.RepeatWrapping;ledTexture.repeat.set(2,1);
+const ledMaterial=new THREE.MeshBasicMaterial({map:ledTexture,side:THREE.DoubleSide});
+ads.forEach(ad=>{ad.material.dispose();ad.material=ledMaterial;});
 const stadiumAnimClock={time:0,phase:-1};
 function animateStadium(dt){
  stadiumAnimClock.time+=dt;
@@ -1060,7 +1070,8 @@ function animateStadium(dt){
   fans.instanceMatrix.needsUpdate=true;
  }
  flags.forEach((flag,i)=>{flag.rotation.y=Math.sin(stadiumAnimClock.time*2+i)*.18});
- if(phase%12===0)ads.forEach((ad,i)=>ad.material.color.setHex(adPalette[(Math.floor(phase/12)+i)%adPalette.length]));
+ if(phase%12===0 && ledCanvas){ledAdIndex=(ledAdIndex+1)%ledMessages.length;ledPaint();}
+if(ledTexture){ledTexture.offset.x-=dt*.16;ledTexture.needsUpdate=true;}
 }
 
 
@@ -1854,6 +1865,16 @@ pauseButton.addEventListener('pointerdown',e=>{e.preventDefault();setPaused(!gam
 document.getElementById('resumeGame').addEventListener('pointerdown',e=>{e.preventDefault();setPaused(false)});
 const mapCanvas=document.getElementById('miniMap'),mapCtx=mapCanvas.getContext('2d');
 let radarTick=0;
+/* MINI FC27 — identificação de atletas baseada nos elencos da simulação */
+const broadcastInfo=document.createElement('div');
+broadcastInfo.id='miniBroadcastPlayers';
+broadcastInfo.style.cssText='position:fixed;left:2%;right:2%;bottom:3%;display:flex;justify-content:space-between;pointer-events:none;z-index:5;font:bold 13px Arial;color:white;text-shadow:0 2px 3px #000';
+broadcastInfo.innerHTML='<span id="miniHomeAthlete" style="background:#081b2bd9;padding:7px 12px;border-left:4px solid #53a3ff"></span><span id="miniAwayAthlete" style="background:#081b2bd9;padding:7px 12px;border-right:4px solid #f04747"></span>';
+document.body.appendChild(broadcastInfo);
+const homeAthlete=broadcastInfo.querySelector('#miniHomeAthlete'),awayAthlete=broadcastInfo.querySelector('#miniAwayAthlete');
+const overheadLabel=document.createElement('div');overheadLabel.style.cssText='position:fixed;z-index:5;color:white;font:bold 12px Arial;text-shadow:0 1px 4px #000;pointer-events:none;transform:translate(-50%,-100%)';document.body.appendChild(overheadLabel);
+function miniAthleteLabel(p,side){const roster=side==='home'?blueRoster:foes;const index=roster.indexOf(p);return p?.userData?.name||('Jogador '+(index>=0?index+1:'—'));}
+function updateMiniBroadcast(){const active=controlledPlayer||player;const opponent=foes.reduce((a,b)=>!a||b.position.distanceToSquared(ball.position)<a.position.distanceToSquared(ball.position)?b:a,null);homeAthlete.textContent='CASA · '+miniAthleteLabel(active,'home');awayAthlete.textContent='FORA · '+miniAthleteLabel(opponent,'away');const pos=active.position.clone();pos.y+=3.4;pos.project(camera);overheadLabel.style.display=pos.z>1?'none':'block';overheadLabel.style.left=((pos.x+1)*50)+'%';overheadLabel.style.top=((1-pos.y)*50)+'%';overheadLabel.textContent='▼ '+miniAthleteLabel(active,'home');}
 function drawRadar(dt){
  radarTick+=dt;if(radarTick<.10)return;radarTick=0;
  const c=mapCtx,w=mapCanvas.width,h=mapCanvas.height;
@@ -2205,5 +2226,5 @@ controlledPlayer.rotation.y=Math.atan2(-moveX,-moveZ)}if(attached){shotActive=fa
  const sd=controlledPlayer.userData,skillP=sd.miniSkillTime>0?1-sd.miniSkillTime/(sd.miniSkillDuration||.55):0;
  const sway=sd.miniSkillTime>0?Math.sin(skillP*Math.PI*2)*.45:0;
  ball.position.set(controlledPlayer.position.x+sway,.37,controlledPlayer.position.z-touch+(sd.miniSkillTime>0?Math.sin(skillP*Math.PI)*.22:0));
-}else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}velocity.x+=weather.wind*dt*.012;ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*(1-weather.wetness*.3+weather.snow*.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<(8+miniAthleteAttribute(controlledPlayer,'dribbling')*.065)&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();arrivalCamera.aspect=innerWidth/innerHeight;arrivalCamera.updateProjectionMatrix();walkoutCamera.aspect=innerWidth/innerHeight;walkoutCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);fcCam.aspect=innerWidth/innerHeight;fcCam.updateProjectionMatrix();fcRenderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
+}else if(!restartState&&!aiPossessor){if(shotActive&&Math.abs(ballSpin)>.01){const turn=ballSpin*dt*.35;const vx=velocity.x,vz=velocity.z;velocity.x=vx*Math.cos(turn)-vz*Math.sin(turn);velocity.z=vx*Math.sin(turn)+vz*Math.cos(turn);ballSpin*=Math.exp(-dt*1.2);}velocity.x+=weather.wind*dt*.012;ball.position.addScaledVector(velocity,dt);ballBounce=Math.max(0,ballBounce-dt*.30);ball.position.y=.37+Math.abs(Math.sin(elapsed*18))*ballBounce;ball.rotation.x+=velocity.z*dt/.37;ball.rotation.z-=velocity.x*dt/.37;velocity.multiplyScalar(Math.exp(-(shotActive?.24:1.25)*(1-weather.wetness*.3+weather.snow*.25)*dt));if(!aiPossessor&&Math.hypot(ball.position.x-controlledPlayer.position.x,ball.position.z-controlledPlayer.position.z)<1.3&&cooldown===0&&velocity.length()<(8+miniAthleteAttribute(controlledPlayer,'dribbling')*.065)&&!penaltyKick){attached=true;lastTouch='blue'}shotActive=false;}aiPlay(dt);updateControlMode();animateKeepers(dt);checkRulesOut();if(penaltyKick&&penaltyKick.taken&&!restartState&&velocity.length()<2){showRule('PÊNALTI DEFENDIDO!',1.8);kickoff();}const sec=Math.floor(elapsed*4);clockEl.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');selectionRing.position.set(controlledPlayer.position.x,.085,controlledPlayer.position.z);selectionTriangle.position.set(controlledPlayer.position.x,3.6,controlledPlayer.position.z);updateAim();drawRadar(dt);animatePlayers(dt);animateStadium(dt);updateBroadcastCamera(dt);updateMiniBroadcast();renderer.render(scene,camera)}window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();arrivalCamera.aspect=innerWidth/innerHeight;arrivalCamera.updateProjectionMatrix();walkoutCamera.aspect=innerWidth/innerHeight;walkoutCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);fcCam.aspect=innerWidth/innerHeight;fcCam.updateProjectionMatrix();fcRenderer.setSize(innerWidth,innerHeight)});kickoff();updateRuleHud();updateControlMode();camera.position.set(80,54,0);smoothCameraLook.set(0,0,0);camera.lookAt(smoothCameraLook);requestAnimationFrame(tick);
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=32").catch(console.warn))}</script></body></html>
