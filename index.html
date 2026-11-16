@@ -2177,13 +2177,40 @@ fcPart(new THREE.BoxGeometry(.32,.035,.045),fcTrim,0,2.43,.36);
 const fcBallMark=fcMat(0x222d38);for(let i=0;i<5;i++){const a=i*Math.PI*2/5;const dot=new THREE.Mesh(new THREE.CircleGeometry(.065,5),fcBallMark);dot.position.set(Math.sin(a)*.24,Math.cos(a)*.24,.13);fcBall.add(dot)}
 const fcKitSleeveL=fcPart(new THREE.CapsuleGeometry(.145,.22,3,7),fcBody.material,-.56,2.27,0),fcKitSleeveR=fcPart(new THREE.CapsuleGeometry(.145,.22,3,7),fcBody.material,.56,2.27,0);
 const fcShowroomLights=[fcFill,fcLight];const fcBaseFill=fcFill.intensity;
+
+// Protótipo de atleta humano detalhado no menu, sem modificar a engine da partida.
+const fcFaceGroup=new THREE.Group();fcFaceGroup.position.set(0,3.05,0);fcActor.add(fcFaceGroup);
+fcHead.visible=false;fcHair.visible=false;
+const fcSkinPBR=new THREE.MeshStandardMaterial({color:0xc99167,roughness:.62,metalness:0});
+function fcDetail(geo,mat,x,y,z,parent=fcFaceGroup){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);parent.add(m);return m}
+const fcSkull=fcDetail(new THREE.SphereGeometry(.31,20,16),fcSkinPBR,0,0,0);fcSkull.scale.set(.87,1.12,.85);
+const fcJaw=fcDetail(new THREE.SphereGeometry(.23,16,12),fcSkinPBR,0,-.14,.045);fcJaw.scale.set(1,.66,.9);
+const fcNose=fcDetail(new THREE.SphereGeometry(.073,10,8),fcSkinPBR,0,-.045,.27);fcNose.scale.set(.68,1.35,.9);
+const fcEarL=fcDetail(new THREE.SphereGeometry(.075,10,8),fcSkinPBR,-.277,-.035,0),fcEarR=fcDetail(new THREE.SphereGeometry(.075,10,8),fcSkinPBR,.277,-.035,0);
+fcEarL.scale.set(.52,1.15,.65);fcEarR.scale.copy(fcEarL.scale);
+const fcWhite=fcMat(0xe9e4da,.36),fcIris=fcMat(0x493e31,.32),fcPupil=fcMat(0x11151b,.28),fcLip=fcMat(0x92594e,.85);
+const fcEyes=[],fcLids=[],fcBrows=[];
+for(const side of [-1,1]){const eye=fcDetail(new THREE.SphereGeometry(.052,12,10),fcWhite,side*.125,.045,.258);eye.scale.set(1.1,.68,.4);fcEyes.push(eye);fcDetail(new THREE.SphereGeometry(.025,10,8),fcIris,side*.125,.045,.281);fcDetail(new THREE.SphereGeometry(.012,8,6),fcPupil,side*.125,.045,.299);const lid=fcDetail(new THREE.SphereGeometry(.055,10,8),fcSkinPBR,side*.125,.045,.287);lid.scale.set(1.05,.03,.45);fcLids.push(lid);const brow=fcDetail(new THREE.CapsuleGeometry(.013,.09,3,6),fcDark,side*.125,.125,.279);brow.rotation.z=side*.13;fcBrows.push(brow)}
+const fcMouth=fcDetail(new THREE.SphereGeometry(.085,12,8),fcLip,0,-.195,.248);fcMouth.scale.set(.95,.16,.25);
+const fcHairCap=fcDetail(new THREE.SphereGeometry(.314,16,12),fcDark,0,.13,-.035);fcHairCap.scale.set(.91,.55,.88);
+for(let i=0;i<9;i++){const x=(i-4)*.055;fcDetail(new THREE.SphereGeometry(.075,8,6),fcDark,x,.245,.06).scale.set(.75,.7,.75)}
+const fcNeck=fcPart(new THREE.CylinderGeometry(.13,.14,.22,12),fcSkinPBR,0,2.69,0);
+const fcShoulderL=fcPart(new THREE.SphereGeometry(.19,12,10),fcBody.material,-.43,2.37,0),fcShoulderR=fcPart(new THREE.SphereGeometry(.19,12,10),fcBody.material,.43,2.37,0);
+const fcWaist=fcPart(new THREE.CylinderGeometry(.28,.3,.35,12),fcBody.material,0,1.5,0);
+const fcKitNumber=fcPart(new THREE.PlaneGeometry(.2,.3),new THREE.MeshBasicMaterial({color:0xf7f7f7,side:THREE.DoubleSide}),0,2.1,-.43);
+const fcHeadPivot=fcFaceGroup;
+let fcPreviewRotation=0,fcDragging=false,fcPointerX=0,fcPreviewHold=0;
+fcRenderer.domElement.addEventListener('pointerdown',e=>{if(!fcMenuActive)return;fcDragging=true;fcPointerX=e.clientX;fcPreviewHold=8;fcRenderer.domElement.setPointerCapture?.(e.pointerId)});
+fcRenderer.domElement.addEventListener('pointermove',e=>{if(!fcDragging)return;fcPreviewRotation+=(e.clientX-fcPointerX)*.009;fcPointerX=e.clientX});
+fcRenderer.domElement.addEventListener('pointerup',()=>{fcDragging=false});
+fcRenderer.domElement.addEventListener('pointercancel',()=>{fcDragging=false});
 const fcVariants=[{name:'AZUL FC',kit:0x245bca,locker:0x344159},{name:'VERMELHO FC',kit:0xd83f4d,locker:0x4c2936},{name:'VERDE FC',kit:0x19a17a,locker:0x284b46},{name:'OURO FC',kit:0xd7b647,locker:0x4c4530}];
-function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcBody.material.color.setHex(v.kit);fcKitSleeveL.material.color.setHex(v.kit);fcKitSleeveR.material.color.setHex(v.kit);fcFill.color.setHex(v.kit);fcLockers.forEach(l=>{l.children[0].material.color.setHex(v.locker)});document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
+function fcChangeVariant(){let next=Math.floor(Math.random()*(fcVariants.length-1));if(next>=fcShowroomVariant)next++;fcShowroomVariant=next;const v=fcVariants[next];fcBody.material.color.setHex(v.kit);fcShoulderL.material.color.setHex(v.kit);fcShoulderR.material.color.setHex(v.kit);fcWaist.material.color.setHex(v.kit);fcKitSleeveL.material.color.setHex(v.kit);fcKitSleeveR.material.color.setHex(v.kit);fcFill.color.setHex(v.kit);fcLockers.forEach(l=>{l.children[0].material.color.setHex(v.locker)});document.getElementById('fcSceneLabel').textContent='VESTIÁRIO · '+v.name}
 fcChangeVariant();
 function fcAnimate(dt){
 fcShowroomTime+=dt;if(fcShowroomTime>=5){fcShowroomTime=0;fcChangeVariant()}
 const t=performance.now()*.001,beat=t*2.4,phase=t*3.6;
-fcActor.position.y=Math.sin(beat)*.035;fcActor.rotation.y=Math.sin(t*.6)*.15;
+fcActor.position.y=Math.sin(beat)*.035;fcPreviewHold=Math.max(0,fcPreviewHold-dt);if(!fcPreviewHold)fcPreviewRotation+=dt*.16;fcActor.rotation.y=fcPreviewRotation+Math.sin(t*.6)*.08;fcHeadPivot.rotation.y=Math.sin(t*.75)*.08;const blink=Math.pow(Math.max(0,Math.sin(t*1.7)),30);fcLids.forEach(l=>l.scale.y=.03+blink*.7);fcMouth.scale.y=.16+Math.max(0,Math.sin(t*2.2))*.08;
 fcArmL.rotation.x=Math.sin(beat)*.22;fcArmR.rotation.x=-Math.sin(beat)*.22;
 fcLegR.rotation.x=Math.sin(beat*1.2)*.19;fcLegL.rotation.x=-Math.sin(beat*1.2)*.15;
 fcBall.position.set(2.45+.55+Math.sin(t*.85)*.12,.33+Math.abs(Math.sin(phase))*.7,.65);
