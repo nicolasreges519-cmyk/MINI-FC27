@@ -2246,7 +2246,7 @@ fcChangeVariant();
 let fcImportedPlayer=null,fcImportedMixer=null;
 (async()=>{
  try{
-  const asset='./assets/professional-soccer-standing.glb';
+  const asset='./professional-soccer-standing.glb';
   const response=await fetch(asset,{method:'HEAD'});
   if(!response.ok) return;
   const {GLTFLoader}=await import('https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/GLTFLoader.js');
